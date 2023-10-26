@@ -1,11 +1,11 @@
-package db
+package client
 
 import (
 	"context"
 	"database/sql"
 	"errors"
-	"hermes-foods/internal/core/domain/entity"
-	"hermes-foods/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/domain/valueObject"
 	"testing"
 )
 

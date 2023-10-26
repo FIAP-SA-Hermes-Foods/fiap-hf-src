@@ -2,7 +2,7 @@ package http
 
 import (
 	"context"
-	"hermes-foods/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/domain/entity"
 )
 
 type PaymentAPI interface {

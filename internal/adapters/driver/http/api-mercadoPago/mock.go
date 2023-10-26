@@ -2,7 +2,7 @@ package api_mercadoPago
 
 import (
 	"encoding/json"
-	"hermes-foods/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/domain/entity"
 	"log"
 	"net/http"
 )

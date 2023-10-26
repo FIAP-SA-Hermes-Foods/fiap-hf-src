@@ -1,8 +1,9 @@
-package db
+package client
 
 import (
 	"context"
-	"hermes-foods/internal/core/domain/entity"
+	psqldb "fiap-hf-src/internal/adapters/driven/repository/db"
+	"fiap-hf-src/internal/core/domain/entity"
 )
 
 var (
@@ -15,10 +16,10 @@ type ClientRepository interface {
 
 type clientRepository struct {
 	Ctx      context.Context
-	Database PostgresDB
+	Database psqldb.PostgresDB
 }
 
-func NewClientRepository(ctx context.Context, db PostgresDB) ClientRepository {
+func NewClientRepository(ctx context.Context, db psqldb.PostgresDB) ClientRepository {
 	return clientRepository{Ctx: ctx, Database: db}
 }
 

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"hermes-foods/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/domain/entity"
 	"io"
 	"log"
 	"net/http"
