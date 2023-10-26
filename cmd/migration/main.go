@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"hermes-foods/infrastructure/db/migration"
+	"fiap-hf-src/infrastructure/db/migration"
 	"log"
 	"os"
 	"regexp"
