@@ -1,9 +1,15 @@
-run-build:
-	./infrastructure/scripts/docker-netowrk.sh;
+run-local:
+	go mod init fiap-hf-src;
+	go mod tidy;
+	go build -ldflags "-w -s" -o bin/hermesfoods cmd/server/*.go;
+	./bin/hermesfoods;
+
+run-build:	
+	./infrastructure/scripts/docker-network.sh;
 	docker-compose up --build --force-recreate;
 
 run:
-	./infrastructure/scripts/docker-netowrk.sh;
+	./infrastructure/scripts/docker-network.sh;
 	docker-compose up;
 
 migration:
