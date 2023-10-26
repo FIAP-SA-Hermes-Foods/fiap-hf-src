@@ -1,0 +1,157 @@
+{
+    "swagger": "2.0",
+    "info": { 
+        "title": "HermesFoods API",
+        "description": "This is an API to create and buy your meal through a food totem.",
+        "version": "1.0.0",
+    },
+    "host": "hermesfoods.api.dev",
+    "basePath": "/v1",
+    "schemes": [
+        "http",
+        "https",
+    ],
+    "consumes": [ 
+        "application/json",
+    ],
+    "produces": [ 
+        "application/json",
+    ],
+    "paths": { 
+        "/clients":{
+            "get": {
+                "tags": [
+                    "Client"
+                ],
+                "summary":"Get all clients.",
+                "description": "Get all clients registered in the system.",
+                "responses":{ 
+                    "200": {
+                        "description": "OK", 
+                    },
+                },
+                "externalDocs":{ 
+                    "url": "https://hermesfoods.api.dev/docs/clients-operations/",
+                    "description": "Learn more about Client operations provided by this API.",
+                },
+            },
+        },
+        "/clients{clientID}":{ 
+            "get": {
+                "tags": [
+                    "Client"
+                ],
+                "summary":"Get a client.",
+                "description": "Get the client by it's unique identifier.",
+                "parameters":[    
+                    {
+                        "name":"clientID",
+                        "in":"path",
+                        "description": "Input subscription to save client at api's database",
+                        "type": "string",
+                        "required": true,
+                    },
+                ],
+                "responses":{ 
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/client"
+                        },   
+                    },
+                },
+                "externalDocs":{ 
+                    "url": "https://hermesfoods.api.dev/docs/clients-operations/",
+                    "description": "Learn more about Client operations provided by this API.",
+                },
+            },
+        },
+        "/clients/":{ 
+            "post": {
+                "tags": [
+                    "Client"
+                ],
+                "summary":"Save a client",
+                "description": "Save a client that subscribed at hermes-foods app.",
+                "parameters":[    
+                    {
+                        "name":"subscriptionInput",
+                        "in":"body",
+                        "description": "Input subscription to save client at api's database",
+                        "schema": {
+                            "$ref": "#/definitions/subscriptionInput",
+                        },
+                        "required": true,
+                    },
+                ],
+                "responses":{ 
+                    "200": {
+                        "description": "Successfully saved a client in totem's database.",
+                        "schema" : {
+                            "$ref": "#/definitions/subscriptionInput",
+                        },
+                    },
+                },
+                "externalDocs":{ 
+                    "url": "https://hermesfoods.api.dev/docs/clients-operations/",
+                    "description": "Learn more about Client operations provided by this API.",
+                }
+            },
+        },
+    },
+    "definitions":{ 
+        "client":{ 
+            "type": "object",
+            "properties": { 
+                "id": {
+                    "type": "integer",
+                    "example": 1,
+                },
+                "name": {
+                    "type": "string",
+                    "example": "some_name"
+                },
+                "cpf": {
+                    "type": "string",
+                    "example": "0000011111"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "510000111111"
+                },
+                "testObject": {
+                    "type": "object",
+                    "example": {"lastname": "someLastname"},
+                },
+            },
+        },
+        "subscriptionInput": { 
+            "type": "object",
+            "properties": {
+                "name":{
+                    "description": "client's name",
+                    "type": "string",
+                    "example": "Someone Name",
+                },
+                "cpf":{
+                    "description": "client's CPF",
+                    "type": "string",
+                    "example": "00000111112222",
+                },
+                "phone":{
+                    "description": "client's phone",
+                    "type": "string",
+                    "example": "5101122222",
+                },
+            },
+            "required": [
+                "name",
+                "cpf",
+                "phone",
+            ],
+        },
+        "subscriptionOutput":{
+        },
+    },
+}
+
