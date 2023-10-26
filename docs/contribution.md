@@ -11,7 +11,7 @@ These rules are mandatory to contribute to this project.
 *** 
 
 ### Issues
-Open an issue on GitHub [repo](https://github.com/HermesFoods/hermes-foods/issues) and make sure that it doesn't exist yet. 
+Open an issue on GitHub [repo](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/issues) and make sure that it doesn't exist yet. 
 
 > [!IMPORTANT]  
 > Always detail the issue description. Details are important to be sure that the implementation will be safe and well done.
