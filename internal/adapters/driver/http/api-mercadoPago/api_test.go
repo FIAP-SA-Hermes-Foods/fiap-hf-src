@@ -3,8 +3,8 @@ package api_mercadoPago
 import (
 	"context"
 	"errors"
-	"hermes-foods/internal/core/domain/entity"
-	"hermes-foods/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/domain/valueObject"
 	"io"
 	"log"
 	"net/http"

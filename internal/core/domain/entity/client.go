@@ -2,7 +2,7 @@ package entity
 
 import (
 	"encoding/json"
-	"hermes-foods/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/domain/valueObject"
 	"log"
 )
 
