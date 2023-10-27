@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	psqldb "fiap-hf-src/internal/adapters/driven/repository/db"
+	psqldb "fiap-hf-src/infrastructure/db/postgres"
 	"fiap-hf-src/internal/core/domain/entity"
 )
 

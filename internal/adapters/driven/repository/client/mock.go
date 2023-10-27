@@ -32,12 +32,18 @@ func (m mockDb) PrepareStmt(query string) error {
 	if m.WantErr != nil && strings.EqualFold("errPrepareStmt", m.WantErr.Error()) {
 		return m.WantErr
 	}
-
 	return nil
 }
 
-func (m mockDb) ExecContext(ctx context.Context, fields ...interface{}) (sql.Result, error) {
+func (m mockDb) ExecContext(ctx context.Context, query string, fields ...interface{}) (sql.Result, error) {
 	if m.WantErr != nil && strings.EqualFold("errExecContext", m.WantErr.Error()) {
+		return nil, m.WantErr
+	}
+	return m.WantResult, nil
+}
+
+func (m mockDb) ExecContextStmt(ctx context.Context, fields ...interface{}) (sql.Result, error) {
+	if m.WantErr != nil && strings.EqualFold("errExecContextStmt", m.WantErr.Error()) {
 		return nil, m.WantErr
 	}
 
