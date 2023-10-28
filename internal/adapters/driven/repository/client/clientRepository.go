@@ -9,7 +9,7 @@ import (
 
 var (
 	queryGetClientByCPF = `SELECT * from client WHERE cpf = $1`
-	querySaveClient     = `INSERT INTO client (id, name, cpf, email, created_at) VALUES (DEFAULT, $1, $2, $3, now()) RETURNING id`
+	querySaveClient     = `INSERT INTO client (id, name, cpf, email, created_at) VALUES (DEFAULT, $1, $2, $3, now()) RETURNING id, created_at`
 )
 
 type ClientRepository interface {
@@ -33,18 +33,20 @@ func (c clientRepository) GetClientByCPF(cpf string) (*entity.Client, error) {
 
 	defer c.Database.Close()
 
-	if err := c.Database.PrepareStmt(queryGetClientByCPF); err != nil {
+	var outClient = new(entity.Client)
+
+	if err := c.Database.Query(queryGetClientByCPF, cpf); err != nil {
 		return nil, err
 	}
 
-	defer c.Database.CloseStmt()
+	for c.Database.GetNextRows() {
+		if err := c.Database.Scan(&outClient.ID, &outClient.Name, &outClient.CPF.Value, &outClient.Email, &outClient.CreatedAt.Value); err != nil {
+			return nil, err
+		}
+	}
 
-	var outClient = new(entity.Client)
-
-	c.Database.QueryRow(cpf)
-
-	if err := c.Database.Scan(&outClient.ID, &outClient.Name, &outClient.CPF.Value, &outClient.Email); err != nil {
-		return nil, err
+	if *outClient == (entity.Client{}) {
+		return nil, nil
 	}
 
 	return outClient, nil
@@ -74,10 +76,9 @@ func (c clientRepository) SaveClient(client entity.Client) (*entity.Client, erro
 
 	c.Database.QueryRow(client.Name, client.CPF.Value, client.Email)
 
-	if err := c.Database.Scan(&outClient.ID); err != nil {
+	if err := c.Database.ScanStmt(&outClient.ID, &outClient.CreatedAt.Value); err != nil {
 		return nil, err
 	}
 
 	return outClient, nil
-
 }
