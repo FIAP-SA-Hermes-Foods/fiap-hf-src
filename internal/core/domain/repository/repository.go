@@ -3,5 +3,6 @@ package repository
 import "fiap-hf-src/internal/core/domain/entity"
 
 type ClientRepository interface {
-	GetClientByID(clientID string) (*entity.Client, error)
+	GetClientByCPF(cpf string) (*entity.Client, error)
+	SaveClient(client entity.Client) (*entity.Client, error)
 }
