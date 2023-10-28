@@ -1,4 +1,4 @@
-package client
+package migration
 
 import (
 	"context"
@@ -32,6 +32,7 @@ func (m mockDb) PrepareStmt(query string) error {
 	if m.WantErr != nil && strings.EqualFold("errPrepareStmt", m.WantErr.Error()) {
 		return m.WantErr
 	}
+
 	return nil
 }
 

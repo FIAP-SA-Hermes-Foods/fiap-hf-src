@@ -1,4 +1,4 @@
-package db
+package postgres
 
 import (
 	"context"
@@ -14,14 +14,14 @@ type (
 		Connect() error
 		Close() error
 		PrepareStmt(query string) error
-
+		ExecContext(ctx context.Context, query string, fields ...interface{}) (sql.Result, error)
 		/*
 		   	ExecContext: This function will query a prepared statement, and return its result
 
 		   IMPORTANT!:
 		     - This method only works after running the method: *PrepareStmt*
 		*/
-		ExecContext(ctx context.Context, fields ...interface{}) (sql.Result, error)
+		ExecContextStmt(ctx context.Context, fields ...interface{}) (sql.Result, error)
 
 		/*
 		   	Query: This function will query a prepared statement and return its rows
@@ -88,13 +88,22 @@ func (p *postgresDB) Connect() error {
 		return err
 	}
 
-	if err := p.PingCtx(p.Ctx); err != nil {
-		return nil
+	if err := db.PingContext(p.Ctx); err != nil {
+		return err
 	}
 
 	p.postgresDB = db
 
 	return nil
+}
+
+func (p *postgresDB) ExecContext(ctx context.Context, query string, fields ...interface{}) (sql.Result, error) {
+	if p.postgresDB != nil {
+		return p.postgresDB.ExecContext(ctx, query, fields...)
+	}
+
+	return nil, errors.New("connection is null, is not possible to ExecContext")
+
 }
 
 func (p *postgresDB) PingCtx(ctx context.Context) error {
@@ -132,8 +141,7 @@ func (p *postgresDB) PrepareStmt(query string) error {
 }
 
 func (p postgresDB) dbURL() string {
-	url := fmt.Sprintf("%s:%s", p.Host, p.Port)
-	return fmt.Sprintf("postgresql://%s:%s@%s/%s/sslmode=disable", p.User, p.Password, url, p.Schema)
+	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", p.User, p.Password, p.Host, p.Port, p.Schema)
 }
 
 // Stmt Methods
@@ -173,7 +181,7 @@ func (p *postgresDB) QueryRow(args ...interface{}) {
 IMPORTANT!:
   - This method only works after running the method: *PrepareStmt*
 */
-func (p *postgresDB) ExecContext(ctx context.Context, fields ...interface{}) (sql.Result, error) {
+func (p *postgresDB) ExecContextStmt(ctx context.Context, fields ...interface{}) (sql.Result, error) {
 	if p.SqlStmt != nil {
 		return p.SqlStmt.ExecContext(ctx, fields...)
 	}

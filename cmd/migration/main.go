@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fiap-hf-src/infrastructure/db/migration"
+	"fiap-hf-src/infrastructure/db/postgres"
 	"log"
 	"os"
 	"regexp"
@@ -17,7 +19,20 @@ func init() {
 }
 
 func main() {
-	if err := migration.DBMigration(); err != nil {
+	ctx := context.Background()
+
+	db := postgres.NewPostgresDB(
+		ctx,
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+	)
+
+	m := migration.NewMigration(db)
+
+	if err := m.Migrate(); err != nil {
 		log.Fatalf("error -> %v", err)
 	}
 
