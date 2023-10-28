@@ -120,7 +120,7 @@ func Test_GetClientByID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			repo := NewClientRepository(tc.ctx, tc.mockDB)
 
-			out, err := repo.GetClientByID(tc.args.ClientID)
+			out, err := repo.GetClientByCPF(tc.args.ClientID)
 
 			if (!tc.isWantError) && err != nil {
 				t.Errorf("was not suppose to have an error here and %v got", err)
