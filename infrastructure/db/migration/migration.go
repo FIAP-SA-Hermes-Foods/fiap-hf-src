@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -64,14 +65,24 @@ func (m migrationDB) Migrate() error {
 
 	defer file.Close()
 
-	list, err := file.Readdir(-1)
+	list, err := file.Readdir(0)
 	if err != nil {
 		return err
 	}
 
-	for _, f := range list {
+	files := make([]string, 0)
 
-		q, err := os.ReadFile(filepath.Join(path, f.Name()))
+	for _, f := range list {
+		files = append(files, f.Name())
+	}
+
+	sort.Slice(files[:], func(i, j int) bool {
+		return files[i] < files[j]
+	})
+
+	for i := range files {
+
+		q, err := os.ReadFile(filepath.Join(path, files[i]))
 
 		if err != nil {
 			return err
