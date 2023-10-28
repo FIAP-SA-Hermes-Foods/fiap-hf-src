@@ -13,8 +13,8 @@ run:
 	docker-compose up;
 
 migration:
-	@go build -ldflags "-w -s" -o bin/hermesfoods-migration cmd/migration/*.go;
-	./bin/hermesfoods-migration;
+	./infrastructure/scripts/docker-migration.sh;
+	docker-compose up;
 
 tests:
 	@./infrastructure/scripts/coverage.sh

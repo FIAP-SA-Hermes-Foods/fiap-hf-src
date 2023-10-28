@@ -11,3 +11,9 @@ RUN go build -ldflags "-w -s" -o bin/hermesfoods cmd/server/*.go
 ENTRYPOINT ["./bin/hermesfoods"]
 
 EXPOSE 8080
+
+WORKDIR /infrastructure/migration
+
+COPY . .
+
+RUN go build -ldflags "-w -s" -o bin/hermesfoods-migration cmd/migration/*.go
