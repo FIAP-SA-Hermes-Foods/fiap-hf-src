@@ -26,14 +26,16 @@ func main() {
 		os.Getenv("DB_PASSWORD"),
 	)
 
-	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService()
+	defer db.Close()
+
+	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService(nil)
 
 	app := application.NewHermesFoodsApp(clientRepo, clientService)
 	handlersClient := ui.NewHandlerClient(app)
 
 	router.HandleFunc("/hermes_foods", server)
 	router.HandleFunc("/hermes_foods/health", ui.HealthCheck)
-	router.HandleFunc("/hermes_foods/client", handlersClient.Handler)
+	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

@@ -35,6 +35,10 @@ func (m mockDb) PrepareStmt(query string) error {
 	return nil
 }
 
+func (m mockDb) GetNextRows() bool {
+	return false
+}
+
 func (m mockDb) ExecContext(ctx context.Context, query string, fields ...interface{}) (sql.Result, error) {
 	if m.WantErr != nil && strings.EqualFold("errExecContext", m.WantErr.Error()) {
 		return nil, m.WantErr
@@ -50,8 +54,15 @@ func (m mockDb) ExecContextStmt(ctx context.Context, fields ...interface{}) (sql
 	return m.WantResult, nil
 }
 
-func (m mockDb) Query(args ...interface{}) (*sql.Rows, error) {
+func (m mockDb) Query(query string, args ...interface{}) error {
 	if m.WantErr != nil && strings.EqualFold("errQuery", m.WantErr.Error()) {
+		return m.WantErr
+	}
+	return nil
+}
+
+func (m mockDb) QueryStmt(args ...interface{}) (*sql.Rows, error) {
+	if m.WantErr != nil && strings.EqualFold("errQueryStmt", m.WantErr.Error()) {
 		return nil, m.WantErr
 	}
 	return m.WantRows, nil
@@ -69,6 +80,14 @@ func (m mockDb) CloseStmt() error {
 }
 
 func (m mockDb) Scan(args ...interface{}) error {
+	if m.WantErr != nil && strings.EqualFold("errScan", m.WantErr.Error()) {
+		return m.WantErr
+	}
+
+	return nil
+}
+
+func (m mockDb) ScanStmt(args ...interface{}) error {
 	if m.WantErr != nil && strings.EqualFold("errScan", m.WantErr.Error()) {
 		return m.WantErr
 	}

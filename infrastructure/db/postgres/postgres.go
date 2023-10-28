@@ -15,6 +15,9 @@ type (
 		Close() error
 		PrepareStmt(query string) error
 		ExecContext(ctx context.Context, query string, fields ...interface{}) (sql.Result, error)
+		Query(query string, args ...interface{}) error
+		GetNextRows() bool
+		Scan(args ...interface{}) error
 		/*
 		   	ExecContext: This function will query a prepared statement, and return its result
 
@@ -29,7 +32,7 @@ type (
 		   IMPORTANT!:
 		     - This method only works after running the method: *PrepareStmt*
 		*/
-		Query(args ...interface{}) (*sql.Rows, error)
+		QueryStmt(args ...interface{}) (*sql.Rows, error)
 
 		/*
 		   	QueryRow: This function will query a prepared statement
@@ -46,7 +49,7 @@ type (
 		   IMPORTANT!:
 		     - This method only works after running the method: *QueryRow*
 		*/
-		Scan(args ...interface{}) error
+		ScanStmt(args ...interface{}) error
 	}
 )
 
@@ -61,6 +64,7 @@ type (
 		postgresDB *sql.DB
 		SqlStmt    *sql.Stmt
 		Row        *sql.Row
+		Rows       *sql.Rows
 	}
 )
 
@@ -76,11 +80,7 @@ func NewPostgresDB(ctx context.Context, host, port, schema, user, password strin
 }
 
 // DB Methods
-
 func (p *postgresDB) Connect() error {
-	if p.postgresDB != nil {
-		return nil
-	}
 
 	db, err := sql.Open("postgres", p.dbURL())
 
@@ -103,7 +103,33 @@ func (p *postgresDB) ExecContext(ctx context.Context, query string, fields ...in
 	}
 
 	return nil, errors.New("connection is null, is not possible to ExecContext")
+}
 
+func (p *postgresDB) Query(query string, args ...interface{}) error {
+	if p.postgresDB == nil {
+		return errors.New("connection is null, is not possible to Query")
+	}
+
+	rows, err := p.postgresDB.Query(query, args...)
+	if err != nil {
+		return err
+	}
+
+	p.Rows = rows
+
+	return nil
+}
+
+func (s *postgresDB) Scan(args ...interface{}) error {
+	if s.Rows != nil {
+		return s.Rows.Scan(args...)
+	}
+
+	return errors.New("row is null, is not possible to scan")
+}
+
+func (s *postgresDB) GetNextRows() bool {
+	return s.Rows.Next()
 }
 
 func (p *postgresDB) PingCtx(ctx context.Context) error {
@@ -122,9 +148,6 @@ func (p *postgresDB) Close() error {
 }
 
 func (p *postgresDB) PrepareStmt(query string) error {
-	if p.SqlStmt != nil {
-		return nil
-	}
 
 	if p.postgresDB == nil {
 		return errors.New("connection is null, is not possible to create a stmt")
@@ -152,7 +175,7 @@ func (p postgresDB) dbURL() string {
 IMPORTANT!:
   - This method only works after running the method: *PrepareStmt*
 */
-func (p *postgresDB) Query(args ...interface{}) (*sql.Rows, error) {
+func (p *postgresDB) QueryStmt(args ...interface{}) (*sql.Rows, error) {
 	if p.SqlStmt != nil {
 		return p.SqlStmt.Query(args...)
 	}
@@ -166,10 +189,6 @@ IMPORTANT!:
   - This method only works after running the method: *PrepareStmt*
 */
 func (p *postgresDB) QueryRow(args ...interface{}) {
-	if p.Row != nil {
-		return
-	}
-
 	if p.SqlStmt != nil {
 		p.Row = p.SqlStmt.QueryRow(args...)
 	}
@@ -204,7 +223,7 @@ func (p *postgresDB) CloseStmt() error {
 IMPORTANT!:
   - This method only works after running the method: *QueryRow*
 */
-func (s *postgresDB) Scan(args ...interface{}) error {
+func (s *postgresDB) ScanStmt(args ...interface{}) error {
 	if s.Row != nil {
 		return s.Row.Scan(args...)
 	}
