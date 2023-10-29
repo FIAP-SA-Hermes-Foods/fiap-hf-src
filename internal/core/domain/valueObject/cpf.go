@@ -22,7 +22,6 @@ func (c Cpf) Validate() error {
 
 	if cpfMatch == nil {
 		return fmt.Errorf("cpf %s is not valid", c.Value)
-
 	}
 
 	return nil

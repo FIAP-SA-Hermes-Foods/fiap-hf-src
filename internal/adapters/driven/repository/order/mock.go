@@ -1,4 +1,4 @@
-package client
+package order
 
 import (
 	"context"
@@ -92,6 +92,5 @@ func (m mockDb) ScanStmt(args ...interface{}) error {
 	if m.WantErr != nil && strings.EqualFold("errScanStmt", m.WantErr.Error()) {
 		return m.WantErr
 	}
-
 	return nil
 }

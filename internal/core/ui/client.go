@@ -24,12 +24,14 @@ func NewHandlerClient(app application.HermesFoodsApp) HandlerClient {
 }
 
 func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
-	switch req.Method {
-	case http.MethodPost:
-		h.handlerSaveClient(rw, req)
-	case http.MethodGet:
-		if len(getCpf(req.URL.Path)) > 0 {
-			h.handlerGetClientByCPF(rw, req)
+	if strings.ContainsAny("/client/", req.URL.Path) {
+		switch req.Method {
+		case http.MethodPost:
+			h.handlerSaveClient(rw, req)
+		case http.MethodGet:
+			if len(getCpf(req.URL.Path)) > 0 {
+				h.handlerGetClientByCPF(rw, req)
+			}
 		}
 	}
 }

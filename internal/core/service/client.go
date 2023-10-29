@@ -6,8 +6,9 @@ import (
 )
 
 type ClientService interface {
-	SaveClient(client entity.Client) (*entity.Client, error)
+	GetClientByID(id int64) error
 	GetClientByCPF(cpf string) error
+	SaveClient(client entity.Client) (*entity.Client, error)
 }
 
 type clientService struct {
@@ -32,6 +33,13 @@ func (c clientService) SaveClient(client entity.Client) (*entity.Client, error) 
 func (c clientService) GetClientByCPF(cpf string) error {
 	if len(cpf) == 0 {
 		return errors.New("the cpf is not valid for consult")
+	}
+	return nil
+}
+
+func (c clientService) GetClientByID(id int64) error {
+	if id < 1 {
+		return errors.New("the id is not valid for consult")
 	}
 	return nil
 }

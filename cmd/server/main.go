@@ -4,15 +4,22 @@ import (
 	"context"
 	"fiap-hf-src/infrastructure/db/postgres"
 	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
+	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
+	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
 	"fiap-hf-src/internal/core/ui"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
+	printArt()
+	go APIMercadoPago()
+
 	router := http.NewServeMux()
 
 	ctx := context.Background()
@@ -28,27 +35,34 @@ func main() {
 
 	defer db.Close()
 
-	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService(nil)
+	urlAPI := fmt.Sprintf("http://%s:%s/%s",
+		os.Getenv("MERCADO_PAGO_API_HOST"),
+		os.Getenv("MERCADO_PAGO_API_PORT"),
+		os.Getenv("MERCADO_PAGO_API_URI"),
+	)
 
-	app := application.NewHermesFoodsApp(clientRepo, clientService)
-	handlersClient := ui.NewHandlerClient(app)
-
-	router.HandleFunc("/hermes_foods", server)
-	router.HandleFunc("/hermes_foods/health", ui.HealthCheck)
-	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
-
-	log.Fatal(http.ListenAndServe(":8080", router))
-}
-
-func server(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
-
-	if req.Method != http.MethodPost {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"}`))
-		return
+	headersAPI := map[string]string{
+		"Content-type": "application/json",
 	}
 
-	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(`{"message": "Let's kill hunger fast!"}`))
+	du, err := time.ParseDuration(os.Getenv("MERCADO_PAGO_API_TIMEOUT"))
+
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	paymentApi := apiMercadoPago.NewMercadoPagoAPI(urlAPI, headersAPI, du)
+
+	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService(nil)
+	orderRepo, orderService := oRepo.NewOrderRepository(ctx, db), service.NewOrderService(nil)
+
+	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, clientService, orderService)
+	handlersClient := ui.NewHandlerClient(app)
+	handlersOrder := ui.NewHandlerOrder(app)
+
+	router.HandleFunc("/hermes_foods/health", ui.HealthCheck)
+	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
+	router.HandleFunc("/hermes_foods/order/", handlersOrder.Handler)
+
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
