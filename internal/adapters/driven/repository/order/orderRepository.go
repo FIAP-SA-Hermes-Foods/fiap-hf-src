@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	querySaveOrder = `INSERT INTO orders (id, status, verification_code, created_at, client_id, voucher_id) VALUES (DEFAULT, $1, $2, now(), $3, $4) RETURNING id, created_at`
+	queryGetOrderByID = `SELECT * FROM orders WHERE id = $1`
+	querySaveOrder    = `INSERT INTO orders (id, status, verification_code, created_at, client_id, voucher_id) VALUES (DEFAULT, $1, $2, now(), $3, $4) RETURNING id, created_at`
 )
 
 type OrderRepository interface {
 	SaveOrder(order entity.Order) (*entity.Order, error)
+	GetOrderByID(id int64) (*entity.Order, error)
 }
 
 type orderRepository struct {
@@ -25,7 +27,6 @@ func NewOrderRepository(ctx context.Context, db psqldb.PostgresDB) OrderReposito
 }
 
 func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
-
 	if err := o.Database.Connect(); err != nil {
 		return nil, err
 	}
@@ -53,6 +54,40 @@ func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 
 	if err := o.Database.ScanStmt(&outOrder.ID, &outOrder.CreatedAt.Value); err != nil {
 		return nil, err
+	}
+
+	return outOrder, nil
+}
+
+func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
+	if err := o.Database.Connect(); err != nil {
+		return nil, err
+	}
+
+	defer o.Database.Close()
+
+	var outOrder = new(entity.Order)
+
+	if err := o.Database.Query(queryGetOrderByID, id); err != nil {
+		return nil, err
+	}
+
+	for o.Database.GetNextRows() {
+		err := o.Database.Scan(
+			&outOrder.ID,
+			&outOrder.Status.Value,
+			&outOrder.VerificationCode.Value,
+			&outOrder.CreatedAt.Value,
+			&outOrder.ClientID,
+			&outOrder.VoucherID,
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if *outOrder == (entity.Order{}) {
+		return nil, nil
 	}
 
 	return outOrder, nil

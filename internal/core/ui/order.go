@@ -8,6 +8,7 @@ import (
 	"fiap-hf-src/internal/core/domain/valueObject"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -29,12 +30,15 @@ func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 		case http.MethodPost:
 			h.saveOrder(rw, req)
 		case http.MethodGet:
+
+			if len(getID("order", req.URL.Path)) > 0 {
+				h.handlerGetOrderByID(rw, req)
+			}
 		}
 	}
 }
 
 func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
-
 	rw.Header().Add("Content-Type", "application/json")
 
 	if req.Method != http.MethodPost {
@@ -75,15 +79,53 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp := entity.RequestOrder{
-		ID:               o.ID,
-		ClientID:         o.ClientID,
-		VoucherID:        o.VoucherID,
-		Status:           o.Status.Value,
-		VerificationCode: o.VerificationCode.Value,
-		CreatedAt:        o.CreatedAt.Format(),
+	rw.WriteHeader(http.StatusCreated)
+	rw.Write([]byte(o.MarshalString()))
+}
+
+func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+
+	id := getID("order", req.URL.Path)
+
+	if req.Method != http.MethodGet {
+		rw.WriteHeader(http.StatusMethodNotAllowed)
+		rw.Write([]byte(`{"error": "method not allowed"} `))
+		return
 	}
 
-	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(resp.MarshalString()))
+	idconv, err := strconv.ParseInt(id, 10, 64)
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get order by ID: %v"} `, err)
+		return
+	}
+
+	o, err := h.App.GetOrderByID(idconv)
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get order by ID: %v"} `, err)
+		return
+	}
+
+	if o == nil {
+		rw.WriteHeader(http.StatusNotFound)
+		rw.Write([]byte(`{"error": "order not found"}`))
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte(o.MarshalString()))
+}
+
+func getID(handlerName, url string) string {
+	indexCpf := strings.Index(url, handlerName+"/")
+
+	if indexCpf == -1 {
+		return ""
+	}
+
+	return strings.ReplaceAll(url[indexCpf:], handlerName+"/", "")
 }

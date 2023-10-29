@@ -77,16 +77,8 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	resp := entity.RequestClient{
-		ID:        c.ID,
-		Name:      c.Name,
-		CPF:       c.CPF.Value,
-		Email:     c.Email,
-		CreatedAt: c.CreatedAt.Format(),
-	}
-
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(resp.MarshalString()))
+	rw.Write([]byte(c.MarshalString()))
 }
 
 func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.Request) {
@@ -114,16 +106,8 @@ func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.R
 		return
 	}
 
-	resp := entity.RequestClient{
-		ID:        c.ID,
-		Name:      c.Name,
-		CPF:       c.CPF.Value,
-		Email:     c.Email,
-		CreatedAt: c.CreatedAt.Format(),
-	}
-
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(resp.MarshalString()))
+	rw.Write([]byte(c.MarshalString()))
 }
 
 func getCpf(url string) string {
