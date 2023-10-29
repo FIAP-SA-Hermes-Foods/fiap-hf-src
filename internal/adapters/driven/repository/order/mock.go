@@ -9,9 +9,10 @@ import (
 // Mock DB
 
 type mockDb struct {
-	WantResult sql.Result
-	WantRows   *sql.Rows
-	WantErr    error
+	WantResult   sql.Result
+	WantRows     *sql.Rows
+	WantErr      error
+	WantNextRows bool
 }
 
 func (m mockDb) Connect() error {
@@ -36,7 +37,7 @@ func (m mockDb) PrepareStmt(query string) error {
 }
 
 func (m mockDb) GetNextRows() bool {
-	return false
+	return m.WantNextRows
 }
 
 func (m mockDb) ExecContext(ctx context.Context, query string, fields ...interface{}) (sql.Result, error) {
@@ -88,9 +89,8 @@ func (m mockDb) Scan(args ...interface{}) error {
 }
 
 func (m mockDb) ScanStmt(args ...interface{}) error {
-	if m.WantErr != nil && strings.EqualFold("errScan", m.WantErr.Error()) {
+	if m.WantErr != nil && strings.EqualFold("errScanStmt", m.WantErr.Error()) {
 		return m.WantErr
 	}
-
 	return nil
 }
