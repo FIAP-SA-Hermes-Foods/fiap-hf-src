@@ -15,7 +15,7 @@ func Test_GetClientByID(t *testing.T) {
 	ctx := context.Background()
 
 	type args struct {
-		ClientID string
+		ClientID int64
 	}
 
 	tests := []struct {
@@ -29,7 +29,7 @@ func Test_GetClientByID(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				ClientID: "",
+				ClientID: 0,
 			},
 			ctx: ctx,
 			WantOutput: &entity.Client{
@@ -51,7 +51,7 @@ func Test_GetClientByID(t *testing.T) {
 		{
 			name: "connection_error",
 			args: args{
-				ClientID: "",
+				ClientID: 0,
 			},
 			ctx: ctx,
 			WantOutput: &entity.Client{
@@ -73,7 +73,7 @@ func Test_GetClientByID(t *testing.T) {
 		{
 			name: "err_query",
 			args: args{
-				ClientID: "",
+				ClientID: 0,
 			},
 			ctx: ctx,
 			WantOutput: &entity.Client{
@@ -94,7 +94,7 @@ func Test_GetClientByID(t *testing.T) {
 		{
 			name: "prepare_stmt_error",
 			args: args{
-				ClientID: "",
+				ClientID: 0,
 			},
 			ctx: ctx,
 			WantOutput: &entity.Client{
@@ -142,7 +142,152 @@ func Test_GetClientByID(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			repo := NewClientRepository(tc.ctx, tc.mockDB)
 
-			out, err := repo.GetClientByCPF(tc.args.ClientID)
+			out, err := repo.GetClientByID(tc.args.ClientID)
+
+			if (!tc.isWantError) && err != nil {
+				t.Errorf("was not suppose to have an error here and %v got", err)
+			}
+
+			if out != nil && (out.MarshalString() != tc.WantOutput.MarshalString()) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", tc.WantOutput.MarshalString(), out.MarshalString())
+			}
+		})
+	}
+}
+
+// go test -v -count=1 -failfast -cover -run ^Test_GetClientByCPF$
+func Test_GetClientByCPF(t *testing.T) {
+	ctx := context.Background()
+
+	type args struct {
+		ClientCPF string
+	}
+
+	tests := []struct {
+		name        string
+		args        args
+		ctx         context.Context
+		WantOutput  *entity.Client
+		mockDB      *mockDb
+		isWantError bool
+	}{
+		{
+			name: "success",
+			args: args{
+				ClientCPF: "",
+			},
+			ctx: ctx,
+			WantOutput: &entity.Client{
+				ID:   0,
+				Name: "",
+				CPF: valueObject.Cpf{
+					Value: "",
+				},
+				Email: "",
+			},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    nil,
+			},
+
+			isWantError: false,
+		},
+		{
+			name: "connection_error",
+			args: args{
+				ClientCPF: "",
+			},
+			ctx: ctx,
+			WantOutput: &entity.Client{
+				ID:   0,
+				Name: "",
+				CPF: valueObject.Cpf{
+					Value: "",
+				},
+				Email: "",
+			},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errConnect"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name: "err_query",
+			args: args{
+				ClientCPF: "",
+			},
+			ctx: ctx,
+			WantOutput: &entity.Client{
+				ID:   0,
+				Name: "",
+				CPF: valueObject.Cpf{
+					Value: "",
+				},
+				Email: "",
+			},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errQuery"),
+			},
+			isWantError: true,
+		},
+		{
+			name: "prepare_stmt_error",
+			args: args{
+				ClientCPF: "",
+			},
+			ctx: ctx,
+			WantOutput: &entity.Client{
+				ID:   0,
+				Name: "",
+				CPF: valueObject.Cpf{
+					Value: "",
+				},
+				Email: "",
+			},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errScan"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name: "error_scan",
+			args: args{},
+			ctx:  nil,
+			WantOutput: &entity.Client{
+				ID:   0,
+				Name: "",
+				CPF: valueObject.Cpf{
+					Value: "",
+				},
+				Email: "",
+				CreatedAt: valueObject.CreatedAt{
+					Value: time.Time{},
+				},
+			},
+			mockDB: &mockDb{
+				WantResult:   nil,
+				WantRows:     &sql.Rows{},
+				WantErr:      errors.New("errScan"),
+				WantNextRows: true,
+			},
+			isWantError: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := NewClientRepository(tc.ctx, tc.mockDB)
+
+			out, err := repo.GetClientByCPF(tc.args.ClientCPF)
 
 			if (!tc.isWantError) && err != nil {
 				t.Errorf("was not suppose to have an error here and %v got", err)

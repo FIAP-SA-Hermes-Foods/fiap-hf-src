@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	queryGetClientByCPF = `SELECT * from client WHERE cpf = $1`
+	queryGetClientByCPF = `SELECT * FROM client WHERE cpf = $1`
+	queryGetClientByID  = `SELECT * FROM client WHERE id = $1`
 	querySaveClient     = `INSERT INTO client (id, name, cpf, email, created_at) VALUES (DEFAULT, $1, $2, $3, now()) RETURNING id, created_at`
 )
 
 type ClientRepository interface {
+	GetClientByID(id int64) (*entity.Client, error)
 	GetClientByCPF(cpf string) (*entity.Client, error)
 	SaveClient(client entity.Client) (*entity.Client, error)
 }
@@ -24,6 +26,32 @@ type clientRepository struct {
 
 func NewClientRepository(ctx context.Context, db psqldb.PostgresDB) ClientRepository {
 	return clientRepository{Ctx: ctx, Database: db}
+}
+
+func (c clientRepository) GetClientByID(id int64) (*entity.Client, error) {
+	if err := c.Database.Connect(); err != nil {
+		return nil, err
+	}
+
+	defer c.Database.Close()
+
+	var outClient = new(entity.Client)
+
+	if err := c.Database.Query(queryGetClientByID, id); err != nil {
+		return nil, err
+	}
+
+	for c.Database.GetNextRows() {
+		if err := c.Database.Scan(&outClient.ID, &outClient.Name, &outClient.CPF.Value, &outClient.Email, &outClient.CreatedAt.Value); err != nil {
+			return nil, err
+		}
+	}
+
+	if *outClient == (entity.Client{}) {
+		return nil, nil
+	}
+
+	return outClient, nil
 }
 
 func (c clientRepository) GetClientByCPF(cpf string) (*entity.Client, error) {
