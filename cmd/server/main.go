@@ -5,15 +5,21 @@ import (
 	"fiap-hf-src/infrastructure/db/postgres"
 	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
 	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
+	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
 	"fiap-hf-src/internal/core/ui"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
+	printArt()
+	go APIMercadoPago()
+
 	router := http.NewServeMux()
 
 	ctx := context.Background()
@@ -29,10 +35,28 @@ func main() {
 
 	defer db.Close()
 
+	urlAPI := fmt.Sprintf("http://%s:%s/%s",
+		os.Getenv("MERCADO_PAGO_API_HOST"),
+		os.Getenv("MERCADO_PAGO_API_PORT"),
+		os.Getenv("MERCADO_PAGO_API_URI"),
+	)
+
+	headersAPI := map[string]string{
+		"Content-type": "application/json",
+	}
+
+	du, err := time.ParseDuration(os.Getenv("MERCADO_PAGO_API_TIMEOUT"))
+
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	paymentApi := apiMercadoPago.NewMercadoPagoAPI(urlAPI, headersAPI, du)
+
 	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService(nil)
 	orderRepo, orderService := oRepo.NewOrderRepository(ctx, db), service.NewOrderService(nil)
 
-	app := application.NewHermesFoodsApp(clientRepo, orderRepo, clientService, orderService)
+	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, clientService, orderService)
 	handlersClient := ui.NewHandlerClient(app)
 	handlersOrder := ui.NewHandlerOrder(app)
 
