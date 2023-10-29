@@ -8,24 +8,32 @@ import (
 )
 
 type HermesFoodsApp interface {
+	// Client Methods
+
 	SaveClient(client entity.Client) (*entity.Client, error)
 	GetClientByCPF(cpf string) (*entity.Client, error)
+
+	// Order Methods
+	SaveOrder(order entity.Order) (*entity.Order, error)
 }
 
 type hermesFoodsApp struct {
 	clientRepo    repository.ClientRepository
 	clientService service.ClientService
+	orderRepo     repository.OrderRepository
+	orderService  service.OrderService
 }
 
-func NewHermesFoodsApp(clientRepo repository.ClientRepository, clientService service.ClientService) HermesFoodsApp {
+func NewHermesFoodsApp(clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, clientService service.ClientService, orderService service.OrderService) HermesFoodsApp {
 	return hermesFoodsApp{
 		clientRepo:    clientRepo,
 		clientService: clientService,
+		orderRepo:     orderRepo,
+		orderService:  orderService,
 	}
 }
 
 func (h hermesFoodsApp) GetClientByCPF(cpf string) (*entity.Client, error) {
-
 	if err := h.GetClientByCPFService(cpf); err != nil {
 		return nil, err
 	}
@@ -69,6 +77,25 @@ func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.Client, error)
 	return returnCRepo, nil
 }
 
+func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.Order, error) {
+	o, err := h.SaveOrderService(order)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if o == nil {
+		return nil, errors.New("is not possible to save order because it's null")
+	}
+
+	returnORepo, err := h.SaveOrderRepository(order)
+	if err != nil {
+		return nil, err
+	}
+
+	return returnORepo, nil
+}
+
 func (h hermesFoodsApp) GetClientByCPFService(cpf string) error {
 	return h.clientService.GetClientByCPF(cpf)
 }
@@ -83,4 +110,12 @@ func (h hermesFoodsApp) SaveClientService(client entity.Client) (*entity.Client,
 
 func (h hermesFoodsApp) SaveClientRepository(client entity.Client) (*entity.Client, error) {
 	return h.clientRepo.SaveClient(client)
+}
+
+func (h hermesFoodsApp) SaveOrderRepository(order entity.Order) (*entity.Order, error) {
+	return h.orderRepo.SaveOrder(order)
+}
+
+func (h hermesFoodsApp) SaveOrderService(order entity.Order) (*entity.Order, error) {
+	return h.orderService.SaveOrder(order)
 }
