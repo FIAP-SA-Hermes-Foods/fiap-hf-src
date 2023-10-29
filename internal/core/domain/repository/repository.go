@@ -10,4 +10,5 @@ type ClientRepository interface {
 
 type OrderRepository interface {
 	SaveOrder(order entity.Order) (*entity.Order, error)
+	GetOrderByID(id int64) (*entity.Order, error)
 }
