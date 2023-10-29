@@ -30,9 +30,10 @@ func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 		case http.MethodPost:
 			h.saveOrder(rw, req)
 		case http.MethodGet:
-
 			if len(getID("order", req.URL.Path)) > 0 {
 				h.handlerGetOrderByID(rw, req)
+			} else {
+				h.handlerGetOrders(rw, req)
 			}
 		}
 	}
@@ -118,6 +119,41 @@ func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Requ
 
 	rw.WriteHeader(http.StatusOK)
 	rw.Write([]byte(o.MarshalString()))
+}
+
+func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+
+	if req.Method != http.MethodGet {
+		rw.WriteHeader(http.StatusMethodNotAllowed)
+		rw.Write([]byte(`{"error": "method not allowed"} `))
+		return
+	}
+
+	oList, err := h.App.GetOrders()
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get order by ID: %v"} `, err)
+		return
+	}
+
+	if oList == nil {
+		rw.WriteHeader(http.StatusNotFound)
+		rw.Write([]byte(`{"error": "order not found"}`))
+		return
+	}
+
+	b, err := json.Marshal(oList)
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get order by ID: %v"} `, err)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(b)
 }
 
 func getID(handlerName, url string) string {
