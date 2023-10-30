@@ -20,8 +20,10 @@ type HermesFoodsApp interface {
 	GetClientByID(id int64) (*entity.OutputClient, error)
 
 	// Order Methods
+
 	SaveOrder(order entity.Order) (*entity.OutputOrder, error)
 	GetOrderByID(id int64) (*entity.OutputOrder, error)
+	UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error)
 	GetOrders() ([]entity.OutputOrder, error)
 }
 
@@ -135,8 +137,46 @@ func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, 
 	return out, nil
 }
 
-func (h hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
+func (h hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error) {
+	oSvc, err := h.UpdateOrderByIDService(id, order)
 
+	if err != nil {
+		return nil, err
+	}
+
+	if oSvc == nil {
+		return nil, errors.New("order is null, is not possible to proceed with update order")
+	}
+
+	oRepo, err := h.UpdateOrderByIDRepository(id, order)
+
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := h.GetClientByID(oRepo.ClientID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client == nil {
+		return nil, errors.New("client is null, is not possible to proceed with update order")
+	}
+
+	out := &entity.OutputOrder{
+		ID:               oRepo.ID,
+		Client:           *client,
+		VoucherID:        oRepo.VoucherID,
+		Status:           oRepo.Status.Value,
+		VerificationCode: oRepo.VerificationCode.Value,
+		CreatedAt:        oRepo.CreatedAt.Format(),
+	}
+
+	return out, nil
+}
+
+func (h hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 	orderList := make([]entity.OutputOrder, 0)
 
 	orders, err := h.GetOrdersRepository()
@@ -337,4 +377,12 @@ func (h hermesFoodsApp) SaveOrderRepository(order entity.Order) (*entity.Order, 
 
 func (h hermesFoodsApp) SaveOrderService(order entity.Order) (*entity.Order, error) {
 	return h.orderService.SaveOrder(order)
+}
+
+func (h hermesFoodsApp) UpdateOrderByIDService(id int64, order entity.Order) (*entity.Order, error) {
+	return h.orderService.UpdateOrderByID(id, order)
+}
+
+func (h hermesFoodsApp) UpdateOrderByIDRepository(id int64, order entity.Order) (*entity.Order, error) {
+	return h.orderRepo.UpdateOrderByID(id, order)
 }
