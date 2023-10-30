@@ -37,6 +37,7 @@ func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
 
 		case http.MethodGet:
 		case http.MethodDelete:
+			h.deleteProductByID(rw, req)
 		default:
 			rw.WriteHeader(http.StatusNotFound)
 			rw.Write([]byte(`{"error": "route not found"} `))
@@ -149,10 +150,39 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(rw, `{"error": "error to save product: %v"} `, err)
+		fmt.Fprintf(rw, `{"error": "error to update product: %v"} `, err)
 		return
 	}
 
 	rw.WriteHeader(http.StatusCreated)
 	rw.Write([]byte(p.MarshalString()))
+}
+
+func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+
+	id := getID("product", req.URL.Path)
+
+	idconv, err := strconv.ParseInt(id, 10, 64)
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get order by ID: %v"} `, err)
+		return
+	}
+
+	if req.Method != http.MethodDelete {
+		rw.WriteHeader(http.StatusMethodNotAllowed)
+		rw.Write([]byte(`{"error": "method not allowed"} `))
+		return
+	}
+
+	if err := h.App.DeleteProductByID(idconv); err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to delete product: %v"} `, err)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte(`{"status":"OK"}`))
 }

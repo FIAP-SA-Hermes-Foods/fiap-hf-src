@@ -9,6 +9,7 @@ type ProductService interface {
 	SaveProduct(order entity.Product) (*entity.Product, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.Product, error)
 	GetProductByID(id int64) error
+	DeleteProductByID(id int64) error
 }
 
 type productService struct {
@@ -43,6 +44,13 @@ func (p productService) UpdateProductByID(id int64, product entity.Product) (*en
 }
 
 func (p productService) GetProductByID(id int64) error {
+	if id < 1 {
+		return errors.New("the id is not valid for consult")
+	}
+	return nil
+}
+
+func (p productService) DeleteProductByID(id int64) error {
 	if id < 1 {
 		return errors.New("the id is not valid for consult")
 	}
