@@ -19,4 +19,5 @@ type ProductRepository interface {
 	SaveProduct(product entity.Product) (*entity.Product, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.Product, error)
 	GetProductByID(id int64) (*entity.Product, error)
+	DeleteProductByID(id int64) error
 }

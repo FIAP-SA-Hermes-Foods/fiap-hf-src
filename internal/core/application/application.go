@@ -30,6 +30,7 @@ type HermesFoodsApp interface {
 
 	SaveProduct(product entity.Product) (*entity.OutputProduct, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error)
+	DeleteProductByID(id int64) error
 }
 
 type hermesFoodsApp struct {
@@ -368,7 +369,6 @@ func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputPro
 }
 
 func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error) {
-
 	if err := app.GetProductByIDService(id); err != nil {
 		return nil, err
 	}
@@ -410,6 +410,28 @@ func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*
 		DeactivatedAt: pRepo.DeactivatedAt.Format(),
 	}
 	return out, nil
+}
+
+func (app hermesFoodsApp) DeleteProductByID(id int64) error {
+	if err := app.GetProductByIDService(id); err != nil {
+		return err
+	}
+
+	pByID, err := app.GetProductByIDRepository(id)
+
+	if err != nil {
+		return err
+	}
+
+	if pByID == nil {
+		return errors.New("was not found any product with this id")
+	}
+
+	if err := app.DeleteProductByIDService(id); err != nil {
+		return err
+	}
+
+	return app.DeleteProductByIDRepository(id)
 }
 
 // ============= Calling Repositories and Services ================
@@ -498,4 +520,12 @@ func (app hermesFoodsApp) UpdateProductByIDService(id int64, product entity.Prod
 
 func (app hermesFoodsApp) UpdateProductByIDRepository(id int64, product entity.Product) (*entity.Product, error) {
 	return app.productRepo.UpdateProductByID(id, product)
+}
+
+func (app hermesFoodsApp) DeleteProductByIDService(id int64) error {
+	return app.productService.DeleteProductByID(id)
+}
+
+func (app hermesFoodsApp) DeleteProductByIDRepository(id int64) error {
+	return app.productRepo.DeleteProductByID(id)
 }
