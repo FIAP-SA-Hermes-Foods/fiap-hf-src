@@ -31,7 +31,13 @@ func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
 		case http.MethodGet:
 			if len(getCpf(req.URL.Path)) > 0 {
 				h.handlerGetClientByCPF(rw, req)
+				return
 			}
+		case http.MethodPatch:
+		default:
+			rw.WriteHeader(http.StatusMethodNotAllowed)
+			rw.Write([]byte(`{"error": "method not allowed"} `))
+			return
 		}
 	}
 }
