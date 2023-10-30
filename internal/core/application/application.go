@@ -22,6 +22,7 @@ type HermesFoodsApp interface {
 	// Order Methods
 	SaveOrder(order entity.Order) (*entity.OutputOrder, error)
 	GetOrderByID(id int64) (*entity.OutputOrder, error)
+	GetOrders() ([]entity.OutputOrder, error)
 }
 
 type hermesFoodsApp struct {
@@ -134,8 +135,46 @@ func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, 
 	return out, nil
 }
 
-func (h hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
+func (h hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 
+	orderList := make([]entity.OutputOrder, 0)
+
+	orders, err := h.GetOrdersRepository()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range orders {
+
+		client, err := h.GetClientByID(orders[i].ID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		order := entity.OutputOrder{
+			ID: orders[i].ID,
+			Client: entity.OutputClient{
+				ID:        client.ID,
+				Name:      client.Name,
+				CPF:       client.CPF,
+				Email:     client.Email,
+				CreatedAt: client.CreatedAt,
+			},
+			VoucherID:        orders[i].VoucherID,
+			Status:           orders[i].Status.Value,
+			VerificationCode: orders[i].VerificationCode.Value,
+			CreatedAt:        orders[i].CreatedAt.Format(),
+		}
+
+		orderList = append(orderList, order)
+	}
+
+	return orderList, nil
+}
+
+func (h hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 	if err := h.orderService.GetOrderByID(id); err != nil {
 		return nil, err
 	}
@@ -279,6 +318,10 @@ func (h hermesFoodsApp) SaveClientRepository(client entity.Client) (*entity.Clie
 }
 
 // Order implementation Call
+
+func (h hermesFoodsApp) GetOrdersRepository() ([]entity.Order, error) {
+	return h.orderRepo.GetOrders()
+}
 
 func (h hermesFoodsApp) GetOrderByIDRepository(id int64) (*entity.Order, error) {
 	return h.orderRepo.GetOrderByID(id)

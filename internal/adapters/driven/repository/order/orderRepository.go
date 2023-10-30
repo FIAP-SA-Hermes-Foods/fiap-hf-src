@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	queryGetOrders    = `SELECT * FROM orders`
 	queryGetOrderByID = `SELECT * FROM orders WHERE id = $1`
 	querySaveOrder    = `INSERT INTO orders (id, status, verification_code, created_at, client_id, voucher_id) VALUES (DEFAULT, $1, $2, now(), $3, $4) RETURNING id, created_at`
 )
@@ -15,6 +16,7 @@ var (
 type OrderRepository interface {
 	SaveOrder(order entity.Order) (*entity.Order, error)
 	GetOrderByID(id int64) (*entity.Order, error)
+	GetOrders() ([]entity.Order, error)
 }
 
 type orderRepository struct {
@@ -91,4 +93,45 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 	}
 
 	return outOrder, nil
+}
+
+func (o orderRepository) GetOrders() ([]entity.Order, error) {
+
+	if err := o.Database.Connect(); err != nil {
+		return nil, err
+	}
+
+	defer o.Database.Close()
+
+	var (
+		order     = new(entity.Order)
+		orderList = make([]entity.Order, 0)
+	)
+
+	if err := o.Database.Query(queryGetOrders); err != nil {
+		return nil, err
+	}
+
+	for o.Database.GetNextRows() {
+		var orderItem entity.Order
+
+		err := o.Database.Scan(
+			&order.ID,
+			&order.Status.Value,
+			&order.VerificationCode.Value,
+			&order.CreatedAt.Value,
+			&order.ClientID,
+			&order.VoucherID,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		orderItem = *order
+		orderList = append(orderList, orderItem)
+	}
+
+	return orderList, nil
+
 }
