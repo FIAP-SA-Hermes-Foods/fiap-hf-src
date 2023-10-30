@@ -14,3 +14,7 @@ type OrderRepository interface {
 	GetOrders() ([]entity.Order, error)
 	GetOrderByID(id int64) (*entity.Order, error)
 }
+
+type ProductRepository interface {
+	SaveProduct(product entity.Product) (*entity.Product, error)
+}

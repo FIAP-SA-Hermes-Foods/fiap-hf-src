@@ -22,7 +22,7 @@ type (
 		VoucherID        *int64 `json:"voucherId,omitempty"`
 		Status           string `json:"status,omitempty"`
 		VerificationCode string `json:"verificationCode,omitempty"`
-		CreatedAt        string ` json:"createdAt,omitempty"`
+		CreatedAt        string `json:"createdAt,omitempty"`
 	}
 
 	OutputOrder struct {
@@ -31,7 +31,7 @@ type (
 		VoucherID        *int64       `json:"voucherId,omitempty"`
 		Status           string       `json:"status,omitempty"`
 		VerificationCode string       `json:"verificationCode,omitempty"`
-		CreatedAt        string       ` json:"createdAt,omitempty"`
+		CreatedAt        string       `json:"createdAt,omitempty"`
 	}
 )
 

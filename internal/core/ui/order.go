@@ -40,8 +40,8 @@ func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 				h.handlerUpdateOrderByID(rw, req)
 			}
 		default:
-			rw.WriteHeader(http.StatusMethodNotAllowed)
-			rw.Write([]byte(`{"error": "method not allowed"} `))
+			rw.WriteHeader(http.StatusNotFound)
+			rw.Write([]byte(`{"error": "route not found"} `))
 			return
 		}
 	}

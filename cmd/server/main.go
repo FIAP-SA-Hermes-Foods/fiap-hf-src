@@ -5,6 +5,7 @@ import (
 	"fiap-hf-src/infrastructure/db/postgres"
 	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
 	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
+	pRepo "fiap-hf-src/internal/adapters/driven/repository/product"
 	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
@@ -55,14 +56,17 @@ func main() {
 
 	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService(nil)
 	orderRepo, orderService := oRepo.NewOrderRepository(ctx, db), service.NewOrderService(nil)
+	productRepo, productService := pRepo.NewProductRepository(ctx, db), service.NewProductService(nil)
 
-	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, clientService, orderService)
+	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, productRepo, clientService, orderService, productService)
 	handlersClient := ui.NewHandlerClient(app)
 	handlersOrder := ui.NewHandlerOrder(app)
+	handlersProduct := ui.NewHandlerProduct(app)
 
 	router.HandleFunc("/hermes_foods/health", ui.HealthCheck)
 	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
 	router.HandleFunc("/hermes_foods/order/", handlersOrder.Handler)
+	router.HandleFunc("/hermes_foods/product/", handlersProduct.Handler)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
