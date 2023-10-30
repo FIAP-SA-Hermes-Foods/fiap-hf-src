@@ -25,25 +25,32 @@ type HermesFoodsApp interface {
 	GetOrderByID(id int64) (*entity.OutputOrder, error)
 	UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error)
 	GetOrders() ([]entity.OutputOrder, error)
+
+	// Product Methods
+	SaveProduct(product entity.Product) (*entity.OutputProduct, error)
 }
 
 type hermesFoodsApp struct {
-	Ctx           context.Context
-	paymentAPI    httpHF.PaymentAPI
-	clientRepo    repository.ClientRepository
-	clientService service.ClientService
-	orderRepo     repository.OrderRepository
-	orderService  service.OrderService
+	Ctx            context.Context
+	paymentAPI     httpHF.PaymentAPI
+	clientRepo     repository.ClientRepository
+	clientService  service.ClientService
+	orderRepo      repository.OrderRepository
+	orderService   service.OrderService
+	productRepo    repository.ProductRepository
+	productService service.ProductService
 }
 
-func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, clientService service.ClientService, orderService service.OrderService) HermesFoodsApp {
+func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, productRepo repository.ProductRepository, clientService service.ClientService, orderService service.OrderService, productService service.ProductService) HermesFoodsApp {
 	return hermesFoodsApp{
-		Ctx:           ctx,
-		paymentAPI:    paymentAPI,
-		clientRepo:    clientRepo,
-		clientService: clientService,
-		orderRepo:     orderRepo,
-		orderService:  orderService,
+		Ctx:            ctx,
+		paymentAPI:     paymentAPI,
+		clientRepo:     clientRepo,
+		clientService:  clientService,
+		orderRepo:      orderRepo,
+		orderService:   orderService,
+		productRepo:    productRepo,
+		productService: productService,
 	}
 }
 
@@ -327,6 +334,40 @@ func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, erro
 	return outOrder, nil
 }
 
+func (h hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProduct, error) {
+
+	p, err := h.SaveProductService(product)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if p == nil {
+		return nil, errors.New("is not possible to save product because it's null")
+	}
+
+	pRepo, err := h.SaveProductRepository(*p)
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := &entity.OutputProduct{
+		ID:            pRepo.ID,
+		Name:          pRepo.Name,
+		Category:      pRepo.Category.Value,
+		Image:         pRepo.Image,
+		Description:   pRepo.Description,
+		Price:         pRepo.Price,
+		CreatedAt:     pRepo.CreatedAt.Format(),
+		DeactivatedAt: pRepo.DeactivatedAt.Format(),
+	}
+
+	return out, nil
+}
+
+// ============= Calling Repositories and Services ================
+
 func (h hermesFoodsApp) DoPaymentAPI(ctx context.Context, input entity.InputPaymentAPI) (*entity.OutputPaymentAPI, error) {
 	return h.paymentAPI.DoPayment(ctx, input)
 }
@@ -385,4 +426,14 @@ func (h hermesFoodsApp) UpdateOrderByIDService(id int64, order entity.Order) (*e
 
 func (h hermesFoodsApp) UpdateOrderByIDRepository(id int64, order entity.Order) (*entity.Order, error) {
 	return h.orderRepo.UpdateOrderByID(id, order)
+}
+
+// Product implementation Call
+
+func (h hermesFoodsApp) SaveProductService(product entity.Product) (*entity.Product, error) {
+	return h.productService.SaveProduct(product)
+}
+
+func (h hermesFoodsApp) SaveProductRepository(product entity.Product) (*entity.Product, error) {
+	return h.productRepo.SaveProduct(product)
 }
