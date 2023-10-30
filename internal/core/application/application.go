@@ -27,7 +27,9 @@ type HermesFoodsApp interface {
 	GetOrders() ([]entity.OutputOrder, error)
 
 	// Product Methods
+
 	SaveProduct(product entity.Product) (*entity.OutputProduct, error)
+	UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error)
 }
 
 type hermesFoodsApp struct {
@@ -54,12 +56,12 @@ func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, client
 	}
 }
 
-func (h hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) {
-	if err := h.GetClientByIDService(id); err != nil {
+func (app hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) {
+	if err := app.GetClientByIDService(id); err != nil {
 		return nil, err
 	}
 
-	c, err := h.GetClientByIDRepository(id)
+	c, err := app.GetClientByIDRepository(id)
 
 	if err != nil {
 		return nil, err
@@ -80,12 +82,12 @@ func (h hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) {
 	return out, err
 }
 
-func (h hermesFoodsApp) GetClientByCPF(cpf string) (*entity.OutputClient, error) {
-	if err := h.GetClientByCPFService(cpf); err != nil {
+func (app hermesFoodsApp) GetClientByCPF(cpf string) (*entity.OutputClient, error) {
+	if err := app.GetClientByCPFService(cpf); err != nil {
 		return nil, err
 	}
 
-	c, err := h.GetClientByCPFRepository(cpf)
+	c, err := app.GetClientByCPFRepository(cpf)
 
 	if err != nil {
 		return nil, err
@@ -106,8 +108,8 @@ func (h hermesFoodsApp) GetClientByCPF(cpf string) (*entity.OutputClient, error)
 	return out, err
 }
 
-func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, error) {
-	clientWithCpf, err := h.GetClientByCPF(client.CPF.Value)
+func (app hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, error) {
+	clientWithCpf, err := app.GetClientByCPF(client.CPF.Value)
 
 	if err != nil {
 		return nil, err
@@ -117,7 +119,7 @@ func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, 
 		return nil, errors.New("is not possible to save client because this cpf is already in use")
 	}
 
-	c, err := h.SaveClientService(client)
+	c, err := app.SaveClientService(client)
 
 	if err != nil {
 		return nil, err
@@ -127,7 +129,7 @@ func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, 
 		return nil, errors.New("is not possible to save client because it's null")
 	}
 
-	cRepo, err := h.SaveClientRepository(*c)
+	cRepo, err := app.SaveClientRepository(*c)
 
 	if err != nil {
 		return nil, err
@@ -144,8 +146,8 @@ func (h hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, 
 	return out, nil
 }
 
-func (h hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error) {
-	oSvc, err := h.UpdateOrderByIDService(id, order)
+func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error) {
+	oSvc, err := app.UpdateOrderByIDService(id, order)
 
 	if err != nil {
 		return nil, err
@@ -155,13 +157,13 @@ func (h hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.O
 		return nil, errors.New("order is null, is not possible to proceed with update order")
 	}
 
-	oRepo, err := h.UpdateOrderByIDRepository(id, order)
+	oRepo, err := app.UpdateOrderByIDRepository(id, order)
 
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := h.GetClientByID(oRepo.ClientID)
+	client, err := app.GetClientByID(oRepo.ClientID)
 
 	if err != nil {
 		return nil, err
@@ -183,10 +185,10 @@ func (h hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.O
 	return out, nil
 }
 
-func (h hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
+func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 	orderList := make([]entity.OutputOrder, 0)
 
-	orders, err := h.GetOrdersRepository()
+	orders, err := app.GetOrdersRepository()
 
 	if err != nil {
 		return nil, err
@@ -194,7 +196,7 @@ func (h hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 
 	for i := range orders {
 
-		client, err := h.GetClientByID(orders[i].ID)
+		client, err := app.GetClientByID(orders[i].ID)
 
 		if err != nil {
 			return nil, err
@@ -221,12 +223,12 @@ func (h hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 	return orderList, nil
 }
 
-func (h hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
-	if err := h.orderService.GetOrderByID(id); err != nil {
+func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
+	if err := app.orderService.GetOrderByID(id); err != nil {
 		return nil, err
 	}
 
-	o, err := h.GetOrderByIDRepository(id)
+	o, err := app.GetOrderByIDRepository(id)
 
 	if err != nil {
 		return nil, err
@@ -236,7 +238,7 @@ func (h hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		return nil, nil
 	}
 
-	outClient, err := h.GetClientByID(o.ClientID)
+	outClient, err := app.GetClientByID(o.ClientID)
 
 	if err != nil {
 		return nil, err
@@ -258,12 +260,12 @@ func (h hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 	return out, nil
 }
 
-func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, error) {
-	if err := h.GetClientByIDService(order.ClientID); err != nil {
+func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, error) {
+	if err := app.GetClientByIDService(order.ClientID); err != nil {
 		return nil, err
 	}
 
-	c, err := h.GetClientByIDRepository(order.ClientID)
+	c, err := app.GetClientByIDRepository(order.ClientID)
 
 	if err != nil {
 		return nil, err
@@ -284,7 +286,7 @@ func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, erro
 		},
 	}
 
-	out, err := h.DoPaymentAPI(h.Ctx, inputDoPaymentAPI)
+	out, err := app.DoPaymentAPI(app.Ctx, inputDoPaymentAPI)
 
 	if err != nil {
 		return nil, err
@@ -298,7 +300,7 @@ func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, erro
 
 	order.Status.Value = out.PaymentStatus
 
-	o, err := h.SaveOrderService(order)
+	o, err := app.SaveOrderService(order)
 
 	if err != nil {
 		return nil, err
@@ -308,7 +310,7 @@ func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, erro
 		return nil, errors.New("is not possible to save order because it's null")
 	}
 
-	oRepo, err := h.SaveOrderRepository(order)
+	oRepo, err := app.SaveOrderRepository(order)
 
 	if err != nil {
 		return nil, err
@@ -334,9 +336,8 @@ func (h hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, erro
 	return outOrder, nil
 }
 
-func (h hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProduct, error) {
-
-	p, err := h.SaveProductService(product)
+func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProduct, error) {
+	p, err := app.SaveProductService(product)
 
 	if err != nil {
 		return nil, err
@@ -346,7 +347,7 @@ func (h hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProdu
 		return nil, errors.New("is not possible to save product because it's null")
 	}
 
-	pRepo, err := h.SaveProductRepository(*p)
+	pRepo, err := app.SaveProductRepository(*p)
 
 	if err != nil {
 		return nil, err
@@ -366,74 +367,135 @@ func (h hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProdu
 	return out, nil
 }
 
+func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error) {
+
+	if err := app.GetProductByIDService(id); err != nil {
+		return nil, err
+	}
+
+	pByID, err := app.GetProductByIDRepository(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if pByID == nil {
+		return nil, errors.New("was not found any product with this id")
+	}
+
+	p, err := app.UpdateProductByIDService(id, product)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if p == nil {
+		return nil, errors.New("is not possible to save product because it's null")
+	}
+
+	pRepo, err := app.UpdateProductByIDRepository(id, *p)
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := &entity.OutputProduct{
+		ID:            pRepo.ID,
+		Name:          pRepo.Name,
+		Category:      pRepo.Category.Value,
+		Image:         pRepo.Image,
+		Description:   pRepo.Description,
+		Price:         pRepo.Price,
+		CreatedAt:     pRepo.CreatedAt.Format(),
+		DeactivatedAt: pRepo.DeactivatedAt.Format(),
+	}
+	return out, nil
+}
+
 // ============= Calling Repositories and Services ================
 
-func (h hermesFoodsApp) DoPaymentAPI(ctx context.Context, input entity.InputPaymentAPI) (*entity.OutputPaymentAPI, error) {
-	return h.paymentAPI.DoPayment(ctx, input)
+func (app hermesFoodsApp) DoPaymentAPI(ctx context.Context, input entity.InputPaymentAPI) (*entity.OutputPaymentAPI, error) {
+	return app.paymentAPI.DoPayment(ctx, input)
 }
 
 // Client implementation Call
 
-func (h hermesFoodsApp) GetClientByCPFService(cpf string) error {
-	return h.clientService.GetClientByCPF(cpf)
+func (app hermesFoodsApp) GetClientByCPFService(cpf string) error {
+	return app.clientService.GetClientByCPF(cpf)
 }
 
-func (h hermesFoodsApp) GetClientByCPFRepository(cpf string) (*entity.Client, error) {
-	return h.clientRepo.GetClientByCPF(cpf)
+func (app hermesFoodsApp) GetClientByCPFRepository(cpf string) (*entity.Client, error) {
+	return app.clientRepo.GetClientByCPF(cpf)
 }
 
-func (h hermesFoodsApp) GetClientByIDService(id int64) error {
-	return h.clientService.GetClientByID(id)
+func (app hermesFoodsApp) GetClientByIDService(id int64) error {
+	return app.clientService.GetClientByID(id)
 }
 
-func (h hermesFoodsApp) GetClientByIDRepository(id int64) (*entity.Client, error) {
-	return h.clientRepo.GetClientByID(id)
+func (app hermesFoodsApp) GetClientByIDRepository(id int64) (*entity.Client, error) {
+	return app.clientRepo.GetClientByID(id)
 }
 
-func (h hermesFoodsApp) SaveClientService(client entity.Client) (*entity.Client, error) {
-	return h.clientService.SaveClient(client)
+func (app hermesFoodsApp) SaveClientService(client entity.Client) (*entity.Client, error) {
+	return app.clientService.SaveClient(client)
 }
 
-func (h hermesFoodsApp) SaveClientRepository(client entity.Client) (*entity.Client, error) {
-	return h.clientRepo.SaveClient(client)
+func (app hermesFoodsApp) SaveClientRepository(client entity.Client) (*entity.Client, error) {
+	return app.clientRepo.SaveClient(client)
 }
 
 // Order implementation Call
 
-func (h hermesFoodsApp) GetOrdersRepository() ([]entity.Order, error) {
-	return h.orderRepo.GetOrders()
+func (app hermesFoodsApp) GetOrdersRepository() ([]entity.Order, error) {
+	return app.orderRepo.GetOrders()
 }
 
-func (h hermesFoodsApp) GetOrderByIDRepository(id int64) (*entity.Order, error) {
-	return h.orderRepo.GetOrderByID(id)
+func (app hermesFoodsApp) GetOrderByIDRepository(id int64) (*entity.Order, error) {
+	return app.orderRepo.GetOrderByID(id)
 }
 
-func (h hermesFoodsApp) GetOrderByIDService(id int64) error {
-	return h.orderService.GetOrderByID(id)
+func (app hermesFoodsApp) GetOrderByIDService(id int64) error {
+	return app.orderService.GetOrderByID(id)
 }
 
-func (h hermesFoodsApp) SaveOrderRepository(order entity.Order) (*entity.Order, error) {
-	return h.orderRepo.SaveOrder(order)
+func (app hermesFoodsApp) SaveOrderRepository(order entity.Order) (*entity.Order, error) {
+	return app.orderRepo.SaveOrder(order)
 }
 
-func (h hermesFoodsApp) SaveOrderService(order entity.Order) (*entity.Order, error) {
-	return h.orderService.SaveOrder(order)
+func (app hermesFoodsApp) SaveOrderService(order entity.Order) (*entity.Order, error) {
+	return app.orderService.SaveOrder(order)
 }
 
-func (h hermesFoodsApp) UpdateOrderByIDService(id int64, order entity.Order) (*entity.Order, error) {
-	return h.orderService.UpdateOrderByID(id, order)
+func (app hermesFoodsApp) UpdateOrderByIDService(id int64, order entity.Order) (*entity.Order, error) {
+	return app.orderService.UpdateOrderByID(id, order)
 }
 
-func (h hermesFoodsApp) UpdateOrderByIDRepository(id int64, order entity.Order) (*entity.Order, error) {
-	return h.orderRepo.UpdateOrderByID(id, order)
+func (app hermesFoodsApp) UpdateOrderByIDRepository(id int64, order entity.Order) (*entity.Order, error) {
+	return app.orderRepo.UpdateOrderByID(id, order)
 }
 
 // Product implementation Call
 
-func (h hermesFoodsApp) SaveProductService(product entity.Product) (*entity.Product, error) {
-	return h.productService.SaveProduct(product)
+func (app hermesFoodsApp) GetProductByIDService(id int64) error {
+	return app.productService.GetProductByID(id)
 }
 
-func (h hermesFoodsApp) SaveProductRepository(product entity.Product) (*entity.Product, error) {
-	return h.productRepo.SaveProduct(product)
+func (app hermesFoodsApp) GetProductByIDRepository(id int64) (*entity.Product, error) {
+	return app.productRepo.GetProductByID(id)
+}
+
+func (app hermesFoodsApp) SaveProductService(product entity.Product) (*entity.Product, error) {
+	return app.productService.SaveProduct(product)
+}
+
+func (app hermesFoodsApp) SaveProductRepository(product entity.Product) (*entity.Product, error) {
+	return app.productRepo.SaveProduct(product)
+}
+
+func (app hermesFoodsApp) UpdateProductByIDService(id int64, product entity.Product) (*entity.Product, error) {
+	return app.productService.UpdateProductByID(id, product)
+}
+
+func (app hermesFoodsApp) UpdateProductByIDRepository(id int64, product entity.Product) (*entity.Product, error) {
+	return app.productRepo.UpdateProductByID(id, product)
 }
