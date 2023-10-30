@@ -13,8 +13,9 @@ run:
 	docker-compose up;
 
 migration:
-	@go build -ldflags "-w -s" -o bin/hermesfoods-migration cmd/migration/*.go;
-	./bin/hermesfoods-migration;
+	docker exec -it go-hermes-foods-app bash -c 'go build -ldflags "-w -s" -o bin/hermesfoods-migration cmd/migration/*.go ; ./bin/hermesfoods-migration';
 
 tests:
-	@./infrastructure/scripts/coverage.sh
+	@docker exec -it go-hermes-foods-app /fiap-hf-src/src/app/infrastructure/scripts/coverage.sh;
+	
+
