@@ -223,13 +223,3 @@ func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.R
 	rw.WriteHeader(http.StatusOK)
 	rw.Write([]byte(o.MarshalString()))
 }
-
-func getID(handlerName, url string) string {
-	indexCpf := strings.Index(url, handlerName+"/")
-
-	if indexCpf == -1 {
-		return ""
-	}
-
-	return strings.ReplaceAll(url[indexCpf:], handlerName+"/", "")
-}
