@@ -9,6 +9,7 @@ type ProductService interface {
 	SaveProduct(order entity.Product) (*entity.Product, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.Product, error)
 	GetProductByID(id int64) error
+	GetProductByCategory(category string) error
 	DeleteProductByID(id int64) error
 }
 
@@ -47,6 +48,20 @@ func (p productService) GetProductByID(id int64) error {
 	if id < 1 {
 		return errors.New("the id is not valid for consult")
 	}
+	return nil
+}
+
+func (p productService) GetProductByCategory(category string) error {
+	if len(category) < 1 {
+		return errors.New("the category is not valid for consult")
+	}
+
+	/*	_, err := valueObject.CategoryMap[strings.ToLower(category)]
+
+		if err {
+			return errors.New("category is not valid")
+		}*/
+
 	return nil
 }
 

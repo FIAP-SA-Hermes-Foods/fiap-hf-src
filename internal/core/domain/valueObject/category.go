@@ -15,7 +15,7 @@ const (
 	BebidaCategory         = "BEBIDA"
 )
 
-var categoryMap = map[string]string{
+var CategoryMap = map[string]string{
 	"lanche":         LancheCategory,
 	"acompanhamento": AcompanhamentoCategory,
 	"bebida":         BebidaCategory,
@@ -23,7 +23,7 @@ var categoryMap = map[string]string{
 
 func (v *Category) Validate() error {
 
-	status, ok := categoryMap[strings.ToLower(v.Value)]
+	status, ok := CategoryMap[strings.ToLower(v.Value)]
 
 	if !ok {
 		return errors.New("category is not valid")

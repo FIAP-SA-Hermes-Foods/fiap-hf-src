@@ -8,16 +8,18 @@ import (
 )
 
 var (
-	queryGetProductByID = `SELECT * FROM product where id = $1`
-	queryDeleteProduct  = `DELETE FROM product where id = $1 RETURNING id`
-	querySaveProduct    = `INSERT INTO product (id, name, category, image, description, price, created_at, deactivated_at) VALUES (DEFAULT, $1, $2, $3, $4, $5, now(), NULL) RETURNING id, created_at`
-	queryUpdateProduct  = `UPDATE product SET name = $1, category = $2, image = $3, description = $4, price = $5, deactivated_at = $6 WHERE id = $7 RETURNING id, created_at`
+	queryGetProductByID       = `SELECT * FROM product where id = $1`
+	queryGetProductByCategory = `SELECT * FROM product where category = $1`
+	queryDeleteProduct        = `DELETE FROM product where id = $1 RETURNING id`
+	querySaveProduct          = `INSERT INTO product (id, name, category, image, description, price, created_at, deactivated_at) VALUES (DEFAULT, $1, $2, $3, $4, $5, now(), NULL) RETURNING id, created_at`
+	queryUpdateProduct        = `UPDATE product SET name = $1, category = $2, image = $3, description = $4, price = $5, deactivated_at = $6 WHERE id = $7 RETURNING id, created_at`
 )
 
 type ProductRepository interface {
 	SaveProduct(product entity.Product) (*entity.Product, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.Product, error)
 	GetProductByID(id int64) (*entity.Product, error)
+	GetProductByCategory(category string) ([]entity.Product, error)
 	DeleteProductByID(id int64) error
 }
 
@@ -131,6 +133,47 @@ func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
 	}
 
 	return outProduct, nil
+}
+
+func (p productRepository) GetProductByCategory(category string) ([]entity.Product, error) {
+	if err := p.Database.Connect(); err != nil {
+		return nil, err
+	}
+
+	defer p.Database.Close()
+
+	var (
+		product     = new(entity.Product)
+		productList = make([]entity.Product, 0)
+	)
+
+	if err := p.Database.Query(queryGetProductByCategory, category); err != nil {
+		return nil, err
+	}
+
+	for p.Database.GetNextRows() {
+		var productItem entity.Product
+
+		err := p.Database.Scan(
+			&product.ID,
+			&product.Name,
+			&product.Category.Value,
+			&product.Image,
+			&product.Description,
+			&product.Price,
+			&product.CreatedAt.Value,
+			&product.DeactivatedAt.Value,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		productItem = *product
+		productList = append(productList, productItem)
+	}
+
+	return productList, nil
 }
 
 func (p productRepository) DeleteProductByID(id int64) error {
