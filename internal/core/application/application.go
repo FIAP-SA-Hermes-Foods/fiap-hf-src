@@ -29,6 +29,7 @@ type HermesFoodsApp interface {
 	// Product Methods
 
 	SaveProduct(product entity.Product) (*entity.OutputProduct, error)
+	GetProductByCategory(category string) ([]entity.OutputProduct, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error)
 	DeleteProductByID(id int64) error
 }
@@ -259,6 +260,40 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 	}
 
 	return out, nil
+}
+
+func (app hermesFoodsApp) GetProductByCategory(category string) ([]entity.OutputProduct, error) {
+	productList := make([]entity.OutputProduct, 0)
+
+	if err := app.productService.GetProductByCategory(category); err != nil {
+		return nil, err
+	}
+
+	products, err := app.GetProductByCategoryRepository(category)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if products == nil {
+		return nil, nil
+	}
+
+	for i := range products {
+		product := entity.OutputProduct{
+			ID:            products[i].ID,
+			Name:          products[i].Name,
+			Category:      products[i].Category.Value,
+			Image:         products[i].Image,
+			Description:   products[i].Description,
+			Price:         products[i].Price,
+			CreatedAt:     products[i].CreatedAt.Format(),
+			DeactivatedAt: products[i].CreatedAt.Format(),
+		}
+		productList = append(productList, product)
+	}
+
+	return productList, nil
 }
 
 func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, error) {
@@ -502,8 +537,16 @@ func (app hermesFoodsApp) GetProductByIDService(id int64) error {
 	return app.productService.GetProductByID(id)
 }
 
+func (app hermesFoodsApp) GetProductByCategoryService(category string) error {
+	return app.productService.GetProductByCategory(category)
+}
+
 func (app hermesFoodsApp) GetProductByIDRepository(id int64) (*entity.Product, error) {
 	return app.productRepo.GetProductByID(id)
+}
+
+func (app hermesFoodsApp) GetProductByCategoryRepository(category string) ([]entity.Product, error) {
+	return app.productRepo.GetProductByCategory(category)
 }
 
 func (app hermesFoodsApp) SaveProductService(product entity.Product) (*entity.Product, error) {

@@ -234,6 +234,127 @@ func Test_GetProductByID(t *testing.T) {
 	}
 }
 
+// go test -v -count=1 -failfast -cover -run ^Test_GetProductByCategory$
+func Test_GetProductByCategory(t *testing.T) {
+	ctx := context.Background()
+
+	type args struct {
+		category string
+	}
+
+	tests := []struct {
+		name        string
+		args        args
+		ctx         context.Context
+		WantOutput  *entity.Product
+		mockDB      *mockDb
+		isWantError bool
+	}{
+		{
+			name:       "success",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.Product{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    nil,
+			},
+
+			isWantError: false,
+		},
+		{
+			name:       "connection_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.Product{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errConnect"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "query_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.Product{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errQuery"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "prepare_stmt_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.Product{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errPrepareStmt"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "prepare_stmt_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.Product{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errScan"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "error_scan_stmt",
+			args:       args{},
+			ctx:        nil,
+			WantOutput: &entity.Product{},
+			mockDB: &mockDb{
+				WantResult:   nil,
+				WantRows:     &sql.Rows{},
+				WantErr:      errors.New("errScanStmt"),
+				WantNextRows: false,
+			},
+			isWantError: true,
+		},
+		{
+			name: "error_scan",
+			args: args{},
+			ctx:  nil,
+			mockDB: &mockDb{
+				WantResult:   nil,
+				WantRows:     &sql.Rows{},
+				WantErr:      errors.New("errScan"),
+				WantNextRows: true,
+			},
+			isWantError: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := NewProductRepository(tc.ctx, tc.mockDB)
+
+			_, err := repo.GetProductByCategory(tc.args.category)
+
+			if (!tc.isWantError) && err != nil {
+				t.Errorf("was not suppose to have an error here and %v got", err)
+			}
+		})
+	}
+}
+
 // go test -v -count=1 -failfast -cover -run ^Test_UpdateProductByID$
 func Test_UpdateProductByID(t *testing.T) {
 	ctx := context.Background()

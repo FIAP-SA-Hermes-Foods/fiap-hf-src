@@ -34,8 +34,8 @@ func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
 			if len(getID("product", req.URL.Path)) > 0 {
 				h.updateProductByID(rw, req)
 			}
-
 		case http.MethodGet:
+			h.getProductByCategory(rw, req)
 		case http.MethodDelete:
 			h.deleteProductByID(rw, req)
 		default:
@@ -102,7 +102,7 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(rw, `{"error": "error to get order by ID: %v"} `, err)
+		fmt.Fprintf(rw, `{"error": "error to update product by ID: %v"} `, err)
 		return
 	}
 
@@ -185,4 +185,41 @@ func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Requ
 
 	rw.WriteHeader(http.StatusOK)
 	rw.Write([]byte(`{"status":"OK"}`))
+}
+
+func (h handlerProduct) getProductByCategory(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+
+	category := req.URL.Query().Get("category")
+
+	if req.Method != http.MethodGet {
+		rw.WriteHeader(http.StatusMethodNotAllowed)
+		rw.Write([]byte(`{"error": "method not allowed"} `))
+		return
+	}
+
+	pList, err := h.App.GetProductByCategory(category)
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get product by category: %v"} `, err)
+		return
+	}
+
+	if pList == nil {
+		rw.WriteHeader(http.StatusNotFound)
+		rw.Write([]byte(`{"error": "product not found"}`))
+		return
+	}
+
+	b, err := json.Marshal(pList)
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(rw, `{"error": "error to get product by category: %v"} `, err)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(b)
 }
