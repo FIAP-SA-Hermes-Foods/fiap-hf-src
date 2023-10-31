@@ -28,13 +28,14 @@ type (
 	}
 
 	OutputOrder struct {
-		ID               int64           `json:"id,omitempty"`
-		Client           OutputClient    `json:"client,omitempty"`
-		Products         []OutputProduct `json:"products,omitempty"`
-		VoucherID        *int64          `json:"voucherId,omitempty"`
-		Status           string          `json:"status,omitempty"`
-		VerificationCode string          `json:"verificationCode,omitempty"`
-		CreatedAt        string          `json:"createdAt,omitempty"`
+		ID               int64         `json:"id,omitempty"`
+		Client           OutputClient  `json:"client,omitempty"`
+		Products         []ProductItem `json:"products,omitempty"`
+		VoucherID        *int64        `json:"voucherId,omitempty"`
+		Status           string        `json:"status,omitempty"`
+		VerificationCode string        `json:"verificationCode,omitempty"`
+		CreatedAt        string        `json:"createdAt,omitempty"`
+		TotalPrice       float64       `json:"totalPrice,omitempty"`
 	}
 )
 

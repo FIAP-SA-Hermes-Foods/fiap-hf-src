@@ -39,6 +39,18 @@ type (
 		CreatedAt     string  `json:"createdAt,omitempty"`
 		DeactivatedAt string  `json:"deactivatedAt,omitempty"`
 	}
+
+	ProductItem struct {
+		ID            int64   `json:"id,omitempty"`
+		Name          string  `json:"name,omitempty"`
+		Category      string  `json:"category,omitempty"`
+		Image         string  `json:"image,omitempty"`
+		Description   string  `json:"description,omitempty"`
+		Price         float64 `json:"price,omitempty"`
+		Quantity      int64   `json:"quantity,omitempty"`
+		CreatedAt     string  `json:"createdAt,omitempty"`
+		DeactivatedAt string  `json:"deactivatedAt,omitempty"`
+	}
 )
 
 func (p Product) MarshalString() string {
