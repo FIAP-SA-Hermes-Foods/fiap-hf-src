@@ -24,6 +24,12 @@ func NewHandlerClient(app application.HermesFoodsApp) HandlerClient {
 }
 
 func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Access-Control-Allow-Origin", "*")
+	rw.Header().Add("Access-Control-Allow-Credentials", "true")
+	rw.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	rw.Header().Add("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
+	rw.Header().Add("Content-Type", "application-json")
+
 	if strings.ContainsAny("/client/", req.URL.Path) {
 		switch req.Method {
 		case http.MethodPost:
@@ -43,7 +49,6 @@ func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	if req.Method != http.MethodPost {
 		rw.WriteHeader(http.StatusMethodNotAllowed)
@@ -88,7 +93,6 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 }
 
 func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	cpf := getCpf(req.URL.Path)
 

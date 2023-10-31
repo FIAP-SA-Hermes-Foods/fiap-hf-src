@@ -25,6 +25,12 @@ func NewHandlerOrder(app application.HermesFoodsApp) HandlerOrder {
 }
 
 func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Access-Control-Allow-Origin", "*")
+	rw.Header().Add("Access-Control-Allow-Credentials", "true")
+	rw.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	rw.Header().Add("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
+	rw.Header().Add("Content-Type", "application/json")
+
 	if strings.ContainsAny("/order/", req.URL.Path) {
 		switch req.Method {
 		case http.MethodPost:
@@ -94,8 +100,6 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
-
 	id := getID("order", req.URL.Path)
 
 	if req.Method != http.MethodGet {
@@ -131,7 +135,6 @@ func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Requ
 }
 
 func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	if req.Method != http.MethodGet {
 		rw.WriteHeader(http.StatusMethodNotAllowed)
@@ -166,7 +169,6 @@ func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request
 }
 
 func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 	id := getID("order", req.URL.Path)
 
 	if req.Method != http.MethodPatch {
