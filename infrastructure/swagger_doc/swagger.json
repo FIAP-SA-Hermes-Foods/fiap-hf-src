@@ -464,6 +464,147 @@
                     }
                 }
             }
+        },
+        "/voucher/": {
+            "post": {
+                "tags": [
+                    "Voucher"
+                ],
+                "summary": "Save voucher in database.",
+                "description": "Partially update a order by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "voucherBody",
+                        "in": "body",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/voucher/{voucherID}": {
+            "get": {
+                "tags": [
+                    "Voucher"
+                ],
+                "summary": "Get a voucher.",
+                "description": "Get the voucher by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "voucherID",
+                        "in": "path",
+                        "description": "Input subscription to get voucher at api's database",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Voucher"
+                ],
+                "summary": "Partially update a voucher.",
+                "description": "Partially update a voucher by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "voucherID",
+                        "in": "path",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "voucherBody",
+                        "in": "body",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -679,6 +820,23 @@
                     "example": "Paid"
                 },
                 "createdAt": {
+                    "type": "string",
+                    "example": "30-10-2023 16:57:22"
+                }
+            }
+        },
+        "voucher": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "MYDISCOUNTCODE10"
+                },
+                "percentage": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "expiresAt": {
                     "type": "string",
                     "example": "30-10-2023 16:57:22"
                 }
