@@ -2,9 +2,37 @@
 
 ## Summary
 
+* [Requirements](#Requirements)
+* [Documentation](#Documentation)
 * [Installation](#Installation)
 * [Tests](#Tests)
-* [Documentation](#Documentation)
+
+
+
+### Requirements
+
+On Windows:
+```
+- Windows Subsystem for Linux (WSL);
+- GNU Make v4.0 or later (on WSL);
+- Docker v20.10.7 or later (on WSL);
+- Docker-compose v1.25 or later (on WSL).
+```
+
+
+On Linux/MacOS:
+```
+- GNU Make v4.0 or later;
+- Docker v20.10.7 or later;
+- Docker-compose v1.25 or later.
+```
+
+### Documentation
+
+* [Project structure](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/tree/main/docs/project_structure.md)
+* [Postman Collection](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/blob/main/infrastructure/postman_collection/hermes-foods.postman_collection.json)
+* [Contribution Guide](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/tree/main/docs/contribution.md)
+* Swagger: access on ```http://localhost:8083/swagger``` (only after running the **Installation** step).
 
 ### Installation
 
@@ -24,10 +52,3 @@ Execute the command below:
 ```bash
 $ make tests
 ```
-
-### Documentation
-
-* [Project structure](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/tree/main/docs/project_structure.md)
-* [Postman Collection](.)
-* [Contribution Guide](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/tree/main/docs/contribution.md)
-* Swagger: access on ```http://localhost:8083/swagger```.
