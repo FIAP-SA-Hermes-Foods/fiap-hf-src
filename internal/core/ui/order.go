@@ -75,6 +75,7 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 	order := entity.Order{
 		ClientID:  reqOrder.ClientID,
 		VoucherID: reqOrder.VoucherID,
+		Items:     reqOrder.Items,
 		Status: valueObject.Status{
 			Value: reqOrder.Status,
 		},

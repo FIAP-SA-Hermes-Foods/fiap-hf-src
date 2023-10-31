@@ -44,7 +44,6 @@ func (o OrderProduct) MarshalString() string {
 		log.Printf("error in MarshalString client %v", err)
 		return ""
 	}
-
 	return string(b)
 }
 
@@ -54,7 +53,6 @@ func (o RequestOrderProduct) MarshalString() string {
 		log.Printf("error in MarshalString client %v", err)
 		return ""
 	}
-
 	return string(b)
 }
 
@@ -64,6 +62,5 @@ func (o OutputOrderProduct) MarshalString() string {
 		log.Printf("error in MarshalString client %v", err)
 		return ""
 	}
-
 	return string(b)
 }

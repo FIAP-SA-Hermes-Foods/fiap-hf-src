@@ -251,3 +251,104 @@ func Test_GetAllOrderProductByOrderID(t *testing.T) {
 		})
 	}
 }
+
+// go test -v -count=1 -failfast -cover -run ^Test_SaveOrderProduct$
+func Test_SaveOrderProduct(t *testing.T) {
+	ctx := context.Background()
+
+	type args struct {
+		order entity.OrderProduct
+	}
+
+	tests := []struct {
+		name        string
+		args        args
+		ctx         context.Context
+		WantOutput  *entity.OrderProduct
+		mockDB      *mockDb
+		isWantError bool
+	}{
+		{
+			name:       "success",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.OrderProduct{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    nil,
+			},
+
+			isWantError: false,
+		},
+		{
+			name:       "connection_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.OrderProduct{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errConnect"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "prepare_stmt_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.OrderProduct{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errPrepareStmt"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "prepare_stmt_error",
+			args:       args{},
+			ctx:        ctx,
+			WantOutput: &entity.OrderProduct{},
+			mockDB: &mockDb{
+				WantResult: nil,
+				WantRows:   &sql.Rows{},
+				WantErr:    errors.New("errScan"),
+			},
+
+			isWantError: true,
+		},
+		{
+			name:       "error_scan_stmt",
+			args:       args{},
+			ctx:        nil,
+			WantOutput: &entity.OrderProduct{},
+			mockDB: &mockDb{
+				WantResult:   nil,
+				WantRows:     &sql.Rows{},
+				WantErr:      errors.New("errScanStmt"),
+				WantNextRows: false,
+			},
+			isWantError: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := NewOrderProductRepository(tc.ctx, tc.mockDB)
+
+			out, err := repo.SaveOrderProduct(tc.args.order)
+
+			if (!tc.isWantError) && err != nil {
+				t.Errorf("was not suppose to have an error here and %v got", err)
+			}
+
+			if out != nil && (out.MarshalString() != tc.WantOutput.MarshalString()) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", tc.WantOutput.MarshalString(), out.MarshalString())
+			}
+
+		})
+	}
+}

@@ -217,7 +217,9 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 			return nil, err
 		}
 
-		productList := make([]entity.OutputProduct, 0)
+		totalPrice := 0.0
+
+		productList := make([]entity.ProductItem, 0)
 
 		for _, op := range orderProductList {
 			if op.ProductID != nil {
@@ -228,9 +230,13 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 				}
 
 				if p != nil {
-					pp := entity.OutputProduct{
+
+					totalPrice = totalPrice + GetTotalPrice(op.Quantity, p.Price)
+
+					pp := entity.ProductItem{
 						ID:            p.ID,
 						Name:          p.Name,
+						Quantity:      op.Quantity,
 						Category:      p.Category.Value,
 						Image:         p.Image,
 						Description:   p.Description,
@@ -238,6 +244,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 						CreatedAt:     p.CreatedAt.Format(),
 						DeactivatedAt: p.DeactivatedAt.Format(),
 					}
+
 					productList = append(productList, pp)
 				}
 			}
@@ -253,6 +260,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 				CreatedAt: client.CreatedAt,
 			},
 			Products:         productList,
+			TotalPrice:       totalPrice,
 			VoucherID:        orders[i].VoucherID,
 			Status:           orders[i].Status.Value,
 			VerificationCode: orders[i].VerificationCode.Value,
@@ -295,7 +303,9 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		return nil, err
 	}
 
-	productList := make([]entity.OutputProduct, 0)
+	productList := make([]entity.ProductItem, 0)
+
+	totalPrice := 0.0
 
 	for _, op := range orderProductList {
 		if op.ProductID != nil {
@@ -306,9 +316,13 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 			}
 
 			if p != nil {
-				pp := entity.OutputProduct{
+
+				totalPrice = totalPrice + GetTotalPrice(op.Quantity, p.Price)
+
+				pp := entity.ProductItem{
 					ID:            p.ID,
 					Name:          p.Name,
+					Quantity:      op.Quantity,
 					Category:      p.Category.Value,
 					Image:         p.Image,
 					Description:   p.Description,
@@ -330,6 +344,7 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		Client:           *outClient,
 		Products:         productList,
 		VoucherID:        o.VoucherID,
+		TotalPrice:       totalPrice,
 		Status:           o.Status.Value,
 		VerificationCode: o.VerificationCode.Value,
 		CreatedAt:        o.CreatedAt.Format(),
@@ -428,6 +443,70 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 		return nil, err
 	}
 
+	productList := make([]entity.ProductItem, 0)
+
+	totalPrice := 0.0
+
+	for _, orderItems := range order.Items {
+		if err := app.GetProductByIDService(orderItems.ProductID); err != nil {
+			return nil, err
+		}
+
+		product, err := app.GetProductByIDRepository(orderItems.ProductID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if product == nil {
+			return nil, errors.New("is not possible to save order because this product does not exists null")
+		}
+
+		pi := entity.ProductItem{
+			ID:            product.ID,
+			Name:          product.Name,
+			Quantity:      orderItems.Quantity,
+			Category:      product.Category.Value,
+			Image:         product.Image,
+			Description:   product.Description,
+			Price:         product.Price,
+			CreatedAt:     product.CreatedAt.Format(),
+			DeactivatedAt: product.DeactivatedAt.Format(),
+		}
+
+		totalPrice = totalPrice + GetTotalPrice(orderItems.Quantity, product.Price)
+
+		productList = append(productList, pi)
+
+		opIn := entity.OrderProduct{
+			Quantity:   orderItems.Quantity,
+			TotalPrice: GetTotalPrice(orderItems.Quantity, product.Price),
+			OrderID:    oRepo.ID,
+			ProductID:  &orderItems.ProductID,
+		}
+
+		opService, err := app.SaveOrderProductService(opIn)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if opService == nil {
+			return nil, errors.New("is not possible to save order because it's null")
+		}
+
+		opRepo, err := app.SaveOrderProductRepository(opIn)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if opRepo == nil {
+			return nil, errors.New("is not possible to save order because it's null")
+		}
+
+	}
+
 	outClient := entity.OutputClient{
 		ID:        c.ID,
 		Name:      c.Name,
@@ -439,6 +518,8 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 	outOrder := &entity.OutputOrder{
 		ID:               oRepo.ID,
 		Client:           outClient,
+		TotalPrice:       totalPrice,
+		Products:         productList,
 		VoucherID:        oRepo.VoucherID,
 		Status:           oRepo.Status.Value,
 		VerificationCode: oRepo.VerificationCode.Value,
@@ -446,6 +527,10 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 	}
 
 	return outOrder, nil
+}
+
+func GetTotalPrice(quantity int64, productPrice float64) float64 {
+	return productPrice * float64(quantity)
 }
 
 func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProduct, error) {
@@ -618,6 +703,14 @@ func (app hermesFoodsApp) GetAllOrderProductByIdService(id int64) error {
 
 func (app hermesFoodsApp) GetAllOrderProductByIdRepository(id int64) ([]entity.OrderProduct, error) {
 	return app.orderProductRepo.GetAllOrderProductByOrderID(id)
+}
+
+func (app hermesFoodsApp) SaveOrderProductService(orderProduct entity.OrderProduct) (*entity.OrderProduct, error) {
+	return app.orderProductService.SaveOrderProduct(orderProduct)
+}
+
+func (app hermesFoodsApp) SaveOrderProductRepository(orderProduct entity.OrderProduct) (*entity.OrderProduct, error) {
+	return app.orderProductRepo.SaveOrderProduct(orderProduct)
 }
 
 // Product implementation Call
