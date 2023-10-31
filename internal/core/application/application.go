@@ -34,26 +34,30 @@ type HermesFoodsApp interface {
 }
 
 type hermesFoodsApp struct {
-	Ctx            context.Context
-	paymentAPI     httpHF.PaymentAPI
-	clientRepo     repository.ClientRepository
-	clientService  service.ClientService
-	orderRepo      repository.OrderRepository
-	orderService   service.OrderService
-	productRepo    repository.ProductRepository
-	productService service.ProductService
+	Ctx                 context.Context
+	paymentAPI          httpHF.PaymentAPI
+	clientRepo          repository.ClientRepository
+	clientService       service.ClientService
+	orderRepo           repository.OrderRepository
+	orderService        service.OrderService
+	orderProductRepo    repository.OrderProductRepository
+	orderProductService service.OrderProductService
+	productRepo         repository.ProductRepository
+	productService      service.ProductService
 }
 
-func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, productRepo repository.ProductRepository, clientService service.ClientService, orderService service.OrderService, productService service.ProductService) HermesFoodsApp {
+func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, orderProductRepo repository.OrderProductRepository, productRepo repository.ProductRepository, clientService service.ClientService, orderService service.OrderService, orderProductService service.OrderProductService, productService service.ProductService) HermesFoodsApp {
 	return hermesFoodsApp{
-		Ctx:            ctx,
-		paymentAPI:     paymentAPI,
-		clientRepo:     clientRepo,
-		clientService:  clientService,
-		orderRepo:      orderRepo,
-		orderService:   orderService,
-		productRepo:    productRepo,
-		productService: productService,
+		Ctx:                 ctx,
+		paymentAPI:          paymentAPI,
+		clientRepo:          clientRepo,
+		clientService:       clientService,
+		orderRepo:           orderRepo,
+		orderService:        orderService,
+		orderProductRepo:    orderProductRepo,
+		orderProductService: orderProductService,
+		productRepo:         productRepo,
+		productService:      productService,
 	}
 }
 
@@ -203,6 +207,41 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 			return nil, err
 		}
 
+		if err := app.GetAllOrderProductByIdService(orders[i].ID); err != nil {
+			return nil, err
+		}
+		orderProductList, err := app.GetAllOrderProductByIdRepository(orders[i].ID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		productList := make([]entity.OutputProduct, 0)
+
+		for _, op := range orderProductList {
+			if op.ProductID != nil {
+				p, errGetC := app.GetProductByIDRepository(*op.ProductID)
+
+				if errGetC != nil {
+					return nil, errGetC
+				}
+
+				if p != nil {
+					pp := entity.OutputProduct{
+						ID:            p.ID,
+						Name:          p.Name,
+						Category:      p.Category.Value,
+						Image:         p.Image,
+						Description:   p.Description,
+						Price:         p.Price,
+						CreatedAt:     p.CreatedAt.Format(),
+						DeactivatedAt: p.DeactivatedAt.Format(),
+					}
+					productList = append(productList, pp)
+				}
+			}
+		}
+
 		order := entity.OutputOrder{
 			ID: orders[i].ID,
 			Client: entity.OutputClient{
@@ -212,6 +251,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 				Email:     client.Email,
 				CreatedAt: client.CreatedAt,
 			},
+			Products:         productList,
 			VoucherID:        orders[i].VoucherID,
 			Status:           orders[i].Status.Value,
 			VerificationCode: orders[i].VerificationCode.Value,
@@ -245,6 +285,41 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		return nil, err
 	}
 
+	if err := app.GetAllOrderProductByIdService(id); err != nil {
+		return nil, err
+	}
+	orderProductList, err := app.GetAllOrderProductByIdRepository(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	productList := make([]entity.OutputProduct, 0)
+
+	for _, op := range orderProductList {
+		if op.ProductID != nil {
+			p, errGetC := app.GetProductByIDRepository(*op.ProductID)
+
+			if errGetC != nil {
+				return nil, errGetC
+			}
+
+			if p != nil {
+				pp := entity.OutputProduct{
+					ID:            p.ID,
+					Name:          p.Name,
+					Category:      p.Category.Value,
+					Image:         p.Image,
+					Description:   p.Description,
+					Price:         p.Price,
+					CreatedAt:     p.CreatedAt.Format(),
+					DeactivatedAt: p.DeactivatedAt.Format(),
+				}
+				productList = append(productList, pp)
+			}
+		}
+	}
+
 	if outClient == nil {
 		return nil, errors.New("client is null")
 	}
@@ -252,6 +327,7 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 	out := &entity.OutputOrder{
 		ID:               o.ID,
 		Client:           *outClient,
+		Products:         productList,
 		VoucherID:        o.VoucherID,
 		Status:           o.Status.Value,
 		VerificationCode: o.VerificationCode.Value,
@@ -494,6 +570,19 @@ func (app hermesFoodsApp) UpdateOrderByIDService(id int64, order entity.Order) (
 
 func (app hermesFoodsApp) UpdateOrderByIDRepository(id int64, order entity.Order) (*entity.Order, error) {
 	return app.orderRepo.UpdateOrderByID(id, order)
+}
+
+// OrderProduct implementation Call
+func (app hermesFoodsApp) GetAllOrderProduct() ([]entity.OrderProduct, error) {
+	return app.orderProductRepo.GetAllOrderProduct()
+}
+
+func (app hermesFoodsApp) GetAllOrderProductByIdService(id int64) error {
+	return app.orderProductService.GetOrderProductByOrderID(id)
+}
+
+func (app hermesFoodsApp) GetAllOrderProductByIdRepository(id int64) ([]entity.OrderProduct, error) {
+	return app.orderProductRepo.GetAllOrderProductByOrderID(id)
 }
 
 // Product implementation Call

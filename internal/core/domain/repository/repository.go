@@ -21,3 +21,8 @@ type ProductRepository interface {
 	GetProductByID(id int64) (*entity.Product, error)
 	DeleteProductByID(id int64) error
 }
+
+type OrderProductRepository interface {
+	GetAllOrderProduct() ([]entity.OrderProduct, error)
+	GetAllOrderProductByOrderID(id int64) ([]entity.OrderProduct, error)
+}
