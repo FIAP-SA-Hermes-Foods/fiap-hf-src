@@ -3,6 +3,8 @@ package service
 import (
 	"errors"
 	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/domain/valueObject"
+	"strings"
 )
 
 type ProductService interface {
@@ -56,11 +58,11 @@ func (p productService) GetProductByCategory(category string) error {
 		return errors.New("the category is not valid for consult")
 	}
 
-	/*	_, err := valueObject.CategoryMap[strings.ToLower(category)]
+	_, ok := valueObject.CategoryMap[strings.ToLower(category)]
 
-		if err {
-			return errors.New("category is not valid")
-		}*/
+	if !ok {
+		return errors.New("category is not valid")
+	}
 
 	return nil
 }
