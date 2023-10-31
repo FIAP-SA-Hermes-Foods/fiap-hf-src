@@ -29,6 +29,10 @@ On Linux/MacOS:
 
 ### Documentation
 
+* [Domain Story Telling](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-storytelling)
+* [Ubiquitious Language](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-ubiquitious-language)
+* [Context Map](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-context-map)
+* [Event Storming](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-event-storming)
 * [Project structure](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/tree/main/docs/project_structure.md)
 * [Postman Collection](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/blob/main/infrastructure/postman_collection/hermes-foods.postman_collection.json)
 * [Contribution Guide](https://github.com/FIAP-SA-Hermes-Foods/fiap-hf-src/tree/main/docs/contribution.md)

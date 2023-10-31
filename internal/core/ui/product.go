@@ -26,6 +26,12 @@ func NewHandlerProduct(app application.HermesFoodsApp) HandlerProduct {
 }
 
 func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Access-Control-Allow-Origin", "*")
+	rw.Header().Add("Access-Control-Allow-Credentials", "true")
+	rw.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	rw.Header().Add("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
+	rw.Header().Add("Content-Type", "application-json")
+
 	if strings.ContainsAny("/product/", req.URL.Path) {
 		switch req.Method {
 		case http.MethodPost:
@@ -47,7 +53,6 @@ func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	if req.Method != http.MethodPost {
 		rw.WriteHeader(http.StatusMethodNotAllowed)
@@ -94,7 +99,6 @@ func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	id := getID("product", req.URL.Path)
 
@@ -159,7 +163,6 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 }
 
 func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	id := getID("product", req.URL.Path)
 
