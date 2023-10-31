@@ -5,6 +5,7 @@ import (
 	"fiap-hf-src/infrastructure/db/postgres"
 	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
 	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
+	opRepo "fiap-hf-src/internal/adapters/driven/repository/order_product"
 	pRepo "fiap-hf-src/internal/adapters/driven/repository/product"
 	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
@@ -56,9 +57,10 @@ func main() {
 
 	clientRepo, clientService := cRepo.NewClientRepository(ctx, db), service.NewClientService(nil)
 	orderRepo, orderService := oRepo.NewOrderRepository(ctx, db), service.NewOrderService(nil)
+	orderProductRepo, orderProductService := opRepo.NewOrderProductRepository(ctx, db), service.NewOrderProductService(nil)
 	productRepo, productService := pRepo.NewProductRepository(ctx, db), service.NewProductService(nil)
 
-	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, productRepo, clientService, orderService, productService)
+	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, orderProductRepo, productRepo, clientService, orderService, orderProductService, productService)
 	handlersClient := ui.NewHandlerClient(app)
 	handlersOrder := ui.NewHandlerOrder(app)
 	handlersProduct := ui.NewHandlerProduct(app)
