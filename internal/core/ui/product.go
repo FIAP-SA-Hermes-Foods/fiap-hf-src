@@ -99,7 +99,6 @@ func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Request) {
-
 	id := getID("product", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -107,12 +106,6 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(rw, `{"error": "error to update product by ID: %v"} `, err)
-		return
-	}
-
-	if req.Method != http.MethodPut {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
 		return
 	}
 
@@ -147,7 +140,11 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 
 	if len(reqProduct.DeactivatedAt) > 0 {
 		product.DeactivatedAt.Value = new(time.Time)
-		product.DeactivatedAt.SetTimeFromString(reqProduct.DeactivatedAt)
+		if err := product.DeactivatedAt.SetTimeFromString(reqProduct.DeactivatedAt); err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(rw, `{"error": "error to update product: %v"} `, err)
+			return
+		}
 	}
 
 	p, err := h.App.UpdateProductByID(idconv, product)
@@ -163,7 +160,6 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 }
 
 func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Request) {
-
 	id := getID("product", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -191,15 +187,7 @@ func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Requ
 }
 
 func (h handlerProduct) getProductByCategory(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
-
 	category := req.URL.Query().Get("category")
-
-	if req.Method != http.MethodGet {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
 
 	pList, err := h.App.GetProductByCategory(category)
 

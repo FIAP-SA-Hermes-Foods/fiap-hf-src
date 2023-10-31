@@ -7,6 +7,7 @@ import (
 	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
 	opRepo "fiap-hf-src/internal/adapters/driven/repository/order_product"
 	pRepo "fiap-hf-src/internal/adapters/driven/repository/product"
+	vRepo "fiap-hf-src/internal/adapters/driven/repository/voucher"
 	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
@@ -59,16 +60,20 @@ func main() {
 	orderRepo, orderService := oRepo.NewOrderRepository(ctx, db), service.NewOrderService(nil)
 	orderProductRepo, orderProductService := opRepo.NewOrderProductRepository(ctx, db), service.NewOrderProductService(nil)
 	productRepo, productService := pRepo.NewProductRepository(ctx, db), service.NewProductService(nil)
+	voucherRepo, voucherService := vRepo.NewVoucherRepository(ctx, db), service.NewVoucherService(nil)
 
-	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, orderProductRepo, productRepo, clientService, orderService, orderProductService, productService)
+	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, orderProductRepo, productRepo, voucherRepo, clientService, orderService, orderProductService, productService, voucherService)
+
 	handlersClient := ui.NewHandlerClient(app)
 	handlersOrder := ui.NewHandlerOrder(app)
 	handlersProduct := ui.NewHandlerProduct(app)
+	hanldersVoucher := ui.NewHandlerVoucher(app)
 
 	router.HandleFunc("/hermes_foods/health", ui.HealthCheck)
 	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
 	router.HandleFunc("/hermes_foods/order/", handlersOrder.Handler)
 	router.HandleFunc("/hermes_foods/product/", handlersProduct.Handler)
+	router.HandleFunc("/hermes_foods/voucher/", hanldersVoucher.Handler)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
