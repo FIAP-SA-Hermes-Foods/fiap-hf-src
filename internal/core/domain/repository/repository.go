@@ -28,3 +28,9 @@ type OrderProductRepository interface {
 	GetAllOrderProductByOrderID(id int64) ([]entity.OrderProduct, error)
 	SaveOrderProduct(order entity.OrderProduct) (*entity.OrderProduct, error)
 }
+
+type VoucherRepository interface {
+	GetVoucherByID(id int64) (*entity.Voucher, error)
+	SaveVoucher(voucher entity.Voucher) (*entity.Voucher, error)
+	UpdateVoucherByID(id int64, voucher entity.Voucher) (*entity.Voucher, error)
+}

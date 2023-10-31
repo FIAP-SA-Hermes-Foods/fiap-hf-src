@@ -54,14 +54,6 @@ func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
-
-	if req.Method != http.MethodPost {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
-
 	var buff bytes.Buffer
 
 	var reqOrder entity.RequestOrder
@@ -102,12 +94,6 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("order", req.URL.Path)
 
-	if req.Method != http.MethodGet {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
-
 	idconv, err := strconv.ParseInt(id, 10, 64)
 
 	if err != nil {
@@ -135,13 +121,6 @@ func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Requ
 }
 
 func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request) {
-
-	if req.Method != http.MethodGet {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
-
 	oList, err := h.App.GetOrders()
 
 	if err != nil {
@@ -170,12 +149,6 @@ func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request
 
 func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("order", req.URL.Path)
-
-	if req.Method != http.MethodPatch {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
 

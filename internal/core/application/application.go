@@ -32,6 +32,12 @@ type HermesFoodsApp interface {
 	GetProductByCategory(category string) ([]entity.OutputProduct, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error)
 	DeleteProductByID(id int64) error
+
+	// Voucher Methods
+
+	SaveVoucher(voucher entity.Voucher) (*entity.OutputVoucher, error)
+	GetVoucherByID(id int64) (*entity.OutputVoucher, error)
+	UpdateVoucherByID(id int64, voucher entity.Voucher) (*entity.OutputVoucher, error)
 }
 
 type hermesFoodsApp struct {
@@ -45,9 +51,11 @@ type hermesFoodsApp struct {
 	orderProductService service.OrderProductService
 	productRepo         repository.ProductRepository
 	productService      service.ProductService
+	voucherRepo         repository.VoucherRepository
+	voucherService      service.VoucherService
 }
 
-func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, orderProductRepo repository.OrderProductRepository, productRepo repository.ProductRepository, clientService service.ClientService, orderService service.OrderService, orderProductService service.OrderProductService, productService service.ProductService) HermesFoodsApp {
+func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, clientRepo repository.ClientRepository, orderRepo repository.OrderRepository, orderProductRepo repository.OrderProductRepository, productRepo repository.ProductRepository, voucherRepo repository.VoucherRepository, clientService service.ClientService, orderService service.OrderService, orderProductService service.OrderProductService, productService service.ProductService, voucherService service.VoucherService) HermesFoodsApp {
 	return hermesFoodsApp{
 		Ctx:                 ctx,
 		paymentAPI:          paymentAPI,
@@ -59,8 +67,12 @@ func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, client
 		orderProductService: orderProductService,
 		productRepo:         productRepo,
 		productService:      productService,
+		voucherRepo:         voucherRepo,
+		voucherService:      voucherService,
 	}
 }
+
+// ========== Client ==========
 
 func (app hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) {
 	if err := app.GetClientByIDService(id); err != nil {
@@ -152,6 +164,8 @@ func (app hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient
 	return out, nil
 }
 
+// ========== Order ==========
+
 func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error) {
 	oSvc, err := app.UpdateOrderByIDService(id, order)
 
@@ -221,6 +235,23 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 
 		productList := make([]entity.ProductItem, 0)
 
+		var voucher = entity.OutputVoucher{}
+
+		if orders[i].VoucherID != nil {
+
+			v, err := app.GetVoucherByID(*orders[i].VoucherID)
+
+			if err != nil {
+				return nil, err
+			}
+
+			if v == nil {
+				return nil, errors.New("is not possible to save order because this voucher does not exist")
+			}
+
+			voucher = *v
+		}
+
 		for _, op := range orderProductList {
 			if op.ProductID != nil {
 				p, errGetC := app.GetProductByIDRepository(*op.ProductID)
@@ -231,7 +262,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 
 				if p != nil {
 
-					totalPrice = totalPrice + GetTotalPrice(op.Quantity, p.Price)
+					totalPrice = totalPrice + getTotalPrice(op.Quantity, p.Price)
 
 					pp := entity.ProductItem{
 						ID:            p.ID,
@@ -248,6 +279,10 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 					productList = append(productList, pp)
 				}
 			}
+		}
+
+		if voucher.Porcentage > 0 {
+			totalPrice = calculateDiscountByPercentage(voucher.Porcentage, totalPrice)
 		}
 
 		order := entity.OutputOrder{
@@ -307,6 +342,23 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 
 	totalPrice := 0.0
 
+	var voucher = entity.OutputVoucher{}
+
+	if o.VoucherID != nil {
+
+		v, err := app.GetVoucherByID(*o.VoucherID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if v == nil {
+			return nil, errors.New("is not possible to save order because this voucher does not exist")
+		}
+
+		voucher = *v
+	}
+
 	for _, op := range orderProductList {
 		if op.ProductID != nil {
 			p, errGetC := app.GetProductByIDRepository(*op.ProductID)
@@ -317,7 +369,7 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 
 			if p != nil {
 
-				totalPrice = totalPrice + GetTotalPrice(op.Quantity, p.Price)
+				totalPrice = totalPrice + getTotalPrice(op.Quantity, p.Price)
 
 				pp := entity.ProductItem{
 					ID:            p.ID,
@@ -339,6 +391,10 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		return nil, errors.New("client is null")
 	}
 
+	if voucher.Porcentage > 0 {
+		totalPrice = calculateDiscountByPercentage(voucher.Porcentage, totalPrice)
+	}
+
 	out := &entity.OutputOrder{
 		ID:               o.ID,
 		Client:           *outClient,
@@ -351,40 +407,6 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 	}
 
 	return out, nil
-}
-
-func (app hermesFoodsApp) GetProductByCategory(category string) ([]entity.OutputProduct, error) {
-	productList := make([]entity.OutputProduct, 0)
-
-	if err := app.productService.GetProductByCategory(category); err != nil {
-		return nil, err
-	}
-
-	products, err := app.GetProductByCategoryRepository(category)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if products == nil {
-		return nil, nil
-	}
-
-	for i := range products {
-		product := entity.OutputProduct{
-			ID:            products[i].ID,
-			Name:          products[i].Name,
-			Category:      products[i].Category.Value,
-			Image:         products[i].Image,
-			Description:   products[i].Description,
-			Price:         products[i].Price,
-			CreatedAt:     products[i].CreatedAt.Format(),
-			DeactivatedAt: products[i].CreatedAt.Format(),
-		}
-		productList = append(productList, product)
-	}
-
-	return productList, nil
 }
 
 func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, error) {
@@ -447,6 +469,23 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 
 	totalPrice := 0.0
 
+	var voucher = entity.OutputVoucher{}
+
+	if order.VoucherID != nil {
+
+		v, err := app.GetVoucherByID(*order.VoucherID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if v == nil {
+			return nil, errors.New("is not possible to save order because this voucher does not exist")
+		}
+
+		voucher = *v
+	}
+
 	for _, orderItems := range order.Items {
 		if err := app.GetProductByIDService(orderItems.ProductID); err != nil {
 			return nil, err
@@ -474,15 +513,24 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 			DeactivatedAt: product.DeactivatedAt.Format(),
 		}
 
-		totalPrice = totalPrice + GetTotalPrice(orderItems.Quantity, product.Price)
-
 		productList = append(productList, pi)
+
+		tPrice := getTotalPrice(orderItems.Quantity, product.Price)
+
+		totalPrice = totalPrice + tPrice
+
+		var discount float64
+
+		if voucher.Porcentage > 0 {
+			discount = calculateDiscountByPercentage(voucher.Porcentage, tPrice)
+		}
 
 		opIn := entity.OrderProduct{
 			Quantity:   orderItems.Quantity,
-			TotalPrice: GetTotalPrice(orderItems.Quantity, product.Price),
+			TotalPrice: tPrice,
 			OrderID:    oRepo.ID,
 			ProductID:  &orderItems.ProductID,
+			Discount:   discount,
 		}
 
 		opService, err := app.SaveOrderProductService(opIn)
@@ -507,6 +555,10 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 
 	}
 
+	if voucher.Porcentage > 0 {
+		totalPrice = calculateDiscountByPercentage(voucher.Porcentage, totalPrice)
+	}
+
 	outClient := entity.OutputClient{
 		ID:        c.ID,
 		Name:      c.Name,
@@ -529,9 +581,7 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 	return outOrder, nil
 }
 
-func GetTotalPrice(quantity int64, productPrice float64) float64 {
-	return productPrice * float64(quantity)
-}
+// ========== Product ==========
 
 func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProduct, error) {
 	p, err := app.SaveProductService(product)
@@ -562,6 +612,40 @@ func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputPro
 	}
 
 	return out, nil
+}
+
+func (app hermesFoodsApp) GetProductByCategory(category string) ([]entity.OutputProduct, error) {
+	productList := make([]entity.OutputProduct, 0)
+
+	if err := app.productService.GetProductByCategory(category); err != nil {
+		return nil, err
+	}
+
+	products, err := app.GetProductByCategoryRepository(category)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if products == nil {
+		return nil, nil
+	}
+
+	for i := range products {
+		product := entity.OutputProduct{
+			ID:            products[i].ID,
+			Name:          products[i].Name,
+			Category:      products[i].Category.Value,
+			Image:         products[i].Image,
+			Description:   products[i].Description,
+			Price:         products[i].Price,
+			CreatedAt:     products[i].CreatedAt.Format(),
+			DeactivatedAt: products[i].CreatedAt.Format(),
+		}
+		productList = append(productList, product)
+	}
+
+	return productList, nil
 }
 
 func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error) {
@@ -630,127 +714,111 @@ func (app hermesFoodsApp) DeleteProductByID(id int64) error {
 	return app.DeleteProductByIDRepository(id)
 }
 
-// ============= Calling Repositories and Services ================
+// ========== Voucher ==========
+
+func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*entity.OutputVoucher, error) {
+	voucherSvc, err := app.SaveVoucherService(voucher)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if voucherSvc == nil {
+		return nil, errors.New("is not possible to save voucher because it's null")
+	}
+
+	rVoucher, err := app.SaveVoucherRepository(voucher)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if rVoucher == nil {
+		return nil, errors.New("was not possible to save voucher because it's null")
+	}
+
+	vOut := entity.OutputVoucher{
+		ID:         rVoucher.ID,
+		Code:       rVoucher.Code,
+		Porcentage: rVoucher.Porcentage,
+		CreatedAt:  rVoucher.CreatedAt.Format(),
+		ExpiresAt:  rVoucher.ExpiresAt.Format(),
+	}
+
+	return &vOut, nil
+}
+
+func (app hermesFoodsApp) GetVoucherByID(id int64) (*entity.OutputVoucher, error) {
+	if err := app.GetVoucherByIDService(id); err != nil {
+		return nil, err
+	}
+
+	rVoucher, err := app.GetVoucherByIDRepository(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if rVoucher == nil {
+		return nil, fmt.Errorf("voucher not found with the %d id", id)
+	}
+
+	vOut := entity.OutputVoucher{
+		ID:         rVoucher.ID,
+		Code:       rVoucher.Code,
+		Porcentage: rVoucher.Porcentage,
+		CreatedAt:  rVoucher.CreatedAt.Format(),
+		ExpiresAt:  rVoucher.ExpiresAt.Format(),
+	}
+
+	return &vOut, nil
+
+}
+
+func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*entity.OutputVoucher, error) {
+	voucherSvc, err := app.UpdateVoucherByIDService(id, voucher)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if voucherSvc == nil {
+		return nil, errors.New("is not possible to update voucher because it's null")
+	}
+
+	rVoucher, err := app.UpdateVoucherByIDRepository(id, voucher)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if rVoucher == nil {
+		return nil, errors.New("was not possible to update voucher because it's null")
+	}
+
+	vOut := entity.OutputVoucher{
+		ID:         rVoucher.ID,
+		Code:       rVoucher.Code,
+		Porcentage: rVoucher.Porcentage,
+		CreatedAt:  rVoucher.CreatedAt.Format(),
+		ExpiresAt:  rVoucher.ExpiresAt.Format(),
+	}
+
+	return &vOut, nil
+}
+
+func getTotalPrice(quantity int64, productPrice float64) float64 {
+	return productPrice * float64(quantity)
+}
+
+func calculateDiscountByPercentage(percentage int64, value float64) float64 {
+	if percentage == 0 {
+		return value
+	}
+
+	return value - (value * (float64(percentage) / 100))
+}
 
 func (app hermesFoodsApp) DoPaymentAPI(ctx context.Context, input entity.InputPaymentAPI) (*entity.OutputPaymentAPI, error) {
 	return app.paymentAPI.DoPayment(ctx, input)
-}
-
-// Client implementation Call
-
-func (app hermesFoodsApp) GetClientByCPFService(cpf string) error {
-	return app.clientService.GetClientByCPF(cpf)
-}
-
-func (app hermesFoodsApp) GetClientByCPFRepository(cpf string) (*entity.Client, error) {
-	return app.clientRepo.GetClientByCPF(cpf)
-}
-
-func (app hermesFoodsApp) GetClientByIDService(id int64) error {
-	return app.clientService.GetClientByID(id)
-}
-
-func (app hermesFoodsApp) GetClientByIDRepository(id int64) (*entity.Client, error) {
-	return app.clientRepo.GetClientByID(id)
-}
-
-func (app hermesFoodsApp) SaveClientService(client entity.Client) (*entity.Client, error) {
-	return app.clientService.SaveClient(client)
-}
-
-func (app hermesFoodsApp) SaveClientRepository(client entity.Client) (*entity.Client, error) {
-	return app.clientRepo.SaveClient(client)
-}
-
-// Order implementation Call
-
-func (app hermesFoodsApp) GetOrdersRepository() ([]entity.Order, error) {
-	return app.orderRepo.GetOrders()
-}
-
-func (app hermesFoodsApp) GetOrderByIDRepository(id int64) (*entity.Order, error) {
-	return app.orderRepo.GetOrderByID(id)
-}
-
-func (app hermesFoodsApp) GetOrderByIDService(id int64) error {
-	return app.orderService.GetOrderByID(id)
-}
-
-func (app hermesFoodsApp) SaveOrderRepository(order entity.Order) (*entity.Order, error) {
-	return app.orderRepo.SaveOrder(order)
-}
-
-func (app hermesFoodsApp) SaveOrderService(order entity.Order) (*entity.Order, error) {
-	return app.orderService.SaveOrder(order)
-}
-
-func (app hermesFoodsApp) UpdateOrderByIDService(id int64, order entity.Order) (*entity.Order, error) {
-	return app.orderService.UpdateOrderByID(id, order)
-}
-
-func (app hermesFoodsApp) UpdateOrderByIDRepository(id int64, order entity.Order) (*entity.Order, error) {
-	return app.orderRepo.UpdateOrderByID(id, order)
-}
-
-// OrderProduct implementation Call
-func (app hermesFoodsApp) GetAllOrderProduct() ([]entity.OrderProduct, error) {
-	return app.orderProductRepo.GetAllOrderProduct()
-}
-
-func (app hermesFoodsApp) GetAllOrderProductByIdService(id int64) error {
-	return app.orderProductService.GetOrderProductByOrderID(id)
-}
-
-func (app hermesFoodsApp) GetAllOrderProductByIdRepository(id int64) ([]entity.OrderProduct, error) {
-	return app.orderProductRepo.GetAllOrderProductByOrderID(id)
-}
-
-func (app hermesFoodsApp) SaveOrderProductService(orderProduct entity.OrderProduct) (*entity.OrderProduct, error) {
-	return app.orderProductService.SaveOrderProduct(orderProduct)
-}
-
-func (app hermesFoodsApp) SaveOrderProductRepository(orderProduct entity.OrderProduct) (*entity.OrderProduct, error) {
-	return app.orderProductRepo.SaveOrderProduct(orderProduct)
-}
-
-// Product implementation Call
-
-func (app hermesFoodsApp) GetProductByIDService(id int64) error {
-	return app.productService.GetProductByID(id)
-}
-
-func (app hermesFoodsApp) GetProductByCategoryService(category string) error {
-	return app.productService.GetProductByCategory(category)
-}
-
-func (app hermesFoodsApp) GetProductByIDRepository(id int64) (*entity.Product, error) {
-	return app.productRepo.GetProductByID(id)
-}
-
-func (app hermesFoodsApp) GetProductByCategoryRepository(category string) ([]entity.Product, error) {
-	return app.productRepo.GetProductByCategory(category)
-}
-
-func (app hermesFoodsApp) SaveProductService(product entity.Product) (*entity.Product, error) {
-	return app.productService.SaveProduct(product)
-}
-
-func (app hermesFoodsApp) SaveProductRepository(product entity.Product) (*entity.Product, error) {
-	return app.productRepo.SaveProduct(product)
-}
-
-func (app hermesFoodsApp) UpdateProductByIDService(id int64, product entity.Product) (*entity.Product, error) {
-	return app.productService.UpdateProductByID(id, product)
-}
-
-func (app hermesFoodsApp) UpdateProductByIDRepository(id int64, product entity.Product) (*entity.Product, error) {
-	return app.productRepo.UpdateProductByID(id, product)
-}
-
-func (app hermesFoodsApp) DeleteProductByIDService(id int64) error {
-	return app.productService.DeleteProductByID(id)
-}
-
-func (app hermesFoodsApp) DeleteProductByIDRepository(id int64) error {
-	return app.productRepo.DeleteProductByID(id)
 }

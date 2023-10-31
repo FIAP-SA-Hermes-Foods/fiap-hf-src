@@ -35,7 +35,7 @@ type (
 		Status           string        `json:"status,omitempty"`
 		VerificationCode string        `json:"verificationCode,omitempty"`
 		CreatedAt        string        `json:"createdAt,omitempty"`
-		TotalPrice       float64       `json:"totalPrice,omitempty"`
+		TotalPrice       float64       `json:"totalPrice"`
 	}
 )
 

@@ -49,13 +49,6 @@ func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Request) {
-
-	if req.Method != http.MethodPost {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
-
 	var buff bytes.Buffer
 
 	var reqClient entity.RequestClient
@@ -93,14 +86,7 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 }
 
 func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.Request) {
-
 	cpf := getCpf(req.URL.Path)
-
-	if req.Method != http.MethodGet {
-		rw.WriteHeader(http.StatusMethodNotAllowed)
-		rw.Write([]byte(`{"error": "method not allowed"} `))
-		return
-	}
 
 	c, err := h.App.GetClientByCPF(cpf)
 
