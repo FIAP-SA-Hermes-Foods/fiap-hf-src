@@ -5,6 +5,7 @@ import (
 	psqldb "fiap-hf-src/infrastructure/db/postgres"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
+	"reflect"
 )
 
 var (
@@ -123,7 +124,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 		}
 	}
 
-	if *outOrder == (entity.Order{}) {
+	if reflect.ValueOf(outOrder).IsNil() || reflect.ValueOf(outOrder).IsZero() {
 		return nil, nil
 	}
 
