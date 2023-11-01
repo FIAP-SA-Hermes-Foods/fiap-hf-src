@@ -756,7 +756,12 @@
                 "voucherId": {
                     "type": "integer",
                     "example": 1
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Paid",
                 }
+
             }
         },
         "order-output-list": {
