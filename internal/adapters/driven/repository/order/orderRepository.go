@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	queryGetOrders    = `SELECT * FROM orders ORDER BY id`
+	queryGetOrders    = `SELECT * FROM orders ORDER BY created_at ASC`
 	queryGetOrderByID = `SELECT * FROM orders WHERE id = $1`
 	querySaveOrder    = `INSERT INTO orders (id, status, verification_code, created_at, client_id, voucher_id) VALUES (DEFAULT, $1, $2, now(), $3, $4) RETURNING id, created_at`
 	queryUpdateOrder  = `UPDATE orders SET status = $1, client_id = $2, voucher_id = $3 WHERE id = $4 RETURNING id, created_at`
