@@ -2,7 +2,7 @@ package voucher
 
 import (
 	"context"
-	psqldb "fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
 )
@@ -21,10 +21,10 @@ type VoucherRepository interface {
 
 type voucherRepository struct {
 	Ctx      context.Context
-	Database psqldb.PostgresDB
+	Database db.SQLDatabase
 }
 
-func NewVoucherRepository(ctx context.Context, db psqldb.PostgresDB) VoucherRepository {
+func NewVoucherRepository(ctx context.Context, db db.SQLDatabase) VoucherRepository {
 	return voucherRepository{Ctx: ctx, Database: db}
 }
 

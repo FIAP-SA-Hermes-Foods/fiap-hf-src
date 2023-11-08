@@ -2,7 +2,7 @@ package product
 
 import (
 	"context"
-	psqldb "fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
 )
@@ -25,10 +25,10 @@ type ProductRepository interface {
 
 type productRepository struct {
 	Ctx      context.Context
-	Database psqldb.PostgresDB
+	Database db.SQLDatabase
 }
 
-func NewProductRepository(ctx context.Context, db psqldb.PostgresDB) ProductRepository {
+func NewProductRepository(ctx context.Context, db db.SQLDatabase) ProductRepository {
 	return productRepository{Ctx: ctx, Database: db}
 }
 
