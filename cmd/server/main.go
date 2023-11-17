@@ -62,7 +62,20 @@ func main() {
 	productRepo, productService := pRepo.NewProductRepository(ctx, db), service.NewProductService(nil)
 	voucherRepo, voucherService := vRepo.NewVoucherRepository(ctx, db), service.NewVoucherService(nil)
 
-	app := application.NewHermesFoodsApp(ctx, paymentApi, clientRepo, orderRepo, orderProductRepo, productRepo, voucherRepo, clientService, orderService, orderProductService, productService, voucherService)
+	app := application.NewHermesFoodsApp(
+		ctx,
+		paymentApi,
+		clientRepo,
+		orderRepo,
+		orderProductRepo,
+		productRepo,
+		voucherRepo,
+		clientService,
+		orderService,
+		orderProductService,
+		productService,
+		voucherService,
+	)
 
 	handlersClient := ui.NewHandlerClient(app)
 	handlersOrder := ui.NewHandlerOrder(app)
