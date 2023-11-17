@@ -24,15 +24,17 @@ func (v *VerificationCode) Generate() {
 	code := ""
 
 	for i := 0; i < 3; i++ {
-		lettersIndex := generateRandom(0, len(lettersVerificationCode))
+		lettersIndex := generateRandom(0, len(lettersVerificationCode)-1)
 		code = fmt.Sprintf("%s%s", code, string(lettersVerificationCode[lettersIndex]))
 
 	}
 
 	for i := 0; i < 3; i++ {
-		numbersIndex := generateRandom(0, len(numbersVerificationCode))
+		numbersIndex := generateRandom(0, len(numbersVerificationCode)-1)
 		code = fmt.Sprintf("%s%s", code, string(numbersVerificationCode[numbersIndex]))
 	}
+
+	v.Value = code
 }
 
 func (c *VerificationCode) Validate() error {
