@@ -303,7 +303,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 			CreatedAt:        orders[i].CreatedAt.Format(),
 		}
 
-		if strings.ToLower(order.Status) != "finished" {
+		if strings.ToLower(order.Status) != valueObject.FinishedStatusKey {
 			orderList = append(orderList, order)
 		}
 	}

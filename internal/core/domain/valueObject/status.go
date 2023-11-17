@@ -10,6 +10,15 @@ type Status struct {
 }
 
 const (
+	PaidStatusKey       = "paid"
+	CanceledStatusKey   = "canceled"
+	ReceivedStatusKey   = "received"
+	InProgressStatusKey = "in Progress"
+	DoneStatusKey       = "done"
+	FinishedStatusKey   = "finished"
+)
+
+const (
 	PaidStatus       = "Paid"
 	CanceledStatus   = "Canceled"
 	ReceivedStatus   = "Received"
@@ -19,12 +28,12 @@ const (
 )
 
 var statusMap = map[string]string{
-	"paid":        PaidStatus,
-	"canceled":    CanceledStatus,
-	"received":    ReceivedStatus,
-	"in progress": InProgressStatus,
-	"done":        DoneStatus,
-	"finished":    FinishedStatus,
+	PaidStatusKey:       PaidStatus,
+	CanceledStatusKey:   CanceledStatus,
+	ReceivedStatusKey:   ReceivedStatus,
+	InProgressStatusKey: InProgressStatus,
+	DoneStatusKey:       DoneStatus,
+	FinishedStatusKey:   FinishedStatus,
 }
 
 func (v *Status) Validate() error {
