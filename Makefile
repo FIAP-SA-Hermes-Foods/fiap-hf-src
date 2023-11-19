@@ -8,6 +8,10 @@ run-build:
 	./infrastructure/scripts/docker-network.sh;
 	docker-compose up --build --force-recreate;
 
+run-build-d:	
+	./infrastructure/scripts/docker-network.sh;
+	docker-compose up --build --force-recreate -d;
+
 run:
 	./infrastructure/scripts/docker-network.sh;
 	docker-compose up;
