@@ -15,7 +15,7 @@ pipeline {
 
         GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
         GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
-        GPG_PASSWORD = credentials("GPG_PASSWORD")
+        GPG_PASSWORD = credentials("GPG_SECRET_PASSWORD")
     }
 
     stages { 
