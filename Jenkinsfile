@@ -43,7 +43,7 @@ pipeline {
 
         stage('Export envs') {
             steps {
-                sh '''export $(grep -v '^#' .env | xargs)'''
+                sh """export \$(grep -v '^#' .env | xargs)"""
             }
         }
 
