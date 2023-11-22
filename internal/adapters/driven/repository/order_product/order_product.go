@@ -2,7 +2,7 @@ package orderproduct
 
 import (
 	"context"
-	psqldb "fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 )
 
@@ -20,10 +20,10 @@ type OrderProductRepository interface {
 
 type orderProductRepository struct {
 	Ctx      context.Context
-	Database psqldb.PostgresDB
+	Database db.SQLDatabase
 }
 
-func NewOrderProductRepository(ctx context.Context, db psqldb.PostgresDB) OrderProductRepository {
+func NewOrderProductRepository(ctx context.Context, db db.SQLDatabase) OrderProductRepository {
 	return orderProductRepository{Ctx: ctx, Database: db}
 }
 

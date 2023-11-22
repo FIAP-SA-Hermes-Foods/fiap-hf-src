@@ -10,6 +10,7 @@ import (
 	"fiap-hf-src/internal/core/service"
 	"fmt"
 	"log"
+	"strings"
 )
 
 type HermesFoodsApp interface {
@@ -216,7 +217,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 
 	for i := range orders {
 
-		client, err := app.GetClientByID(orders[i].ID)
+		client, err := app.GetClientByID(orders[i].ClientID)
 
 		if err != nil {
 			return nil, err
@@ -302,7 +303,9 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 			CreatedAt:        orders[i].CreatedAt.Format(),
 		}
 
-		orderList = append(orderList, order)
+		if strings.ToLower(order.Status) != valueObject.FinishedStatusKey {
+			orderList = append(orderList, order)
+		}
 	}
 
 	return orderList, nil
@@ -459,7 +462,7 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 		return nil, errors.New("is not possible to save order because it's null")
 	}
 
-	oRepo, err := app.SaveOrderRepository(order)
+	oRepo, err := app.SaveOrderRepository(*o)
 
 	if err != nil {
 		return nil, err

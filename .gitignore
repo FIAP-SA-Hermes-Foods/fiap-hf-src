@@ -32,3 +32,12 @@ bin/
 
 .DS_Store
 .idea/
+.gitsecret/keys/random_seed
+!*.secret
+
+.env
+
+gpg-ownertrust.txt
+gpg-secret.key
+
+

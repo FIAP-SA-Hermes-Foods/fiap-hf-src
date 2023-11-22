@@ -2,14 +2,14 @@ package order
 
 import (
 	"context"
-	psqldb "fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
 	"reflect"
 )
 
 var (
-	queryGetOrders    = `SELECT * FROM orders ORDER BY id`
+	queryGetOrders    = `SELECT * FROM orders ORDER BY created_at ASC`
 	queryGetOrderByID = `SELECT * FROM orders WHERE id = $1`
 	querySaveOrder    = `INSERT INTO orders (id, status, verification_code, created_at, client_id, voucher_id) VALUES (DEFAULT, $1, $2, now(), $3, $4) RETURNING id, created_at`
 	queryUpdateOrder  = `UPDATE orders SET status = $1, client_id = $2, voucher_id = $3 WHERE id = $4 RETURNING id, created_at`
@@ -24,10 +24,10 @@ type OrderRepository interface {
 
 type orderRepository struct {
 	Ctx      context.Context
-	Database psqldb.PostgresDB
+	Database db.SQLDatabase
 }
 
-func NewOrderRepository(ctx context.Context, db psqldb.PostgresDB) OrderRepository {
+func NewOrderRepository(ctx context.Context, db db.SQLDatabase) OrderRepository {
 	return orderRepository{Ctx: ctx, Database: db}
 }
 

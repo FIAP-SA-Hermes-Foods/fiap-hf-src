@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	psqldb "fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
 )
@@ -21,10 +21,10 @@ type ClientRepository interface {
 
 type clientRepository struct {
 	Ctx      context.Context
-	Database psqldb.PostgresDB
+	Database db.SQLDatabase
 }
 
-func NewClientRepository(ctx context.Context, db psqldb.PostgresDB) ClientRepository {
+func NewClientRepository(ctx context.Context, db db.SQLDatabase) ClientRepository {
 	return clientRepository{Ctx: ctx, Database: db}
 }
 

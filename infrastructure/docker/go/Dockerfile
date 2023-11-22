@@ -10,4 +10,4 @@ RUN go build -ldflags "-w -s" -o bin/hermesfoods cmd/server/*.go
 
 ENTRYPOINT ["./bin/hermesfoods"]
 
-EXPOSE 8080
+EXPOSE 8080 8081
