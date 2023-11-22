@@ -34,4 +34,10 @@ bin/
 .idea/
 .gitsecret/keys/random_seed
 !*.secret
-dbpassword.txt
+
+.env
+
+gpg-ownertrust.txt
+gpg-secret.key
+
+
