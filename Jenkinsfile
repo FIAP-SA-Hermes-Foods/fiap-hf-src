@@ -50,9 +50,9 @@ pipeline {
         stage('Building images') {
             steps{
                 script {
-                    sh """docker buildx -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} ."""
-                    sh """docker buildx -f infrastructure/docker/postgres/Dockerfile -t ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ."""
-                    sh """docker buildx -f infrastructure/docker/swagger/Dockerfile -t ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ."""
+                    sh """docker build -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} ."""
+                    sh """docker build -f infrastructure/docker/postgres/Dockerfile -t ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ."""
+                    sh """docker build -f infrastructure/docker/swagger/Dockerfile -t ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ."""
                     sh 'docker images'
                 }
             }
