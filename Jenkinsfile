@@ -36,8 +36,14 @@ pipeline {
 
         stage('Create .env') {
             steps {
-                sh """ git secret reveal -p '${GPG_PASSWORD}'"""
-                sh """ git secret cat .env > .env"""
+                sh """git secret reveal -p '${GPG_PASSWORD}'"""
+                sh """git secret cat .env > .env"""
+            }
+        }
+
+        stage('Export envs') {
+            steps {
+                sh """export $(grep -v '^#' .env | xargs)"""
             }
         }
 
