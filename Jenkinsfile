@@ -3,14 +3,19 @@ pipeline {
     environment {
         AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
         AWS_DEFAULT_REGION = credentials('AWS_DEFAULT_REGION')
+
         IMAGE_API_NAME = credentials('IMAGE_API_NAME')
         IMAGE_POSTGRES_NAME = credentials('IMAGE_POSTGRES_NAME')
         IMAGE_SWAGGER_NAME = credentials('IMAGE_SWAGGER_NAME')
         IMAGE_TAG= "latest"
+
         REPOSITORY_API_URL = credentials('ECR_API_URL')
         REPOSITORY_POSTGRES_URL = credentials('ECR_POSTGRES_URL')
         REPOSITORY_SWAGGER_URL = credentials('ECR_SWAGGER_URL')
-        HF_GITHUB_PROJECT_URL = credentials('HF_GITHUB_PROJECT_URL')
+
+        GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
+        GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
+        GPG_PASSWORD = credentials("GPG_PASSWORD")
     }
 
     stages { 
@@ -22,31 +27,53 @@ pipeline {
             }
         }
 
-        stage('Rename .env') {
+        stage('Import secrets from git-secrets') { 
             steps {
-                sh 'mv .env.example .env'    
+                sh """gpg --batch --import ${GPG_SECRET_KEY}"""
+                sh """gpg --import-ownertrust ${GPG_OWNER_TRUST}"""
             }
         }
 
-        // Building Docker images
+        stage('Create .env') {
+            steps {
+                sh """ git secret reveal -p '${GPG_PASSWORD}'"""
+                sh """ git secret cat .env > .env"""
+            }
+        }
+
+        stage('Create docker network') {
+            steps {
+                sh './infrastructure/scripts/docker-network.sh'    
+            }
+        }
+
         stage('Building images') {
             steps{
                 script {
-                    sh 'make run-build-d'
+                    sh """docker buildx -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} ."""
+                    sh """docker buildx -f infrastructure/docker/postgres/Dockerfile -t ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ."""
+                    sh """docker buildx -f infrastructure/docker/swagger/Dockerfile -t ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ."""
+                    sh 'docker images'
                 }
             }
         }
 
-        // Uploading Docker images into AWS ECR
+        stage('Tagging images') {
+            steps{
+                script {
+                    sh """docker tag ${IMAGE_API_NAME}:${IMAGE_TAG} ${REPOSITORY_API_URL}:$IMAGE_TAG"""
+                    sh """docker tag ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ${REPOSITORY_POSTGRES_URL}:$IMAGE_TAG"""
+                    sh """docker tag ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ${REPOSITORY_SWAGGER_URL}:$IMAGE_TAG"""
+                }
+            }
+        }
+
         stage('Pushing to ECR') {
             steps{  
                 script {
-                    sh """docker tag ${IMAGE_API_NAME}:${IMAGE_TAG} ${REPOSITORY_API_URL}:$IMAGE_TAG"""
-                        sh """docker push ${REPOSITORY_API_URL}:${IMAGE_TAG}"""
-                        sh """docker tag ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ${REPOSITORY_POSTGRES_URL}:$IMAGE_TAG"""
-                        sh """docker push ${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
-                        sh """docker tag ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ${REPOSITORY_SWAGGER_URL}:$IMAGE_TAG"""
-                        sh """docker push ${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
+                    sh """docker push ${REPOSITORY_API_URL}:${IMAGE_TAG}"""
+                    sh """docker push ${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
+                    sh """docker push ${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
                 }
             }
         }
