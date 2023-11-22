@@ -38,7 +38,7 @@ services:
       dockerfile: ./infrastructure/docker/swagger/Dockerfile
       context: .
     image: hermes-foods-swagger:latest
-    container_name: swagger_hermes_foods
+    container_name: swagger-hermes-foods
     env_file: ./.env
     ports:
       - '8083:8080'
