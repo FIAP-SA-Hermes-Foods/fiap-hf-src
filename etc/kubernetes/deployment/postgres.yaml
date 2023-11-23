@@ -25,7 +25,7 @@ spec:
         ports:
         - containerPort: 5432
         envFrom:
-          - secretRef:
+        - secretRef:
             name: hf-deploy-secret
 
 ---

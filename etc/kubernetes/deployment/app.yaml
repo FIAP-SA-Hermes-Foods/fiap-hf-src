@@ -22,13 +22,13 @@ spec:
       containers:
       - name: go-hermes-foods-app
         image: hermes-foods-go:latest
+        envFrom:
+        - secretRef:
+            name: hf-deploy-secret
         ports:
         - containerPort: 8080
         - containerPort: 8081
-        envFrom:
-          - secretRef:
-            name: hf-deploy-secret
-
+        
 ---
 
 # Service config
