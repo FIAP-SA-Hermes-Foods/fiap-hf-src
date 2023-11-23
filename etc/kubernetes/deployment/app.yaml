@@ -1,9 +1,9 @@
 # Deployment config
-apiVersion: dev/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hermes-foods-go-deployment
-  # namespace: dev
+  namespace: dev
   labels:
     app: hermes-foods-go-app
 
