@@ -22,6 +22,7 @@ spec:
       containers:
       - name: swagger-hermes-foods
         image: hermes-foods-swagger:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8083
         envFrom:
