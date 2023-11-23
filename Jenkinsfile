@@ -86,6 +86,7 @@ pipeline {
 
         stage('Deploy at k8s') {
             steps {
+                sh 'kubectl create namespace dev'
                 sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
                 sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
                 sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'

@@ -1,8 +1,9 @@
 # Deployment config
-apiVersion: hermes-foods-swagger/v1
+apiVersion: v1
 kind: Deployment
 metadata:
   name: hermes-foods-swagger-deployment
+  namespace: dev
   labels:
     app: hermes-foods-swagger-app
 
