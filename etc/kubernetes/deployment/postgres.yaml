@@ -1,9 +1,9 @@
 # Deployment config
-apiVersion: v1
+apiVersion: dev/v1
 kind: Deployment
 metadata:
   name: hermes-foods-postgres-deployment
-  namespace: dev
+  # namespace: dev
   labels:
     app: hermes-foods-postgres-app
 

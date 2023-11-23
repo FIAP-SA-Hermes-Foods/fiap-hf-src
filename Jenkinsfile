@@ -78,15 +78,14 @@ pipeline {
             }
         }
 
-        stage('Create Kubernetes secret from .env') {
+        stage('Kubernetes setup') {
             steps {
-                sh './infrastructure/scripts/kubernetes-secret.sh'
+                sh './infrastructure/scripts/kubernetes-config.sh'
             }
         }
 
         stage('Deploy at k8s') {
             steps {
-                sh 'kubectl create namespace dev'
                 sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
                 sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
                 sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
