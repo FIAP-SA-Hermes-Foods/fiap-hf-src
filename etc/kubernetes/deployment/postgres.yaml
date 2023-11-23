@@ -1,0 +1,44 @@
+# Deployment config
+apiVersion: hermes-foods-postgres/v1
+kind: Deployment
+metadata:
+  name: hermes-foods-postgres-deployment
+  labels:
+    app: hermes-foods-postgres-app
+
+spec:
+  replicas: 1 # It specifies how many pods do you wanna create with the specs below.
+
+  selector:
+    matchLabels:
+      app: hermes-foods-postgres-app # This label references the label that we specified in line 7, bcz it maches from deployment label.
+
+  template:
+    metadata:
+      labels:
+        app: hermes-foods-postgres-app
+    spec:
+      containers:
+      - name: postgresql-hermes-foods
+        image: hermes-foods-postgres:latest
+        ports:
+        - containerPort: 5432
+        envFrom:
+          - secretRef:
+            name: hf-deploy-secret
+
+---
+
+# Service config
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-foods-postgres-service
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: hermes-foods-postgres-app # It should be the same label as we defined in deployment config, so it belongs to "hermes-foods-postgres-app".
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432 # The same as container port defined in deployment

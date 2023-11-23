@@ -39,13 +39,7 @@ pipeline {
                 sh """git secret reveal -p '${GPG_PASSWORD}'"""
                 sh """git secret cat .env > .env"""
             }
-        }
-
-        stage('Export envs') {
-            steps {
-                sh """export \$(grep -v '^#' .env | xargs)"""
-            }
-        }
+        } 
 
         stage('Create docker network') {
             steps {
@@ -81,6 +75,21 @@ pipeline {
                     sh """docker push ${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
                     sh """docker push ${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
                 }
+            }
+        }
+
+        stage('Create Kubernetes secret from .env') {
+            steps {
+                sh 'kubectl create secret generic hf-deploy-secret --from-env-file=.env'
+            }
+        }
+
+        stage('Deploy at k8s') {
+            steps {
+                sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
+                sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
+                sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
+                sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
             }
         }
     }
