@@ -80,7 +80,7 @@ pipeline {
 
         stage('Create Kubernetes secret from .env') {
             steps {
-                sh 'kubectl create secret generic hf-deploy-secret --from-env-file=.env'
+                sh './infrastructure/scripts/kubernetes-secret.sh'
             }
         }
 
