@@ -103,6 +103,7 @@ pipeline {
         stage('Deploy at k8s') { 
             steps{ 
                 script {
+                    sh '. $HOME/envs/.env'
                     sh 'echo $AWS_REGISTRY_API_URL'
                     sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
                     sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
