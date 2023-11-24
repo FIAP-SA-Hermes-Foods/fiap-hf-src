@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: go-hermes-foods-app
-        image: ${AWS_REGISTRY_API_URL}
+        image: "${REPOSITORY_API_URL}:${IMAGE_TAG}"
         imagePullPolicy: IfNotPresent
         envFrom:
         - secretRef:

@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: swagger-hermes-foods
-        image: ${AWS_REGISTRY_SWAGGER_URL}
+        image: "${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8083
