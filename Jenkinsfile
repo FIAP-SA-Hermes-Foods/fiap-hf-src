@@ -1,22 +1,22 @@
 pipeline {
     agent any
-    environment {
-        AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
-        AWS_DEFAULT_REGION = credentials('AWS_DEFAULT_REGION')
+        environment {
+            AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
+            AWS_DEFAULT_REGION = credentials('AWS_DEFAULT_REGION')
 
-        IMAGE_API_NAME = credentials('IMAGE_API_NAME')
-        IMAGE_POSTGRES_NAME = credentials('IMAGE_POSTGRES_NAME')
-        IMAGE_SWAGGER_NAME = credentials('IMAGE_SWAGGER_NAME')
-        IMAGE_TAG= "latest"
+            IMAGE_API_NAME = credentials('IMAGE_API_NAME')
+            IMAGE_POSTGRES_NAME = credentials('IMAGE_POSTGRES_NAME')
+            IMAGE_SWAGGER_NAME = credentials('IMAGE_SWAGGER_NAME')
+            IMAGE_TAG= "latest"
 
-        REPOSITORY_API_URL = credentials('ECR_API_URL')
-        REPOSITORY_POSTGRES_URL = credentials('ECR_POSTGRES_URL')
-        REPOSITORY_SWAGGER_URL = credentials('ECR_SWAGGER_URL')
+            REPOSITORY_API_URL = credentials('ECR_API_URL')
+            REPOSITORY_POSTGRES_URL = credentials('ECR_POSTGRES_URL')
+            REPOSITORY_SWAGGER_URL = credentials('ECR_SWAGGER_URL')
 
-        GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
-        GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
-        GPG_PASSWORD = credentials("GPG_SECRET_PASSWORD")
-    }
+            GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
+            GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
+            GPG_PASSWORD = credentials("GPG_SECRET_PASSWORD")
+        }
 
     stages { 
         stage('Logging into AWS ECR') {
@@ -39,11 +39,11 @@ pipeline {
                 sh """git secret reveal -p '${GPG_PASSWORD}'"""
                 sh """git secret cat .env > .env"""
                 sh """#!/bin/bash
-                    if [ -d $HOME/envs ]; then 
-                        echo ""
-                    else
-                        mkdir $HOME/envs
-                    fi
+                if [ -d $HOME/envs ]; then 
+                    echo ""
+                else
+                    mkdir $HOME/envs
+                        fi
                 """
                 sh """git secret cat .env > $HOME/envs/.env"""
             }
@@ -91,16 +91,17 @@ pipeline {
                 sh './infrastructure/scripts/kubernetes-config.sh'
             }
         }
- 
+
         stage('Deploy at k8s') { 
-                script {
-                        sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
-                        sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
-                        sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
-                        sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
-                    }
-                }
+            script {
+                sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
+                sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
+                sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
+                sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
             }
-        }    
+        }
     }
+}    
+    
+
 
