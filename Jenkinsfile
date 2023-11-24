@@ -114,6 +114,7 @@ pipeline {
                     sh '. $HOME/envs/.env.export'
                 }
             }
+        }
 
         stage('Deploy at k8s') {
             steps { 
@@ -125,6 +126,6 @@ pipeline {
                     }
                 }
             }
-        }
+        }    
     }
 }
