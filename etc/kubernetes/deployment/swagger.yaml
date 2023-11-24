@@ -28,6 +28,8 @@ spec:
         envFrom:
         - secretRef:
             name: hf-deploy-secret
+      imagePullSecrets:
+      - name: hfregcred
 
 ---
 

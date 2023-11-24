@@ -16,6 +16,11 @@ pipeline {
             GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
             GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
             GPG_PASSWORD = credentials("GPG_SECRET_PASSWORD")
+
+            AWS_ECR_URL = credentials("AWS_ECR_URL")
+            AWS_ECR_USERNAME = credentials("AWS_ECR_USERNAME")
+            AWS_ECR_PASSWORD = credentials("AWS_ECR_PASSWORD")
+            AWS_ECR_EMAIL = credentials("AWS_ECR_EMAIL")
         }
 
     stages { 
@@ -95,7 +100,7 @@ pipeline {
         stage('Kubernetes setup') {
             steps {
                 script {
-                    sh './infrastructure/scripts/kubernetes-config.sh'
+                    sh """./infrastructure/scripts/kubernetes-config.sh ${AWS_ECR_URL} ${AWS_ECR_USERNAME} ${AWS_ECR_PASSWORD} ${AWS_ECR_EMAIL}"""
                 }
             }
         }
