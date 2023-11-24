@@ -29,29 +29,35 @@ pipeline {
 
         stage('Import secrets from git-secrets') { 
             steps {
-                sh """gpg --batch --import ${GPG_SECRET_KEY}"""
-                sh """gpg --import-ownertrust ${GPG_OWNER_TRUST}"""
+                script{ 
+                    sh """gpg --batch --import ${GPG_SECRET_KEY}"""
+                    sh """gpg --import-ownertrust ${GPG_OWNER_TRUST}"""
+                }
             }
         }
 
         stage('Create .env') {
             steps {
-                sh """git secret reveal -p '${GPG_PASSWORD}'"""
-                sh """git secret cat .env > .env"""
-                sh """#!/bin/bash
-                if [ -d $HOME/envs ]; then 
-                    echo ""
-                else
-                    mkdir $HOME/envs
-                        fi
-                """
-                sh """git secret cat .env > $HOME/envs/.env"""
+                script { 
+                    sh """git secret reveal -p '${GPG_PASSWORD}'"""
+                    sh """git secret cat .env > .env"""
+                    sh """#!/bin/bash
+                    if [ -d $HOME/envs ]; then 
+                        echo ""
+                    else
+                        mkdir $HOME/envs
+                            fi
+                    """
+                    sh """git secret cat .env > $HOME/envs/.env"""
+                }
             }
         } 
 
         stage('Create docker network') {
             steps {
-                sh './infrastructure/scripts/docker-network.sh'
+                script{ 
+                    sh './infrastructure/scripts/docker-network.sh'
+                }
             }
         }
 
@@ -88,16 +94,20 @@ pipeline {
 
         stage('Kubernetes setup') {
             steps {
-                sh './infrastructure/scripts/kubernetes-config.sh'
+                script {
+                    sh './infrastructure/scripts/kubernetes-config.sh'
+                }
             }
         }
 
         stage('Deploy at k8s') { 
-            script {
-                sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
-                sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
-                sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
-                sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+            steps{ 
+                script {
+                    sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
+                    sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
+                    sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
+                    sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+                }
             }
         }
     }
