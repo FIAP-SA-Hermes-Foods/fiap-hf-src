@@ -21,8 +21,8 @@ spec:
     spec:
       containers:
       - name: go-hermes-foods-app
-        image: hermes-foods-go:latest
-        imagePullPolicy: Never
+        image: ${.data.AWS_REGISTRY_URL}/hermes-foods-go:latest
+        # imagePullPolicy: Never
         envFrom:
         - secretRef:
             name: hf-deploy-secret

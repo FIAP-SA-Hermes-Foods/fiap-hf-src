@@ -21,8 +21,8 @@ spec:
     spec:
       containers:
       - name: swagger-hermes-foods
-        image: hermes-foods-swagger:latest
-        imagePullPolicy: Never
+        image: ${.data.AWS_REGISTRY_URL}/hermes-foods-swagger:latest
+        # imagePullPolicy: Never
         ports:
         - containerPort: 8083
         envFrom:
