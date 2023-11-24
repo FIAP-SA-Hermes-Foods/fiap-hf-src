@@ -38,6 +38,7 @@ pipeline {
             steps {
                 sh """git secret reveal -p '${GPG_PASSWORD}'"""
                 sh """git secret cat .env > .env"""
+                sh 'cat .env > $HOME/envs/.env'
             }
         } 
 
@@ -88,26 +89,24 @@ pipeline {
             steps { 
                 script {
                     sh '''#!/bin/bash
-                        if [ -f .env ]; then
-                            cp -f .env $HOME/envs
-
-                            if [ -f $HOME/envs/.env.export ]; then 
-                                rm -f $HOME/envs/.env.export
-                            fi
-          
-                            cat $HOME/envs/.env | while read LINE; do
-                                if [[ $LINE == \\#* ]]; then
-                                    continue
-                                fi
-                                export $LINE
-                                echo "export $LINE" >> $HOME/envs/.env.export
-                            done
+                        if [ -f $HOME/envs/.env.export ]; then 
+                            rm -f $HOME/envs/.env.export
                         fi
+          
+                        cat $HOME/envs/.env | while read LINE; do
+                            if [[ $LINE == \\#* ]]; then
+                                continue
+                            fi
+                            export $LINE
+                            echo "export $LINE" >> $HOME/envs/.env.export
+                        done
                     '''
                 }
+
                 script{ 
                     sh '. $HOME/envs/.env.export'
                 }
+
                 script {
                         sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
                         sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
