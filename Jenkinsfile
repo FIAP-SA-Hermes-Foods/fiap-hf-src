@@ -38,6 +38,11 @@ pipeline {
             steps {
                 sh """git secret reveal -p '${GPG_PASSWORD}'"""
                 sh """git secret cat .env > .env"""
+                sh '''#!/bin/bash
+                    if [ ! -d $HOME/envs ]; then 
+                        mkdir $HOME/envs
+                    fi
+                '''
                 sh """git secret cat .env > $HOME/envs/.env"""
             }
         } 
