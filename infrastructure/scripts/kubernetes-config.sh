@@ -21,7 +21,7 @@ else
     kubectl create namespace dev
 fi
 
-if [ -z "$OUT_KUBE_GET_REG_SECRET" -a "$OUT_KUBE_GET_REG_SECRET" != " "]; then
+if [ ! -z "$OUT_KUBE_GET_REG_SECRET" -a "$OUT_KUBE_GET_REG_SECRET" != " " ]; then
     echo "registry secret already exists, skipping..."
 else
     kubectl create secret docker-registry hfregcred --docker-server="$KUBE_REG_SERVER" --docker-username="$KUBE_REG_USERNAME" --docker-password="$KUBE_REG_PASSWORD" --docker-email="$KUBE_REG_EMAIL"
