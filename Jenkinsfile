@@ -83,9 +83,9 @@ pipeline {
                 sh './infrastructure/scripts/kubernetes-config.sh'
             }
         }
-
-        stage('set environments') {
-            steps {
+ 
+        stage('Deploy at k8s') {
+            steps { 
                 script {
                     sh '''#!/bin/bash
                         if [ -f .env ]; then
@@ -105,24 +105,14 @@ pipeline {
                         fi
                     '''
                 }
-            }
-        }
-        
-        stage('sourcing...') {
-            steps {
                 script{ 
                     sh '. $HOME/envs/.env.export'
                 }
-            }
-        }
-
-        stage('Deploy at k8s') {
-            steps { 
                 script {
-                    sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
-                    sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
-                    sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
-                    sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+                        sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
+                        sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
+                        sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
+                        sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
                     }
                 }
             }
