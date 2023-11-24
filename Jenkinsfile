@@ -87,9 +87,9 @@ pipeline {
         stage('Deploy at k8s') {
             steps {
                 script {
-                    sh """kubectl run ${IMAGE_API_NAME}:${IMAGE_TAG} --image=${REPOSITORY_API_URL}:${IMAGE_TAG}"""
-                    sh """kubectl run ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} --image=${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
-                    sh """kubectl run ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} --image=${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
+                    sh """kubectl run ${IMAGE_API_NAME} --image=${REPOSITORY_API_URL}:${IMAGE_TAG}"""
+                    sh """kubectl run ${IMAGE_POSTGRES_NAME} --image=${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
+                    sh """kubectl run ${IMAGE_SWAGGER_NAME} --image=${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
                 }
 
                 script {
