@@ -21,8 +21,8 @@ spec:
     spec:
       containers:
       - name: postgresql-hermes-foods
-        image: hermes-foods-postgres:latest
-        # imagePullPolicy: Never
+        image: ${AWS_REGISTRY_POSTGRES_URL}
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5432
         envFrom:

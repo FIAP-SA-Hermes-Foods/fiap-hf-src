@@ -84,14 +84,39 @@ pipeline {
             }
         }
 
-        stage('Deploy at k8s') {
+        stage('set environments') {
             steps {
                 script {
-                    sh """kubectl run ${IMAGE_API_NAME} --image=${REPOSITORY_API_URL}:${IMAGE_TAG}"""
-                    sh """kubectl run ${IMAGE_POSTGRES_NAME} --image=${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
-                    sh """kubectl run ${IMAGE_SWAGGER_NAME} --image=${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
-                }
+                    sh '''#!/bin/bash
+                        if [ -f .env ]; then
+                            cp -f .env $HOME/envs
 
+                            if [ -f $HOME/envs/.env.export ]; then 
+                                rm -f $HOME/envs/.env.export
+                            fi
+          
+                            cat $HOME/envs/.env | while read LINE; do
+                                if [[ $LINE == \\#* ]]; then
+                                    continue
+                                fi
+                                export $LINE
+                                echo "export $LINE" >> $HOME/envs/.env.export
+                            done
+                        fi
+                    '''
+                } 
+            }
+        }
+        
+        stage('sourcing...') {
+            steps {
+                script{ 
+                    sh '. $HOME/envs/.env.export'
+                }
+            }
+
+        stage('Deploy at k8s') {
+            steps { 
                 script {
                     sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
                     sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
