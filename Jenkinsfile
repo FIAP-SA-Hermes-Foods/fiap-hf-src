@@ -86,10 +86,18 @@ pipeline {
 
         stage('Deploy at k8s') {
             steps {
-                sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
-                sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
-                sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
-                sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+                script {
+                    sh """kubectl create pod ${IMAGE_API_NAME}:${IMAGE_TAG} --image=${REPOSITORY_API_URL}:${IMAGE_TAG}"""
+                    sh """kubectl create pod ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} --image=${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"""
+                    sh """kubectl create pod ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} --image=${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}"""
+                }
+
+                script {
+                    sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
+                    sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
+                    sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
+                    sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+                }
             }
         }
     }
