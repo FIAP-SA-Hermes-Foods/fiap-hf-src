@@ -43,7 +43,7 @@ pipeline {
 
         stage('Create docker network') {
             steps {
-                sh './infrastructure/scripts/docker-network.sh'    
+                sh './infrastructure/scripts/docker-network.sh'
             }
         }
 
@@ -104,7 +104,7 @@ pipeline {
                             done
                         fi
                     '''
-                } 
+                }
             }
         }
         
@@ -122,6 +122,7 @@ pipeline {
                     sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
                     sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
                     sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+                    }
                 }
             }
         }
