@@ -92,28 +92,7 @@ pipeline {
             }
         }
  
-        stage('Deploy at k8s') {
-            steps { 
-                script {
-                    sh '''#!/bin/bash
-                        if [ -f $HOME/envs/.env.export ]; then 
-                            rm -f $HOME/envs/.env.export
-                        fi
-          
-                        cat $HOME/envs/.env | while read LINE; do
-                            if [[ $LINE == \\#* ]]; then
-                                continue
-                            fi
-                            export $LINE
-                            echo "export $LINE" >> $HOME/envs/.env.export
-                        done
-                    '''
-                }
-
-                script{ 
-                    sh '. $HOME/envs/.env.export'
-                }
-
+        stage('Deploy at k8s') { 
                 script {
                         sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
                         sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
