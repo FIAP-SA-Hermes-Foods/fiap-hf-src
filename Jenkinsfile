@@ -100,15 +100,21 @@ pipeline {
             }
         }
 
-        stage('Deploy at k8s') { 
-            steps{ 
-                script {
-                    sh '. $HOME/envs/.env'
-                    sh 'echo $AWS_REGISTRY_API_URL'
-                    sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
-                    sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
-                    sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
-                    sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+        node {
+              withEnv(['AWS_REGISTRY_API_URL=${REPOSITORY_API_URL}:${IMAGE_TAG}',
+                   'AWS_REGISTRY_POSTGRES_URL=${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}',
+                   'AWS_REGISTRY_SWAGGER_URL=${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}']) {
+                stage('Deploy at k8s') { 
+                    steps{ 
+                        script {
+                            sh '. $HOME/envs/.env'
+                            sh 'echo $AWS_REGISTRY_API_URL'
+                            sh 'kubectl apply -f ./etc/kubernetes/config/postgres.yaml'
+                            sh 'kubectl apply -f ./etc/kubernetes/deployment/app.yaml'
+                            sh 'kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml'
+                            sh 'kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml'
+                        }
+                    }
                 }
             }
         }
