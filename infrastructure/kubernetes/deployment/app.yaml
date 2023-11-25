@@ -8,11 +8,11 @@ metadata:
     app: hermes-foods-go-app
 
 spec:
-  replicas: 1 # It specifies how many pods do you wanna create with the specs below.
+  replicas: 1 
 
   selector:
     matchLabels:
-      app: hermes-foods-go-app # This label references the label that we specified in line 7, bcz it maches from deployment label.
+      app: hermes-foods-go-app 
 
   template:
     metadata:
@@ -44,16 +44,16 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app.kubernetes.io/name: hermes-foods-go-app # It should be the same label as we defined in deployment config, so it belongs to "hermes-foods-go-app".
+    app.kubernetes.io/name: hermes-foods-go-app 
 
   ports:
     - protocol: TCP
       name: go-api-port
       port: 8080
-      targetPort: 8080 # The same as container port defined in deployment
+      targetPort: 8080 
       nodePort: 30800
     - protocol: TCP
       name: api-fake-mp-port
       port: 8081
-      targetPort: 8081 # The same as container port defined in deployment
+      targetPort: 8081 
       nodePort: 30801

@@ -8,11 +8,11 @@ metadata:
     app: hermes-foods-postgres-app
 
 spec:
-  replicas: 1 # It specifies how many pods do you wanna create with the specs below.
+  replicas: 1 
 
   selector:
     matchLabels:
-      app: hermes-foods-postgres-app # This label references the label that we specified in line 7, bcz it maches from deployment label.
+      app: hermes-foods-postgres-app 
 
   template:
     metadata:
@@ -43,9 +43,9 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/name: hermes-foods-postgres-app # It should be the same label as we defined in deployment config, so it belongs to "hermes-foods-postgres-app".
+    app.kubernetes.io/name: hermes-foods-postgres-app 
 
   ports:
     - protocol: TCP
       port: 5432
-      targetPort: 5432 # The same as container port defined in deployment
+      targetPort: 5432 
