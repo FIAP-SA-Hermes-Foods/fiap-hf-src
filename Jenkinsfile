@@ -109,10 +109,10 @@ pipeline {
             steps{ 
                 script {
                     sh """echo ${REPOSITORY_API_URL}:${IMAGE_TAG}"""
-                    sh """kubectl apply -f ./etc/kubernetes/config/postgres.yaml"""
-                    sh """kubectl apply -f ./etc/kubernetes/deployment/app.yaml"""
-                    sh """kubectl apply -f ./etc/kubernetes/deployment/postgres.yaml"""
-                    sh """kubectl apply -f ./etc/kubernetes/deployment/swagger.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml"""
                 }
             }
         }
