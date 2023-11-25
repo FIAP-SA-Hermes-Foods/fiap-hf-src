@@ -27,11 +27,11 @@ else
     kubectl create secret docker-registry hfregcred --docker-server="$KUBE_REG_SERVER" --docker-username="$KUBE_REG_USERNAME" --docker-password="$KUBE_REG_PASSWORD" --docker-email="$KUBE_REG_EMAIL" --namespace=dev
 fi
 
-sed -i s/{{REPOSITORY_API_URL}}/$REPOSITORY_API_URL/g ./etc/kubernetes/deployment/app.yaml
-sed -i s/{{IMAGE_TAG}}/$IMAGE_TAG/g ./etc/kubernetes/deployment/app.yaml
+sed -i "s/{{REPOSITORY_API_URL}}/$REPOSITORY_API_URL/g" ./etc/kubernetes/deployment/app.yaml
+sed -i "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" ./etc/kubernetes/deployment/app.yaml
 
-sed -i s/{{REPOSITORY_POSTGRES_URL}}/$REPOSITORY_POSTGRES_URL/g ./etc/kubernetes/deployment/postgres.yaml
-sed -i s/{{IMAGE_TAG}}/$IMAGE_TAG/g ./etc/kubernetes/deployment/postgres.yaml
+sed -i "s/{{REPOSITORY_POSTGRES_URL}}/$REPOSITORY_POSTGRES_URL/g" ./etc/kubernetes/deployment/postgres.yaml
+sed -i "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" ./etc/kubernetes/deployment/postgres.yaml
 
-sed -i s/{{REPOSITORY_SWAGGER_URL}}/$REPOSITORY_SWAGGER_URL/g ./etc/kubernetes/deployment/swagger.yaml
-sed -i s/{{REPOSITORY_SWAGGER_URL}}/$REPOSITORY_SWAGGER_URL/g ./etc/kubernetes/deployment/swagger.yaml
+sed -i "s/{{REPOSITORY_SWAGGER_URL}}/$REPOSITORY_SWAGGER_URL/g" ./etc/kubernetes/deployment/swagger.yaml
+sed -i "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" ./etc/kubernetes/deployment/swagger.yaml
