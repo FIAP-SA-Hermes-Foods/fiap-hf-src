@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: postgresql-hermes-foods
-        image: "${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}"
+        image: "{{REPOSITORY_POSTGRES_URL}}:{{IMAGE_TAG}}"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5432
