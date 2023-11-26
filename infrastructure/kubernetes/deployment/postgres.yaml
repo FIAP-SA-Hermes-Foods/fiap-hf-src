@@ -1,0 +1,51 @@
+# Deployment config
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-foods-postgres-deployment
+  namespace: dev
+  labels:
+    app: hermes-foods-postgres-app
+
+spec:
+  replicas: 1 
+
+  selector:
+    matchLabels:
+      app: hermes-foods-postgres-app 
+
+  template:
+    metadata:
+      labels:
+        app: hermes-foods-postgres-app
+    spec:
+      containers:
+      - name: postgresql-hermes-foods
+        image: "{{REPOSITORY_POSTGRES_URL}}:{{IMAGE_TAG}}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: hf-deploy-secret
+      imagePullSecrets:
+      - name: hfregcred
+
+---
+
+# Service config
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-foods-postgres-service
+  namespace: dev
+
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: hermes-foods-postgres-app 
+
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432 

@@ -1,0 +1,52 @@
+# Deployment config
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-foods-swagger-deployment
+  namespace: dev
+  labels:
+    app: hermes-foods-swagger-app
+
+spec:
+  replicas: 1 
+
+  selector:
+    matchLabels:
+      app: hermes-foods-swagger-app 
+
+  template:
+    metadata:
+      labels:
+        app: hermes-foods-swagger-app
+    spec:
+      containers:
+      - name: swagger-hermes-foods
+        image: "{{REPOSITORY_SWAGGER_URL}}:{{IMAGE_TAG}}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8083
+        envFrom:
+        - secretRef:
+            name: hf-deploy-secret
+      imagePullSecrets:
+      - name: hfregcred
+
+---
+
+# Service config
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-foods-swagger-service
+  namespace: dev
+
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: hermes-foods-swagger-app 
+
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8083 
+      nodePort: 30803

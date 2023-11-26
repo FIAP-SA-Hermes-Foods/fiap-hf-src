@@ -1,22 +1,27 @@
 pipeline {
     agent any
-    environment {
-        AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
-        AWS_DEFAULT_REGION = credentials('AWS_DEFAULT_REGION')
+        environment {
+            AWS_ACCOUNT_ID = credentials('AWS_ACCOUNT_ID')
+            AWS_DEFAULT_REGION = credentials('AWS_DEFAULT_REGION')
 
-        IMAGE_API_NAME = credentials('IMAGE_API_NAME')
-        IMAGE_POSTGRES_NAME = credentials('IMAGE_POSTGRES_NAME')
-        IMAGE_SWAGGER_NAME = credentials('IMAGE_SWAGGER_NAME')
-        IMAGE_TAG= "latest"
+            IMAGE_API_NAME = credentials('IMAGE_API_NAME')
+            IMAGE_POSTGRES_NAME = credentials('IMAGE_POSTGRES_NAME')
+            IMAGE_SWAGGER_NAME = credentials('IMAGE_SWAGGER_NAME')
+            IMAGE_TAG= "latest"
 
-        REPOSITORY_API_URL = credentials('ECR_API_URL')
-        REPOSITORY_POSTGRES_URL = credentials('ECR_POSTGRES_URL')
-        REPOSITORY_SWAGGER_URL = credentials('ECR_SWAGGER_URL')
+            REPOSITORY_API_URL = credentials('ECR_API_URL')
+            REPOSITORY_POSTGRES_URL = credentials('ECR_POSTGRES_URL')
+            REPOSITORY_SWAGGER_URL = credentials('ECR_SWAGGER_URL')
 
-        GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
-        GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
-        GPG_PASSWORD = credentials("GPG_SECRET_PASSWORD")
-    }
+            GPG_SECRET_KEY = credentials("GPG_SECRET_KEY")
+            GPG_OWNER_TRUST = credentials("GPG_OWNER_TRUST")
+            GPG_PASSWORD = credentials("GPG_SECRET_PASSWORD")
+
+            AWS_ECR_URL = credentials("AWS_ECR_URL")
+            AWS_ECR_USERNAME = credentials("AWS_ECR_USERNAME")
+            AWS_ECR_PASSWORD = credentials("AWS_ECR_PASSWORD")
+            AWS_ECR_EMAIL = credentials("AWS_ECR_EMAIL")
+        }
 
     stages { 
         stage('Logging into AWS ECR') {
@@ -29,27 +34,35 @@ pipeline {
 
         stage('Import secrets from git-secrets') { 
             steps {
-                sh """gpg --batch --import ${GPG_SECRET_KEY}"""
-                sh """gpg --import-ownertrust ${GPG_OWNER_TRUST}"""
+                script{ 
+                    sh """gpg --batch --import ${GPG_SECRET_KEY}"""
+                    sh """gpg --import-ownertrust ${GPG_OWNER_TRUST}"""
+                }
             }
         }
 
         stage('Create .env') {
             steps {
-                sh """git secret reveal -p '${GPG_PASSWORD}'"""
-                sh """git secret cat .env > .env"""
+                script { 
+                    sh """git secret reveal -p '${GPG_PASSWORD}'"""
+                    sh """git secret cat .env > .env"""
+                    sh """#!/bin/bash
+                    if [ -d $HOME/envs ]; then 
+                        echo ""
+                    else
+                        mkdir $HOME/envs
+                            fi
+                    """
+                    sh """git secret cat .env > $HOME/envs/.env"""
+                }
             }
-        }
-
-        stage('Export envs') {
-            steps {
-                sh """export \$(grep -v '^#' .env | xargs)"""
-            }
-        }
+        } 
 
         stage('Create docker network') {
             steps {
-                sh './infrastructure/scripts/docker-network.sh'    
+                script{ 
+                    sh './infrastructure/scripts/docker-network.sh'
+                }
             }
         }
 
@@ -83,5 +96,27 @@ pipeline {
                 }
             }
         }
+
+        stage('Kubernetes setup') {
+            steps {
+                script {
+                    sh """./infrastructure/scripts/kubernetes-config.sh ${AWS_ECR_URL} ${AWS_ECR_USERNAME} ${AWS_ECR_PASSWORD} ${AWS_ECR_EMAIL}"""
+                }
+            }
+        }
+
+        stage('Deploy at k8s') { 
+            steps{ 
+                script {
+                    sh """kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml"""
+                }
+            }
+        }
     }
-}
+}      
+    
+
+
