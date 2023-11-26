@@ -108,7 +108,6 @@ pipeline {
         stage('Deploy at k8s') { 
             steps{ 
                 script {
-                    sh """echo ${REPOSITORY_API_URL}:${IMAGE_TAG}"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml"""
