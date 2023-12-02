@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	l "fiap-hf-src/infrastructure/logger"
 	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
@@ -82,13 +83,16 @@ func (c clientRepository) GetClientByCPF(cpf string) (*entity.Client, error) {
 
 func (c clientRepository) SaveClient(client entity.Client) (*entity.Client, error) {
 
-	if err := c.Database.Connect(); err != nil {
+	err := c.Database.Connect()
+	if err != nil {
+		l.Errorf("SaveClient connect error:", err)
 		return nil, err
 	}
 
 	defer c.Database.Close()
 
 	if err := c.Database.PrepareStmt(querySaveClient); err != nil {
+		l.Errorf("SaveClient error to connect database: ", err)
 		return nil, err
 	}
 
@@ -105,6 +109,7 @@ func (c clientRepository) SaveClient(client entity.Client) (*entity.Client, erro
 	c.Database.QueryRow(client.Name, client.CPF.Value, client.Email)
 
 	if err := c.Database.ScanStmt(&outClient.ID, &outClient.CreatedAt.Value); err != nil {
+		l.Errorf("SaveClient error to scan database: ", err)
 		return nil, err
 	}
 
