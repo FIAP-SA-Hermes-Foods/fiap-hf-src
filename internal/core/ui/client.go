@@ -24,6 +24,14 @@ func NewHandlerClient(app application.HermesFoodsApp) HandlerClient {
 }
 
 func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
+	apiHToken := req.Header.Get("Auth-token")
+
+	if err := tokenValidate(apiHToken); err != nil {
+		rw.WriteHeader(http.StatusUnauthorized)
+		rw.Write([]byte(`{"error": "not authorized"} `))
+		return
+	}
+
 	rw.Header().Add("Access-Control-Allow-Origin", "*")
 	rw.Header().Add("Access-Control-Allow-Credentials", "true")
 	rw.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
