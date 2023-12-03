@@ -23,9 +23,8 @@ func Test_Logger(t *testing.T) {
 		b, err := json.Marshal(marty)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
 		Info(string(b))
 	})
 
@@ -33,19 +32,17 @@ func Test_Logger(t *testing.T) {
 		b, err := json.Marshal(marty)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
-		Infof(string(b), marty.Name, marty.Age)
+		Infof("out: ", " | ", string(b), marty.Name, marty.Age)
 	})
 
 	t.Run("testing DEBUG", func(*testing.T) {
 		b, err := json.Marshal(doc)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
 		Debug(string(b))
 	})
 
@@ -53,19 +50,17 @@ func Test_Logger(t *testing.T) {
 		b, err := json.Marshal(doc)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
-		Debugf(string(b), doc.Name, doc.Age, doc.Line)
+		Debugf("out: ", " | ", string(b), doc.Name, doc.Age, doc.Line)
 	})
 
 	t.Run("testing WARNING", func(*testing.T) {
 		b, err := json.Marshal(einstein)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
 		Warning(string(b))
 	})
 
@@ -73,17 +68,16 @@ func Test_Logger(t *testing.T) {
 		b, err := json.Marshal(einstein)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
-		Warningf(string(b), einstein.Name, einstein.Age, einstein.Line)
+		Warningf("out: ", " | ", string(b), einstein.Name, einstein.Age, einstein.Line)
 	})
 
 	t.Run("testing ERROR", func(*testing.T) {
 		b, err := json.Marshal(biff)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
 
 		Error(string(b))
@@ -93,9 +87,8 @@ func Test_Logger(t *testing.T) {
 		b, err := json.Marshal(biff)
 
 		if err != nil {
-			Errorf("error: ", err)
+			Errorf("error: ", " | ", err)
 		}
-
-		Errorf(string(b), biff.Name, biff.Age, biff.Line)
+		Errorf("out: ", " | ", string(b), biff.Name, biff.Age, biff.Line)
 	})
 }
