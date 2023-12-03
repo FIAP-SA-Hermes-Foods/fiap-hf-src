@@ -7,75 +7,81 @@ import (
 )
 
 const (
-	LogLevels = iota * 2
-	INFO
-	DEBUG
-	DIEBUG
-	WARNING
-	ERROR
+	logLevels = iota * 2
+	infoLevel
+	debugLevel
+	diebugLevel
+	warningLevel
+	errorLevel
 )
 
-var (
-	logLevelsMap = map[int]string{
-		INFO:    "INFO",
-		DEBUG:   "DEBUG",
-		DIEBUG:  "DIEBUG",
-		WARNING: "WARNING",
-		ERROR:   "ERROR",
-	}
-)
-
-func Info(message string) {
-	generateLog(INFO, message, nil)
+var logLevelsMap = map[int]string{
+	infoLevel:    "INFO",
+	debugLevel:   "DEBUG",
+	diebugLevel:  "DIEBUG",
+	warningLevel: "WARNING",
+	errorLevel:   "ERROR",
 }
 
-func Infof(message string, data ...interface{}) {
-	generateLog(INFO, message, data...)
+func Info(message string) {
+	generateLog(infoLevel, message, "", nil)
+}
+
+func Infof(message string, separator string, data ...interface{}) {
+	generateLog(infoLevel, message, separator, data...)
 }
 
 func Debug(message string) {
-	generateLog(DEBUG, message, nil)
+	generateLog(debugLevel, message, "", nil)
 }
 
-func Debugf(message string, data ...interface{}) {
-	generateLog(DEBUG, message, data...)
+func Debugf(message string, separator string, data ...interface{}) {
+	generateLog(debugLevel, message, separator, data...)
 }
 
 func Diebug(message string) {
-	generateLog(DIEBUG, message, nil)
+	generateLog(diebugLevel, message, "", nil)
 }
 
-func Diebugf(message string, data ...interface{}) {
-	generateLog(DIEBUG, message, data...)
+func Diebugf(message string, separator string, data ...interface{}) {
+	generateLog(diebugLevel, message, separator, data...)
 }
 
 func Warning(message string) {
-	generateLog(WARNING, message, nil)
+	generateLog(warningLevel, message, "", nil)
 }
 
-func Warningf(message string, data ...interface{}) {
-	generateLog(WARNING, message, data...)
+func Warningf(message string, separator string, data ...interface{}) {
+	generateLog(warningLevel, message, separator, data...)
 }
 
 func Error(message string) {
-	generateLog(ERROR, message, nil)
+	generateLog(errorLevel, message, "", nil)
 }
 
-func Errorf(message string, data ...interface{}) {
-	generateLog(ERROR, message, data...)
+func Errorf(message string, separator string, data ...interface{}) {
+	generateLog(errorLevel, message, separator, data...)
 }
 
-func generateLog(level int, message string, data ...interface{}) {
+// message: %s separator %s
+// out: {} | 200
+
+func generateLog(level int, message string, separator string, data ...interface{}) {
 	var (
 		msgStrWithData string
-		logPrint       = fmt.Sprintf(`\e%s[%s]\e[0m message: %s`, colorByLabel(level), logLevelsMap[level], message)
+		logPrint       = fmt.Sprintf(`\e%s[%s]\e[0m %s`, colorByLabel(level), logLevelsMap[level], message)
 	)
 
 	for index, v := range data {
 		if v != nil {
-			msgStrWithData = fmt.Sprintf("%s | %v", msgStrWithData, v)
+
+			if index == 0 {
+				msgStrWithData = fmt.Sprintf("%s%v", msgStrWithData, v)
+			} else {
+				msgStrWithData = fmt.Sprintf("%s%s%v", msgStrWithData, separator, v)
+			}
 			if index == len(data)-1 {
-				msgStrWithData = msgStrWithData + " |"
+				msgStrWithData = msgStrWithData + separator
 			}
 		}
 	}
@@ -88,7 +94,7 @@ func generateLog(level int, message string, data ...interface{}) {
 		Error(err.Error())
 	}
 
-	if level == DIEBUG {
+	if level == diebugLevel {
 		log.Fatal(string(out))
 	}
 
@@ -97,15 +103,15 @@ func generateLog(level int, message string, data ...interface{}) {
 
 func colorByLabel(level int) string {
 	switch level {
-	case INFO:
+	case infoLevel:
 		return "[32m"
-	case DEBUG:
+	case debugLevel:
 		return "[36m"
-	case DIEBUG:
+	case diebugLevel:
 		return "[36m"
-	case WARNING:
+	case warningLevel:
 		return "[33m"
-	case ERROR:
+	case errorLevel:
 		return "[31m"
 	default:
 		return "[37m"
