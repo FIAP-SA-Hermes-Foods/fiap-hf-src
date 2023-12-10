@@ -28,8 +28,17 @@ spec:
         envFrom:
         - secretRef:
             name: hf-deploy-secret
+        volumeMounts:
+        - name: shared
+          mountPath: /docker-entrypoint-initdb.d/init-database.sh
+
       imagePullSecrets:
       - name: hfregcred
+
+      volumes:
+      - name: shared
+        persistentVolumeClaim:
+          claimName: hf-pv-claim-postgres
 
 ---
 

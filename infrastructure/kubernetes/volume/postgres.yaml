@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hf-pv-postgres
+  labels:
+    name: hf-pv-postgres
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hf-postgres-db
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "{{PWD}}/infrastructure/scripts/init-database.sh"
