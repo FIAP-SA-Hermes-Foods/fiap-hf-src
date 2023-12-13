@@ -87,7 +87,6 @@ func (m mercadoPagoAPI) DoPayment(ctx context.Context, input entity.InputPayment
 	}
 
 	l.Infof("DoPayment output: ", " | ", out.MarshalString())
-
 	return out, nil
 }
 

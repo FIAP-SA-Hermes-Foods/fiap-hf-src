@@ -53,9 +53,11 @@ func (c clientRepository) GetClientByID(id int64) (*entity.Client, error) {
 	}
 
 	if *outClient == (entity.Client{}) {
+		l.Infof("GetClientByID output: ", " | ", "nil")
 		return nil, nil
 	}
 
+	l.Infof("GetClientByID output: ", " | ", outClient.MarshalString())
 	return outClient, nil
 }
 
@@ -82,9 +84,10 @@ func (c clientRepository) GetClientByCPF(cpf string) (*entity.Client, error) {
 	}
 
 	if *outClient == (entity.Client{}) {
+		l.Infof("GetClientByCPF output: ", " | ", "nil")
 		return nil, nil
 	}
-
+	l.Infof("GetClientByCPF output: ", " | ", outClient.MarshalString())
 	return outClient, nil
 }
 
