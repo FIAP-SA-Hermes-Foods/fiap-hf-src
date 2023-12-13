@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	l "fiap-hf-src/infrastructure/logger"
 	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
@@ -33,13 +34,16 @@ func NewProductRepository(ctx context.Context, db db.SQLDatabase) ProductReposit
 }
 
 func (p productRepository) SaveProduct(product entity.Product) (*entity.Product, error) {
+	l.Infof("SaveProduct received input: ", " | ", product)
 	if err := p.Database.Connect(); err != nil {
+		l.Errorf("SaveProduct connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer p.Database.Close()
 
 	if err := p.Database.PrepareStmt(querySaveProduct); err != nil {
+		l.Infof("SaveProduct prepare error: ", " | ", err)
 		return nil, err
 	}
 
@@ -58,20 +62,24 @@ func (p productRepository) SaveProduct(product entity.Product) (*entity.Product,
 	p.Database.QueryRow(product.Name, product.Category.Value, product.Image, product.Description, product.Price)
 
 	if err := p.Database.ScanStmt(&outProduct.ID, &outProduct.CreatedAt.Value); err != nil {
+		l.Infof("SaveProduct scan error: ", " | ", err)
 		return nil, err
 	}
-
+	l.Infof("SaveProduct output: ", " | ", outProduct.MarshalString())
 	return outProduct, nil
 }
 
 func (p productRepository) UpdateProductByID(id int64, product entity.Product) (*entity.Product, error) {
+	l.Infof("UpdateProductByID received input: ", " | ", product)
 	if err := p.Database.Connect(); err != nil {
+		l.Errorf("UpdateProductByID connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer p.Database.Close()
 
 	if err := p.Database.PrepareStmt(queryUpdateProduct); err != nil {
+		l.Errorf("UpdateProductByID prepare error: ", " | ", err)
 		return nil, err
 	}
 
@@ -93,14 +101,18 @@ func (p productRepository) UpdateProductByID(id int64, product entity.Product) (
 	p.Database.QueryRow(product.Name, product.Category.Value, product.Image, product.Description, product.Price, product.DeactivatedAt.Value, id)
 
 	if err := p.Database.ScanStmt(&outProduct.ID, &outProduct.CreatedAt.Value); err != nil {
+		l.Errorf("UpdateProductByID scan error: ", " | ", err)
 		return nil, err
 	}
 
+	l.Infof("UpdateProductByID output: ", " | ", outProduct.MarshalString())
 	return outProduct, nil
 }
 
 func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
+	l.Infof("GetProductByID received input: ", " | ", id)
 	if err := p.Database.Connect(); err != nil {
+		l.Errorf("GetProductByID connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -109,6 +121,7 @@ func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
 	var outProduct = new(entity.Product)
 
 	if err := p.Database.Query(queryGetProductByID, id); err != nil {
+		l.Errorf("GetProductByID error to connect database: ", " | ", err)
 		return nil, err
 	}
 
@@ -124,6 +137,7 @@ func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
 			&outProduct.DeactivatedAt.Value,
 		)
 		if err != nil {
+			l.Errorf("GetProductByID error to scan database: ", " | ", err)
 			return nil, err
 		}
 	}
@@ -136,7 +150,9 @@ func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
 }
 
 func (p productRepository) GetProductByCategory(category string) ([]entity.Product, error) {
+	l.Infof("GetProductByCategory received input: ", " | ", category)
 	if err := p.Database.Connect(); err != nil {
+		l.Errorf("GetProductByCategory connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -148,6 +164,7 @@ func (p productRepository) GetProductByCategory(category string) ([]entity.Produ
 	)
 
 	if err := p.Database.Query(queryGetProductByCategory, category); err != nil {
+		l.Errorf("GetProductByCategory error to connect database: ", " | ", err)
 		return nil, err
 	}
 
@@ -166,6 +183,7 @@ func (p productRepository) GetProductByCategory(category string) ([]entity.Produ
 		)
 
 		if err != nil {
+			l.Errorf("GetProductByCategory error to scan database: ", " | ", err)
 			return nil, err
 		}
 
@@ -177,13 +195,16 @@ func (p productRepository) GetProductByCategory(category string) ([]entity.Produ
 }
 
 func (p productRepository) DeleteProductByID(id int64) error {
+	l.Infof("DeleteProductByID received input: ", " | ", id)
 	if err := p.Database.Connect(); err != nil {
+		l.Errorf("DeleteProductByID connect error: ", " | ", err)
 		return err
 	}
 
 	defer p.Database.Close()
 
 	if err := p.Database.PrepareStmt(queryDeleteProduct); err != nil {
+		l.Errorf("DeleteProductByID prepare error: ", " | ", err)
 		return err
 	}
 
@@ -194,6 +215,7 @@ func (p productRepository) DeleteProductByID(id int64) error {
 	var returnID int
 
 	if err := p.Database.ScanStmt(&returnID); err != nil {
+		l.Errorf("DeleteProductByID scan error: ", " | ", err)
 		return err
 	}
 

@@ -3,13 +3,13 @@ package application
 import (
 	"context"
 	"errors"
+	l "fiap-hf-src/infrastructure/logger"
 	"fiap-hf-src/internal/core/domain/entity"
 	httpHF "fiap-hf-src/internal/core/domain/http"
 	"fiap-hf-src/internal/core/domain/repository"
 	"fiap-hf-src/internal/core/domain/valueObject"
 	"fiap-hf-src/internal/core/service"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -76,17 +76,21 @@ func NewHermesFoodsApp(ctx context.Context, paymentAPI httpHF.PaymentAPI, client
 // ========== Client ==========
 
 func (app hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) {
+	l.Infof("GetClientByID: ", " | ", id)
 	if err := app.GetClientByIDService(id); err != nil {
+		l.Errorf("GetClientByID error: ", " | ", err)
 		return nil, err
 	}
 
 	c, err := app.GetClientByIDRepository(id)
 
 	if err != nil {
+		l.Errorf("GetClientByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if c == nil {
+		l.Infof("GetClientByID output: ", " | ", nil)
 		return nil, nil
 	}
 
@@ -98,21 +102,26 @@ func (app hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) 
 		CreatedAt: c.CreatedAt.Format(),
 	}
 
+	l.Infof("GetClientByID output: ", " | ", out.MarshalString())
 	return out, err
 }
 
 func (app hermesFoodsApp) GetClientByCPF(cpf string) (*entity.OutputClient, error) {
+	l.Infof("GetClientByCPF: ", " | ", cpf)
 	if err := app.GetClientByCPFService(cpf); err != nil {
+		l.Errorf("GetClientByCPF error: ", " | ", err)
 		return nil, err
 	}
 
 	c, err := app.GetClientByCPFRepository(cpf)
 
 	if err != nil {
+		l.Errorf("GetClientByCPF error: ", " | ", err)
 		return nil, err
 	}
 
 	if c == nil {
+		l.Infof("GetClientByCPF output: ", " | ", nil)
 		return nil, nil
 	}
 
@@ -124,33 +133,41 @@ func (app hermesFoodsApp) GetClientByCPF(cpf string) (*entity.OutputClient, erro
 		CreatedAt: c.CreatedAt.Format(),
 	}
 
+	l.Infof("GetClientByCPF output: ", " | ", out.MarshalString())
 	return out, err
 }
 
 func (app hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient, error) {
+	l.Infof("SaveClient: ", " | ", client.MarshalString())
 	clientWithCpf, err := app.GetClientByCPF(client.CPF.Value)
 
 	if err != nil {
+		l.Errorf("SaveClient error: ", " | ", err)
 		return nil, err
 	}
 
 	if clientWithCpf != nil {
+		l.Infof("SaveClient output: ", " | ", nil)
 		return nil, errors.New("is not possible to save client because this cpf is already in use")
 	}
 
 	c, err := app.SaveClientService(client)
 
 	if err != nil {
+		l.Errorf("SaveClient error: ", " | ", err)
 		return nil, err
 	}
 
 	if c == nil {
+		l.Infof("SaveClient output: ", " | ", nil)
 		return nil, errors.New("is not possible to save client because it's null")
 	}
 
 	cRepo, err := app.SaveClientRepository(*c)
+	l.Infof("SaveClient output: ", " | ", cRepo.MarshalString())
 
 	if err != nil {
+		l.Errorf("SaveClient error: ", " | ", err)
 		return nil, err
 	}
 
@@ -162,35 +179,42 @@ func (app hermesFoodsApp) SaveClient(client entity.Client) (*entity.OutputClient
 		CreatedAt: cRepo.CreatedAt.Format(),
 	}
 
+	l.Infof("SaveClient output: ", " | ", out.MarshalString())
 	return out, nil
 }
 
 // ========== Order ==========
 
 func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error) {
+	l.Infof("UpdateOrderByID: ", " | ", id, " | ", order.MarshalString())
 	oSvc, err := app.UpdateOrderByIDService(id, order)
 
 	if err != nil {
+		l.Errorf("UpdateOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if oSvc == nil {
+		l.Infof("UpdateOrderByID output: ", " | ", nil)
 		return nil, errors.New("order is null, is not possible to proceed with update order")
 	}
 
 	oRepo, err := app.UpdateOrderByIDRepository(id, order)
 
 	if err != nil {
+		l.Errorf("UpdateOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
 	client, err := app.GetClientByID(oRepo.ClientID)
 
 	if err != nil {
+		l.Errorf("UpdateOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if client == nil {
+		l.Infof("UpdateOrderByID output: ", " | ", nil)
 		return nil, errors.New("client is null, is not possible to proceed with update order")
 	}
 
@@ -203,15 +227,18 @@ func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*entity
 		CreatedAt:        oRepo.CreatedAt.Format(),
 	}
 
+	l.Infof("UpdateOrderByID output: ", " | ", out.MarshalString())
 	return out, nil
 }
 
 func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
+	l.Infof("GetOrders: ", " | ")
 	orderList := make([]entity.OutputOrder, 0)
 
 	orders, err := app.GetOrdersRepository()
 
 	if err != nil {
+		l.Errorf("GetOrders error: ", " | ", err)
 		return nil, err
 	}
 
@@ -220,15 +247,19 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 		client, err := app.GetClientByID(orders[i].ClientID)
 
 		if err != nil {
+			l.Errorf("GetOrders error: ", " | ", err)
 			return nil, err
 		}
 
 		if err := app.GetAllOrderProductByIdService(orders[i].ID); err != nil {
+			l.Errorf("GetOrders error: ", " | ", err)
 			return nil, err
 		}
+
 		orderProductList, err := app.GetAllOrderProductByIdRepository(orders[i].ID)
 
 		if err != nil {
+			l.Errorf("GetOrders error: ", " | ", err)
 			return nil, err
 		}
 
@@ -243,10 +274,12 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 			v, err := app.GetVoucherByID(*orders[i].VoucherID)
 
 			if err != nil {
+				l.Errorf("GetOrders error: ", " | ", err)
 				return nil, err
 			}
 
 			if v == nil {
+				l.Infof("GetOrders output: ", " | ", nil)
 				return nil, errors.New("is not possible to save order because this voucher does not exist")
 			}
 
@@ -258,6 +291,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 				p, errGetC := app.GetProductByIDRepository(*op.ProductID)
 
 				if errGetC != nil {
+					l.Errorf("GetOrders error: ", " | ", errGetC)
 					return nil, errGetC
 				}
 
@@ -308,36 +342,44 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 		}
 	}
 
+	l.Infof("GetOrders output: ", " | ", orderList)
 	return orderList, nil
 }
 
 func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
+	l.Infof("GetOrderByID: ", " | ", id)
 	if err := app.orderService.GetOrderByID(id); err != nil {
+		l.Errorf("GetOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
 	o, err := app.GetOrderByIDRepository(id)
 
 	if err != nil {
+		l.Errorf("GetOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if o == nil {
+		l.Infof("GetOrderByID output: ", " | ", nil)
 		return nil, nil
 	}
 
 	outClient, err := app.GetClientByID(o.ClientID)
 
 	if err != nil {
+		l.Errorf("GetOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if err := app.GetAllOrderProductByIdService(id); err != nil {
+		l.Errorf("GetOrderByID error: ", " | ", err)
 		return nil, err
 	}
 	orderProductList, err := app.GetAllOrderProductByIdRepository(id)
 
 	if err != nil {
+		l.Errorf("GetOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
@@ -352,11 +394,14 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		v, err := app.GetVoucherByID(*o.VoucherID)
 
 		if err != nil {
+			l.Errorf("GetOrderByID error: ", " | ", err)
 			return nil, err
 		}
 
 		if v == nil {
-			return nil, errors.New("is not possible to save order because this voucher does not exist")
+			voucherNullErr := errors.New("is not possible to save order because this voucher does not exist")
+			l.Errorf("GetOrderByID error: ", " | ", voucherNullErr)
+			return nil, voucherNullErr
 		}
 
 		voucher = *v
@@ -367,6 +412,7 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 			p, errGetC := app.GetProductByIDRepository(*op.ProductID)
 
 			if errGetC != nil {
+				l.Errorf("GetOrderByID error: ", " | ", errGetC)
 				return nil, errGetC
 			}
 
@@ -391,7 +437,9 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 	}
 
 	if outClient == nil {
-		return nil, errors.New("client is null")
+		clientNullErr := errors.New("client is null")
+		l.Errorf("GetOrderByID error: ", " | ", clientNullErr)
+		return nil, clientNullErr
 	}
 
 	if voucher.Porcentage > 0 {
@@ -409,17 +457,21 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*entity.OutputOrder, error) {
 		CreatedAt:        o.CreatedAt.Format(),
 	}
 
+	l.Infof("GetOrderByID output: ", " | ", out.MarshalString())
 	return out, nil
 }
 
 func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, error) {
+	l.Infof("SaveOrder: ", " | ", order.MarshalString())
 	if err := app.GetClientByIDService(order.ClientID); err != nil {
+		l.Errorf("SaveOrder error: ", " | ", err)
 		return nil, err
 	}
 
 	c, err := app.GetClientByIDRepository(order.ClientID)
 
 	if err != nil {
+		l.Errorf("SaveOrder error: ", " | ", err)
 		return nil, err
 	}
 
@@ -441,30 +493,35 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 	out, err := app.DoPaymentAPI(app.Ctx, inputDoPaymentAPI)
 
 	if err != nil {
+		l.Errorf("SaveOrder error: ", " | ", err)
 		return nil, err
 	}
 
 	if out.Error != nil {
+		l.Errorf("SaveOrder error: ", " | ", out.Error.Message, " | ", out.Error.Code)
 		return nil, fmt.Errorf("error to do payment message: %s, code: %s", out.Error.Message, out.Error.Code)
 	}
-
-	log.Printf("output mercado pago api: %s\n", out.MarshalString())
 
 	order.Status.Value = out.PaymentStatus
 
 	o, err := app.SaveOrderService(order)
 
 	if err != nil {
+		l.Errorf("SaveOrder error: ", " | ", err)
 		return nil, err
 	}
 
 	if o == nil {
-		return nil, errors.New("is not possible to save order because it's null")
+		orderNullErr := errors.New("is not possible to save order because it's null")
+		l.Infof("SaveOrder output: ", " | ", orderNullErr)
+		return nil, orderNullErr
 	}
 
 	oRepo, err := app.SaveOrderRepository(*o)
+	l.Infof("SaveOrder output: ", " | ", oRepo.MarshalString())
 
 	if err != nil {
+		l.Errorf("SaveOrder error: ", " | ", err)
 		return nil, err
 	}
 
@@ -477,13 +534,17 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 	if order.VoucherID != nil {
 
 		v, err := app.GetVoucherByID(*order.VoucherID)
+		l.Infof("SaveOrder output: ", " | ", v.MarshalString())
 
 		if err != nil {
+			l.Errorf("SaveOrder error: ", " | ", err)
 			return nil, err
 		}
 
 		if v == nil {
-			return nil, errors.New("is not possible to save order because this voucher does not exist")
+			voucherNullErr := errors.New("is not possible to save order because this voucher does not exist")
+			l.Infof("SaveOrder output: ", " | ", voucherNullErr)
+			return nil, voucherNullErr
 		}
 
 		voucher = *v
@@ -491,17 +552,21 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 
 	for _, orderItems := range order.Items {
 		if err := app.GetProductByIDService(orderItems.ProductID); err != nil {
+			l.Errorf("SaveOrder error: ", " | ", err)
 			return nil, err
 		}
 
 		product, err := app.GetProductByIDRepository(orderItems.ProductID)
 
 		if err != nil {
+			l.Errorf("SaveOrder error: ", " | ", err)
 			return nil, err
 		}
 
 		if product == nil {
-			return nil, errors.New("is not possible to save order because this product does not exists null")
+			productNullErr := errors.New("is not possible to save order because this product does not exists null")
+			l.Infof("SaveOrder output: ", " | ", productNullErr)
+			return nil, productNullErr
 		}
 
 		pi := entity.ProductItem{
@@ -539,20 +604,25 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 		opService, err := app.SaveOrderProductService(opIn)
 
 		if err != nil {
+			l.Errorf("SaveOrder error: ", " | ", err)
 			return nil, err
 		}
 
 		if opService == nil {
-			return nil, errors.New("is not possible to save order because it's null")
+			orderProductNullErr := errors.New("is not possible to save order because it's null")
+			l.Infof("SaveOrder output: ", " | ", orderProductNullErr)
+			return nil, orderProductNullErr
 		}
 
 		opRepo, err := app.SaveOrderProductRepository(opIn)
 
 		if err != nil {
+			l.Errorf("SaveOrder error: ", " | ", err)
 			return nil, err
 		}
 
 		if opRepo == nil {
+			l.Infof("SaveOrder output: ", " | ", nil)
 			return nil, errors.New("is not possible to save order because it's null")
 		}
 
@@ -581,25 +651,30 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 		CreatedAt:        oRepo.CreatedAt.Format(),
 	}
 
+	l.Infof("SaveOrder output: ", " | ", outOrder.MarshalString())
 	return outOrder, nil
 }
 
 // ========== Product ==========
 
 func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputProduct, error) {
+	l.Infof("SaveProduct: ", " | ", product.MarshalString())
 	p, err := app.SaveProductService(product)
 
 	if err != nil {
+		l.Errorf("SaveProduct error: ", " | ", err)
 		return nil, err
 	}
 
 	if p == nil {
+		l.Infof("SaveProduct output: ", " | ", nil)
 		return nil, errors.New("is not possible to save product because it's null")
 	}
 
 	pRepo, err := app.SaveProductRepository(*p)
 
 	if err != nil {
+		l.Errorf("SaveProduct error: ", " | ", err)
 		return nil, err
 	}
 
@@ -614,23 +689,28 @@ func (app hermesFoodsApp) SaveProduct(product entity.Product) (*entity.OutputPro
 		DeactivatedAt: pRepo.DeactivatedAt.Format(),
 	}
 
+	l.Infof("SaveProduct output: ", " | ", out.MarshalString())
 	return out, nil
 }
 
 func (app hermesFoodsApp) GetProductByCategory(category string) ([]entity.OutputProduct, error) {
+	l.Infof("GetProductByCategory: ", " | ", category)
 	productList := make([]entity.OutputProduct, 0)
 
 	if err := app.productService.GetProductByCategory(category); err != nil {
+		l.Errorf("GetProductByCategory error: ", " | ", err)
 		return nil, err
 	}
 
 	products, err := app.GetProductByCategoryRepository(category)
 
 	if err != nil {
+		l.Errorf("GetProductByCategory error: ", " | ", err)
 		return nil, err
 	}
 
 	if products == nil {
+		l.Infof("GetProductByCategory output: ", " | ", nil)
 		return nil, nil
 	}
 
@@ -648,37 +728,48 @@ func (app hermesFoodsApp) GetProductByCategory(category string) ([]entity.Output
 		productList = append(productList, product)
 	}
 
+	l.Infof("GetProductByCategory output: ", " | ", productList)
 	return productList, nil
 }
 
 func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error) {
+	l.Infof("UpdateProductByID: ", " | ", id, " | ", product.MarshalString())
+
 	if err := app.GetProductByIDService(id); err != nil {
+		l.Errorf("UpdateProductByID error: ", " | ", err)
 		return nil, err
 	}
 
 	pByID, err := app.GetProductByIDRepository(id)
 
 	if err != nil {
+		l.Errorf("UpdateProductByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if pByID == nil {
-		return nil, errors.New("was not found any product with this id")
+		productNullErr := errors.New("was not found any product with this id")
+		l.Infof("UpdateProductByID output: ", " | ", productNullErr)
+		return nil, productNullErr
 	}
 
 	p, err := app.UpdateProductByIDService(id, product)
 
 	if err != nil {
+		l.Errorf("UpdateProductByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if p == nil {
-		return nil, errors.New("is not possible to save product because it's null")
+		productNullErr := errors.New("is not possible to save product because it's null")
+		l.Errorf("UpdateProductByID output: ", " | ", productNullErr)
+		return nil, productNullErr
 	}
 
 	pRepo, err := app.UpdateProductByIDRepository(id, *p)
 
 	if err != nil {
+		l.Errorf("UpdateProductByID error: ", " | ", err)
 		return nil, err
 	}
 
@@ -692,52 +783,69 @@ func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*
 		CreatedAt:     pRepo.CreatedAt.Format(),
 		DeactivatedAt: pRepo.DeactivatedAt.Format(),
 	}
+
+	l.Infof("UpdateProductByID output: ", " | ", out.MarshalString())
 	return out, nil
 }
 
 func (app hermesFoodsApp) DeleteProductByID(id int64) error {
+	l.Infof("DeleteProductByID: ", " | ", id)
+
 	if err := app.GetProductByIDService(id); err != nil {
+		l.Errorf("DeleteProductByID error: ", " | ", err)
 		return err
 	}
 
 	pByID, err := app.GetProductByIDRepository(id)
 
 	if err != nil {
+		l.Errorf("DeleteProductByID error: ", " | ", err)
 		return err
 	}
 
 	if pByID == nil {
-		return errors.New("was not found any product with this id")
+		productNullErr := errors.New("was not found any product with this id")
+		l.Infof("DeleteProductByID output: ", " | ", productNullErr)
+		return productNullErr
 	}
 
 	if err := app.DeleteProductByIDService(id); err != nil {
+		l.Errorf("DeleteProductByID error: ", " | ", err)
 		return err
 	}
 
+	l.Infof("DeleteProductByID output: ", " | ", nil)
 	return app.DeleteProductByIDRepository(id)
 }
 
 // ========== Voucher ==========
 
 func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*entity.OutputVoucher, error) {
+	l.Infof("SaveVoucher: ", " | ", voucher.MarshalString())
 	voucherSvc, err := app.SaveVoucherService(voucher)
 
 	if err != nil {
+		l.Errorf("SaveVoucher error: ", " | ", err)
 		return nil, err
 	}
 
 	if voucherSvc == nil {
-		return nil, errors.New("is not possible to save voucher because it's null")
+		voucherNullErr := errors.New("is not possible to save voucher because it's null")
+		l.Errorf("SaveVoucher output: ", " | ", voucherNullErr)
+		return nil, voucherNullErr
 	}
 
 	rVoucher, err := app.SaveVoucherRepository(voucher)
 
 	if err != nil {
+		l.Errorf("SaveVoucher error: ", " | ", err)
 		return nil, err
 	}
 
 	if rVoucher == nil {
-		return nil, errors.New("was not possible to save voucher because it's null")
+		voucherNullErr := errors.New("is not possible to save voucher because it's null")
+		l.Errorf("SaveVoucher output: ", " | ", voucherNullErr)
+		return nil, voucherNullErr
 	}
 
 	vOut := entity.OutputVoucher{
@@ -748,22 +856,28 @@ func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*entity.OutputVou
 		ExpiresAt:  rVoucher.ExpiresAt.Format(),
 	}
 
+	l.Infof("SaveVoucher output: ", " | ", vOut.MarshalString())
 	return &vOut, nil
 }
 
 func (app hermesFoodsApp) GetVoucherByID(id int64) (*entity.OutputVoucher, error) {
+	l.Infof("GetVoucherByID: ", " | ", id)
 	if err := app.GetVoucherByIDService(id); err != nil {
+		l.Errorf("GetVoucherByID error: ", " | ", err)
 		return nil, err
 	}
 
 	rVoucher, err := app.GetVoucherByIDRepository(id)
 
 	if err != nil {
+		l.Errorf("GetVoucherByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if rVoucher == nil {
-		return nil, fmt.Errorf("voucher not found with the %d id", id)
+		voucherNotFoundErr := fmt.Errorf("voucher not found with the %d id", id)
+		l.Errorf("GetVoucherByID output: ", " | ", voucherNotFoundErr)
+		return nil, voucherNotFoundErr
 	}
 
 	vOut := entity.OutputVoucher{
@@ -774,29 +888,36 @@ func (app hermesFoodsApp) GetVoucherByID(id int64) (*entity.OutputVoucher, error
 		ExpiresAt:  rVoucher.ExpiresAt.Format(),
 	}
 
+	l.Infof("GetVoucherByID output: ", " | ", vOut.MarshalString())
 	return &vOut, nil
-
 }
 
 func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*entity.OutputVoucher, error) {
+	l.Infof("UpdateVoucherByID: ", " | ", id, " | ", voucher.MarshalString())
 	voucherSvc, err := app.UpdateVoucherByIDService(id, voucher)
 
 	if err != nil {
+		l.Errorf("UpdateVoucherByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if voucherSvc == nil {
-		return nil, errors.New("is not possible to update voucher because it's null")
+		voucherNullErr := errors.New("is not possible to update voucher because it's null")
+		l.Infof("UpdateVoucherByID output: ", " | ", voucherNullErr)
+		return nil, voucherNullErr
 	}
 
 	rVoucher, err := app.UpdateVoucherByIDRepository(id, voucher)
 
 	if err != nil {
+		l.Errorf("UpdateVoucherByID error: ", " | ", err)
 		return nil, err
 	}
 
 	if rVoucher == nil {
-		return nil, errors.New("was not possible to update voucher because it's null")
+		voucherNullErr := errors.New("is not possible to update voucher because it's null")
+		l.Infof("UpdateVoucherByID output: ", " | ", voucherNullErr)
+		return nil, voucherNullErr
 	}
 
 	vOut := entity.OutputVoucher{
@@ -807,6 +928,7 @@ func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*
 		ExpiresAt:  rVoucher.ExpiresAt.Format(),
 	}
 
+	l.Infof("UpdateVoucherByID output: ", " | ", vOut.MarshalString())
 	return &vOut, nil
 }
 
@@ -818,7 +940,6 @@ func calculateDiscountByPercentage(percentage int64, value float64) float64 {
 	if percentage == 0 {
 		return value
 	}
-
 	return value - (value * (float64(percentage) / 100))
 }
 

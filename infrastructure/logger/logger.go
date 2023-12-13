@@ -63,9 +63,6 @@ func Errorf(message string, separator string, data ...interface{}) {
 	generateLog(errorLevel, message, separator, data...)
 }
 
-// message: %s separator %s
-// out: {} | 200
-
 func generateLog(level int, message string, separator string, data ...interface{}) {
 	var (
 		msgStrWithData string
