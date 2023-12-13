@@ -84,7 +84,6 @@ func (app hermesFoodsApp) GetClientByID(id int64) (*entity.OutputClient, error) 
 	}
 
 	c, err := app.GetClientByIDRepository(id)
-	l.Infof("GetClientByIDRepository output: ", " | ", c.MarshalString())
 
 	if err != nil {
 		l.Errorf("GetClientByIDRepository error: ", " | ", err)

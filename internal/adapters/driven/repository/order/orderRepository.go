@@ -35,14 +35,14 @@ func NewOrderRepository(ctx context.Context, db db.SQLDatabase) OrderRepository 
 func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 	l.Infof("SaveOrder received input: ", " | ", order)
 	if err := o.Database.Connect(); err != nil {
-		l.Errorf("Save Order connect error: ", " | ", err)
+		l.Errorf("SaveOrder connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer o.Database.Close()
 
 	if err := o.Database.PrepareStmt(querySaveOrder); err != nil {
-		l.Errorf("Save Order prepare error: ", " | ", err)
+		l.Errorf("SaveOrder prepare error: ", " | ", err)
 		return nil, err
 	}
 
@@ -62,7 +62,7 @@ func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 	o.Database.QueryRow(order.Status.Value, order.VerificationCode.Value, order.ClientID, order.VoucherID)
 
 	if err := o.Database.ScanStmt(&outOrder.ID, &outOrder.CreatedAt.Value); err != nil {
-		l.Errorf("Save Order scan error: ", " | ", err)
+		l.Errorf("SaveOrder scan error: ", " | ", err)
 		return nil, err
 	}
 
@@ -73,14 +73,14 @@ func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.Order, error) {
 	l.Infof("UpdateOrderByID received input: ", " | ", order)
 	if err := o.Database.Connect(); err != nil {
-		l.Errorf("Update Order connect error: ", " | ", err)
+		l.Errorf("UpdateOrderByID connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer o.Database.Close()
 
 	if err := o.Database.PrepareStmt(queryUpdateOrder); err != nil {
-		l.Errorf("Update Order prepare error: ", " | ", err)
+		l.Errorf("UpdateOrderByID prepare error: ", " | ", err)
 		return nil, err
 	}
 
@@ -100,7 +100,7 @@ func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.
 	o.Database.QueryRow(order.Status.Value, order.ClientID, order.VoucherID, id)
 
 	if err := o.Database.ScanStmt(&outOrder.ID, &outOrder.CreatedAt.Value); err != nil {
-		l.Errorf("Update Order scan error: ", " | ", err)
+		l.Errorf("UpdateOrderByID scan error: ", " | ", err)
 		return nil, err
 	}
 	l.Infof("UpdateOrderByID output: ", " | ", outOrder.MarshalString())
@@ -110,7 +110,7 @@ func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.
 func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 	l.Infof("GetOrderByID received input: ", " | ", id)
 	if err := o.Database.Connect(); err != nil {
-		l.Errorf("Get Order by ID connect error: ", " | ", err)
+		l.Errorf("GetOrderByID connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -119,7 +119,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 	var outOrder = new(entity.Order)
 
 	if err := o.Database.Query(queryGetOrderByID, id); err != nil {
-		l.Errorf("Get Order by ID query error: ", " | ", err)
+		l.Errorf("GetOrderByID query error: ", " | ", err)
 		return nil, err
 	}
 
@@ -133,7 +133,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 			&outOrder.VoucherID,
 		)
 		if err != nil {
-			l.Errorf("Get Order by ID scan error: ", " | ", err)
+			l.Errorf("GetOrderByID scan error: ", " | ", err)
 			return nil, err
 		}
 	}
