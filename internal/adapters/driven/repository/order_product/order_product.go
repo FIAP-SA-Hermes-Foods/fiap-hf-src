@@ -2,6 +2,7 @@ package orderproduct
 
 import (
 	"context"
+	l "fiap-hf-src/infrastructure/logger"
 	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 )
@@ -28,7 +29,9 @@ func NewOrderProductRepository(ctx context.Context, db db.SQLDatabase) OrderProd
 }
 
 func (o orderProductRepository) GetAllOrderProduct() ([]entity.OrderProduct, error) {
+	l.Infof("GetAllOrderProduct received input: ", " | ", nil)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("GetAllOrderProduct connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -40,6 +43,7 @@ func (o orderProductRepository) GetAllOrderProduct() ([]entity.OrderProduct, err
 	)
 
 	if err := o.Database.Query(queryGetOrderProducts); err != nil {
+		l.Errorf("GetAllOrderProduct error to connect database: ", " | ", err)
 		return nil, err
 	}
 
@@ -57,6 +61,7 @@ func (o orderProductRepository) GetAllOrderProduct() ([]entity.OrderProduct, err
 		)
 
 		if err != nil {
+			l.Errorf("GetAllOrderProduct error to scan database: ", " | ", err)
 			return nil, err
 		}
 
@@ -64,11 +69,14 @@ func (o orderProductRepository) GetAllOrderProduct() ([]entity.OrderProduct, err
 		orderList = append(orderList, orderItem)
 	}
 
+	l.Infof("GetAllOrderProduct output: ", " | ", orderList)
 	return orderList, nil
 }
 
 func (o orderProductRepository) GetAllOrderProductByOrderID(id int64) ([]entity.OrderProduct, error) {
+	l.Infof("GetAllOrderProductByOrderID received input: ", " | ", id)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("GetAllOrderProductByOrderID connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -80,6 +88,7 @@ func (o orderProductRepository) GetAllOrderProductByOrderID(id int64) ([]entity.
 	)
 
 	if err := o.Database.Query(queryGetOrderProductByOrderID, id); err != nil {
+		l.Errorf("GetAllOrderProductByOrderID error to connect database: ", " | ", err)
 		return nil, err
 	}
 
@@ -97,6 +106,7 @@ func (o orderProductRepository) GetAllOrderProductByOrderID(id int64) ([]entity.
 		)
 
 		if err != nil {
+			l.Errorf("GetAllOrderProductByOrderID error to scan database: ", " | ", err)
 			return nil, err
 		}
 
@@ -104,17 +114,21 @@ func (o orderProductRepository) GetAllOrderProductByOrderID(id int64) ([]entity.
 		orderList = append(orderList, orderItem)
 	}
 
+	l.Infof("GetAllOrderProductByOrderID output: ", " | ", orderList)
 	return orderList, nil
 }
 
 func (o orderProductRepository) SaveOrderProduct(order entity.OrderProduct) (*entity.OrderProduct, error) {
+	l.Infof("SaveOrderProduct received input: ", " | ", order)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("SaveOrderProduct connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer o.Database.Close()
 
 	if err := o.Database.PrepareStmt(querySaveOrderProducts); err != nil {
+		l.Errorf("SaveOrderProduct error to prepare statement: ", " | ", err)
 		return nil, err
 	}
 
@@ -131,8 +145,10 @@ func (o orderProductRepository) SaveOrderProduct(order entity.OrderProduct) (*en
 	o.Database.QueryRow(order.OrderID, order.ProductID, order.Quantity, order.TotalPrice, order.Discount)
 
 	if err := o.Database.ScanStmt(&outOrder.ID, &outOrder.CreatedAt.Value); err != nil {
+		l.Errorf("SaveOrderProduct error to scan statement: ", " | ", err)
 		return nil, err
 	}
 
+	l.Infof("SaveOrderProduct output: ", " | ", outOrder)
 	return outOrder, nil
 }

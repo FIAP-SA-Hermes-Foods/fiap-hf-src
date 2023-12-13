@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	l "fiap-hf-src/infrastructure/logger"
 	"fiap-hf-src/internal/core/db"
 	"fiap-hf-src/internal/core/domain/entity"
 	"fiap-hf-src/internal/core/domain/valueObject"
@@ -32,13 +33,16 @@ func NewOrderRepository(ctx context.Context, db db.SQLDatabase) OrderRepository 
 }
 
 func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
+	l.Infof("SaveOrder received input: ", " | ", order)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("Save Order connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer o.Database.Close()
 
 	if err := o.Database.PrepareStmt(querySaveOrder); err != nil {
+		l.Errorf("Save Order prepare error: ", " | ", err)
 		return nil, err
 	}
 
@@ -58,20 +62,25 @@ func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 	o.Database.QueryRow(order.Status.Value, order.VerificationCode.Value, order.ClientID, order.VoucherID)
 
 	if err := o.Database.ScanStmt(&outOrder.ID, &outOrder.CreatedAt.Value); err != nil {
+		l.Errorf("Save Order scan error: ", " | ", err)
 		return nil, err
 	}
 
+	l.Infof("SaveOrder output: ", " | ", outOrder.MarshalString())
 	return outOrder, nil
 }
 
 func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.Order, error) {
+	l.Infof("UpdateOrderByID received input: ", " | ", order)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("Update Order connect error: ", " | ", err)
 		return nil, err
 	}
 
 	defer o.Database.Close()
 
 	if err := o.Database.PrepareStmt(queryUpdateOrder); err != nil {
+		l.Errorf("Update Order prepare error: ", " | ", err)
 		return nil, err
 	}
 
@@ -91,14 +100,17 @@ func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.
 	o.Database.QueryRow(order.Status.Value, order.ClientID, order.VoucherID, id)
 
 	if err := o.Database.ScanStmt(&outOrder.ID, &outOrder.CreatedAt.Value); err != nil {
+		l.Errorf("Update Order scan error: ", " | ", err)
 		return nil, err
 	}
-
+	l.Infof("UpdateOrderByID output: ", " | ", outOrder.MarshalString())
 	return outOrder, nil
 }
 
 func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
+	l.Infof("GetOrderByID received input: ", " | ", id)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("Get Order by ID connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -107,6 +119,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 	var outOrder = new(entity.Order)
 
 	if err := o.Database.Query(queryGetOrderByID, id); err != nil {
+		l.Errorf("Get Order by ID query error: ", " | ", err)
 		return nil, err
 	}
 
@@ -120,6 +133,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 			&outOrder.VoucherID,
 		)
 		if err != nil {
+			l.Errorf("Get Order by ID scan error: ", " | ", err)
 			return nil, err
 		}
 	}
@@ -132,7 +146,9 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 }
 
 func (o orderRepository) GetOrders() ([]entity.Order, error) {
+	l.Infof("GetOrders received input: ", " | ", nil)
 	if err := o.Database.Connect(); err != nil {
+		l.Errorf("GetOrders connect error: ", " | ", err)
 		return nil, err
 	}
 
@@ -144,6 +160,7 @@ func (o orderRepository) GetOrders() ([]entity.Order, error) {
 	)
 
 	if err := o.Database.Query(queryGetOrders); err != nil {
+		l.Errorf("GetOrders query error: ", " | ", err)
 		return nil, err
 	}
 
@@ -160,6 +177,7 @@ func (o orderRepository) GetOrders() ([]entity.Order, error) {
 		)
 
 		if err != nil {
+			l.Errorf("GetOrders scan error: ", " | ", err)
 			return nil, err
 		}
 
