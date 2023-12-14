@@ -2,17 +2,17 @@ package entity
 
 import (
 	"encoding/json"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	com "fiap-hf-src/internal/core/entity/common"
 	"log"
 )
 
 type (
 	Voucher struct {
-		ID         int64                 `json:"id,omitempty"`
-		Code       string                `json:"code,omitempty"`
-		Porcentage int64                 `json:"porcentage,omitempty"`
-		CreatedAt  valueObject.CreatedAt `json:"createdAt,omitempty"`
-		ExpiresAt  valueObject.ExpiresAt `json:"expiresAt,omitempty"`
+		ID         int64         `json:"id,omitempty"`
+		Code       string        `json:"code,omitempty"`
+		Porcentage int64         `json:"porcentage,omitempty"`
+		CreatedAt  com.CreatedAt `json:"createdAt,omitempty"`
+		ExpiresAt  com.ExpiresAt `json:"expiresAt,omitempty"`
 	}
 
 	RequestVoucher struct {

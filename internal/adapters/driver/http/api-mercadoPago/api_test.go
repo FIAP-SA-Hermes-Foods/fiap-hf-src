@@ -3,8 +3,8 @@ package api_mercadoPago
 import (
 	"context"
 	"errors"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
 	"fmt"
 	"io"
 	"log"
@@ -25,7 +25,7 @@ func Test_Integration(t *testing.T) {
 		Price: 0.0,
 		Client: entity.Client{
 			Name: "",
-			CPF: valueObject.Cpf{
+			CPF: com.Cpf{
 				Value: "",
 			},
 			Email: "",

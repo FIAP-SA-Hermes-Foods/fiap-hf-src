@@ -1,10 +1,10 @@
-package ui
+package web
 
 import (
 	"bytes"
 	"encoding/json"
 	"fiap-hf-src/internal/core/application"
-	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/entity"
 	"fmt"
 	"net/http"
 	"strconv"

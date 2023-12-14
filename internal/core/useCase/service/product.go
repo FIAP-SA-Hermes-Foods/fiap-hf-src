@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	c "fiap-hf-src/internal/core/entity/common"
 	"strings"
 )
 
@@ -58,7 +58,7 @@ func (p productService) GetProductByCategory(category string) error {
 		return errors.New("the category is not valid for consult")
 	}
 
-	_, ok := valueObject.CategoryMap[strings.ToLower(category)]
+	_, ok := c.CategoryMap[strings.ToLower(category)]
 
 	if !ok {
 		return errors.New("category is not valid")

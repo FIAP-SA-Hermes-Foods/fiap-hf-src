@@ -1,8 +1,8 @@
-package ui
+package web
 
 import (
 	"encoding/base64"
-	l "fiap-hf-src/infrastructure/logger"
+	l "fiap-hf-src/pkg/logger"
 	"fmt"
 	"net/http"
 	"os"

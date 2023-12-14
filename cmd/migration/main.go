@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fiap-hf-src/infrastructure/db/migration"
-	"fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/pkg/postgres"
 	"log"
 	"os"
 	"regexp"

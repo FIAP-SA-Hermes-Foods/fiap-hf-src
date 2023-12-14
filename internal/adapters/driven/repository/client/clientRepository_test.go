@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
 	"fmt"
 	"log"
 	"os/exec"
@@ -39,7 +39,7 @@ func Test_GetClientByID(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -61,7 +61,7 @@ func Test_GetClientByID(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -83,7 +83,7 @@ func Test_GetClientByID(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -104,7 +104,7 @@ func Test_GetClientByID(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -124,11 +124,11 @@ func Test_GetClientByID(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 			},
@@ -185,7 +185,7 @@ func Test_GetClientByCPF(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -207,7 +207,7 @@ func Test_GetClientByCPF(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -229,7 +229,7 @@ func Test_GetClientByCPF(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -250,7 +250,7 @@ func Test_GetClientByCPF(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -270,11 +270,11 @@ func Test_GetClientByCPF(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 			},
@@ -328,11 +328,11 @@ func Test_SaveClient(t *testing.T) {
 				client: entity.Client{
 					ID:   0,
 					Name: "",
-					CPF: valueObject.Cpf{
+					CPF: com.Cpf{
 						Value: "",
 					},
 					Email: "",
-					CreatedAt: valueObject.CreatedAt{
+					CreatedAt: com.CreatedAt{
 						Value: time.Time{},
 					},
 				},
@@ -341,7 +341,7 @@ func Test_SaveClient(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -361,7 +361,7 @@ func Test_SaveClient(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -381,7 +381,7 @@ func Test_SaveClient(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -401,7 +401,7 @@ func Test_SaveClient(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
@@ -421,11 +421,11 @@ func Test_SaveClient(t *testing.T) {
 			WantOutput: &entity.Client{
 				ID:   0,
 				Name: "",
-				CPF: valueObject.Cpf{
+				CPF: com.Cpf{
 					Value: "",
 				},
 				Email: "",
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 			},

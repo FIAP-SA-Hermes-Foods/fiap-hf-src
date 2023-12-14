@@ -1,6 +1,6 @@
 package application
 
-import "fiap-hf-src/internal/core/domain/entity"
+import "fiap-hf-src/internal/core/entity"
 
 // Client implementation Call
 
