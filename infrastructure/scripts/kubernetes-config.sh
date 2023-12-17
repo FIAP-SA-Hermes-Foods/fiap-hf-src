@@ -36,4 +36,4 @@ sed -i s:{{IMAGE_TAG}}:$IMAGE_TAG:g ./infrastructure/kubernetes/deployment/postg
 sed -i s:{{REPOSITORY_SWAGGER_URL}}:$REPOSITORY_SWAGGER_URL:g ./infrastructure/kubernetes/deployment/swagger.yaml;
 sed -i s:{{IMAGE_TAG}}:$IMAGE_TAG:g ./infrastructure/kubernetes/deployment/swagger.yaml;
 
-sed -i s:{{PWD}}:$PWD:g ./infrastructure/kubernetes/volume/postgres;
+sed -i s:{{PWD}}:$PWD:g ./infrastructure/kubernetes/volume/postgres.yaml;
