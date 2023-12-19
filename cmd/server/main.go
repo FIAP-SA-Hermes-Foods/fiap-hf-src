@@ -9,7 +9,7 @@ import (
 	vRepo "fiap-hf-src/internal/adapters/driven/repository/voucher"
 	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
-	"fiap-hf-src/internal/core/useCase/service"
+	"fiap-hf-src/internal/core/service"
 	"fiap-hf-src/internal/handler/web"
 	"fiap-hf-src/pkg/postgres"
 	"fmt"
