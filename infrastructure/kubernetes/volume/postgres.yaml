@@ -14,4 +14,4 @@ spec:
   storageClassName: hf-postgres-db
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: "/var/lib/jenkins/workspace/hf-pipeline/infrastructure/scripts/init-database.sh"
+    path: "{{PWD}}/infrastructure/scripts/init-database.sh"
