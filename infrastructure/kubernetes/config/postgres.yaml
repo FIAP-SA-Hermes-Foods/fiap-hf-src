@@ -6,5 +6,5 @@ metadata:
 
 data:
   postgres-url: postgres-service
-  initdb:
-    scripts: /infrastructure/scripts/init-database.sh
+  # initdb:
+    # scripts: /infrastructure/scripts/init-database.sh

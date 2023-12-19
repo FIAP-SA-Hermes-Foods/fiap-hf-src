@@ -28,14 +28,14 @@ spec:
         envFrom:
         - secretRef:
             name: hf-deploy-secret
-        volumeMounts:
-        - name: postgresql-initdb
-          mountPath: /docker-entrypoint-initdb.d
+        # volumeMounts:
+        # - name: postgresql-initdb
+        #   mountPath: /docker-entrypoint-initdb.d
 
-      volumes:
-        - name: postgresql-initdb
-          configMap:
-            name: hermes-foods-postgres-config
+      # volumes:
+        # - name: postgresql-initdb
+        #   configMap:
+        #     name: hermes-foods-postgres-config
 
       imagePullSecrets:
       - name: hfregcred
