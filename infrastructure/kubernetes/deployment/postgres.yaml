@@ -8,7 +8,7 @@ metadata:
     app: hermes-foods-postgres-app
 
 spec:
-  replicas: 1 
+  replicas: 1
 
   selector:
     matchLabels:
@@ -28,22 +28,17 @@ spec:
         envFrom:
         - secretRef:
             name: hf-deploy-secret
-        # volumeMounts:
-        # - name: postgresql-initdb
-        #   mountPath: /docker-entrypoint-initdb.d
-
-      # volumes:
-        # - name: postgresql-initdb
-        #   configMap:
-        #     name: hermes-foods-postgres-config
-
+        volumeMounts:
+        - name: postgresql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+ 
       imagePullSecrets:
       - name: hfregcred
 
-      # volumes:
-      # - name: shared
-      #   persistentVolumeClaim:
-      #     claimName: hf-pv-claim-postgres
+      volumes:
+      - name: postgresql-initdb
+        persistentVolumeClaim:
+          claimName: hf-pv-claim-postgres
 
 ---
 
