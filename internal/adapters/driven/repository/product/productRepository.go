@@ -2,10 +2,11 @@ package product
 
 import (
 	"context"
-	l "fiap-hf-src/infrastructure/logger"
-	"fiap-hf-src/internal/core/db"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
+	"fiap-hf-src/internal/core/useCase/db"
+
+	l "fiap-hf-src/pkg/logger"
 )
 
 var (
@@ -51,7 +52,7 @@ func (p productRepository) SaveProduct(product entity.Product) (*entity.Product,
 
 	var outProduct = &entity.Product{
 		Name: product.Name,
-		Category: valueObject.Category{
+		Category: com.Category{
 			Value: product.Category.Value,
 		},
 		Image:       product.Image,
@@ -87,13 +88,13 @@ func (p productRepository) UpdateProductByID(id int64, product entity.Product) (
 
 	var outProduct = &entity.Product{
 		Name: product.Name,
-		Category: valueObject.Category{
+		Category: com.Category{
 			Value: product.Category.Value,
 		},
 		Image:       product.Image,
 		Description: product.Description,
 		Price:       product.Price,
-		DeactivatedAt: valueObject.DeactivatedAt{
+		DeactivatedAt: com.DeactivatedAt{
 			Value: product.DeactivatedAt.Value,
 		},
 	}

@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
 	"fmt"
 	"log"
 	"os/exec"
@@ -22,7 +22,7 @@ func Test_SaveVoucher(t *testing.T) {
 		product entity.Voucher
 	}
 
-	valExpiresAt := valueObject.ExpiresAt{}
+	valExpiresAt := com.ExpiresAt{}
 	valExpiresAt.SetTimeFromString("0001-01-01T00:00:00Z")
 
 	tests := []struct {
@@ -41,7 +41,7 @@ func Test_SaveVoucher(t *testing.T) {
 				ID:         0,
 				Code:       "",
 				Porcentage: 0,
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 				ExpiresAt: valExpiresAt,
@@ -135,7 +135,7 @@ func Test_GetVoucherByID(t *testing.T) {
 		id int64
 	}
 
-	valExpiresAt := valueObject.ExpiresAt{}
+	valExpiresAt := com.ExpiresAt{}
 	valExpiresAt.SetTimeFromString("0001-01-01T00:00:00Z")
 
 	tests := []struct {
@@ -154,7 +154,7 @@ func Test_GetVoucherByID(t *testing.T) {
 				ID:         0,
 				Code:       "",
 				Porcentage: 0,
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 				ExpiresAt: valExpiresAt,
@@ -275,7 +275,7 @@ func Test_UpdateVoucherByID(t *testing.T) {
 
 	tt, _ := time.Parse("02-01-2006 15:04:05", "0001-01-01T00:00:00Z")
 
-	valExpiresAt := valueObject.ExpiresAt{Value: &tt}
+	valExpiresAt := com.ExpiresAt{Value: &tt}
 	// 02-01-2006 15:04:05
 	// err := valExpiresAt.SetTimeFromString("01-01-0001 00:00:00")
 	// log.Print(err)
@@ -296,7 +296,7 @@ func Test_UpdateVoucherByID(t *testing.T) {
 				ID:         0,
 				Code:       "",
 				Porcentage: 0,
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 				ExpiresAt: valExpiresAt,
@@ -330,7 +330,7 @@ func Test_UpdateVoucherByID(t *testing.T) {
 				ID:         0,
 				Code:       "",
 				Porcentage: 0,
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 				ExpiresAt: valExpiresAt,
@@ -351,7 +351,7 @@ func Test_UpdateVoucherByID(t *testing.T) {
 				ID:         0,
 				Code:       "",
 				Porcentage: 0,
-				CreatedAt: valueObject.CreatedAt{
+				CreatedAt: com.CreatedAt{
 					Value: time.Time{},
 				},
 				ExpiresAt: valExpiresAt,

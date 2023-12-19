@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fiap-hf-src/infrastructure/db/postgres"
 	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
 	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
 	opRepo "fiap-hf-src/internal/adapters/driven/repository/order_product"
@@ -11,7 +10,8 @@ import (
 	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
-	"fiap-hf-src/internal/core/ui"
+	"fiap-hf-src/internal/handler/web"
+	"fiap-hf-src/pkg/postgres"
 	"fmt"
 	"log"
 	"net/http"
@@ -77,12 +77,12 @@ func main() {
 		voucherService,
 	)
 
-	handlersClient := ui.NewHandlerClient(app)
-	handlersOrder := ui.NewHandlerOrder(app)
-	handlersProduct := ui.NewHandlerProduct(app)
-	hanldersVoucher := ui.NewHandlerVoucher(app)
+	handlersClient := web.NewHandlerClient(app)
+	handlersOrder := web.NewHandlerOrder(app)
+	handlersProduct := web.NewHandlerProduct(app)
+	hanldersVoucher := web.NewHandlerVoucher(app)
 
-	router.HandleFunc("/hermes_foods/health", ui.HealthCheck)
+	router.HandleFunc("/hermes_foods/health", web.HealthCheck)
 	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
 	router.HandleFunc("/hermes_foods/order/", handlersOrder.Handler)
 	router.HandleFunc("/hermes_foods/product/", handlersProduct.Handler)

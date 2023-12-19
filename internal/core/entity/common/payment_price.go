@@ -1,4 +1,4 @@
-package valueObject
+package common
 
 type PaymentPrice struct {
 	Value float64 `json:"value,omitempty"`

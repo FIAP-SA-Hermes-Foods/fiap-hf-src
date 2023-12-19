@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/pkg/postgres"
 	"log"
 	"os"
 	"os/exec"

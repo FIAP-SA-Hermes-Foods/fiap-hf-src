@@ -2,10 +2,10 @@ package voucher
 
 import (
 	"context"
-	l "fiap-hf-src/infrastructure/logger"
-	"fiap-hf-src/internal/core/db"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
+	"fiap-hf-src/internal/core/useCase/db"
+	l "fiap-hf-src/pkg/logger"
 )
 
 var (
@@ -83,7 +83,7 @@ func (v voucherRepository) SaveVoucher(voucher entity.Voucher) (*entity.Voucher,
 	var outVoucher = &entity.Voucher{
 		Code:       voucher.Code,
 		Porcentage: voucher.Porcentage,
-		ExpiresAt: valueObject.ExpiresAt{
+		ExpiresAt: com.ExpiresAt{
 			Value: voucher.ExpiresAt.Value,
 		},
 	}
@@ -117,10 +117,10 @@ func (v voucherRepository) UpdateVoucherByID(id int64, voucher entity.Voucher) (
 	var outVoucher = &entity.Voucher{
 		Code:       voucher.Code,
 		Porcentage: voucher.Porcentage,
-		CreatedAt: valueObject.CreatedAt{
+		CreatedAt: com.CreatedAt{
 			Value: voucher.CreatedAt.Value,
 		},
-		ExpiresAt: valueObject.ExpiresAt{
+		ExpiresAt: com.ExpiresAt{
 			Value: &voucher.CreatedAt.Value,
 		},
 	}

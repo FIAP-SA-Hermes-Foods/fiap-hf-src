@@ -2,10 +2,10 @@ package order
 
 import (
 	"context"
-	l "fiap-hf-src/infrastructure/logger"
-	"fiap-hf-src/internal/core/db"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
+	"fiap-hf-src/internal/core/useCase/db"
+	l "fiap-hf-src/pkg/logger"
 	"reflect"
 )
 
@@ -51,10 +51,10 @@ func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 	var outOrder = &entity.Order{
 		ClientID:  order.ClientID,
 		VoucherID: order.VoucherID,
-		Status: valueObject.Status{
+		Status: com.Status{
 			Value: order.Status.Value,
 		},
-		VerificationCode: valueObject.VerificationCode{
+		VerificationCode: com.VerificationCode{
 			Value: order.VerificationCode.Value,
 		},
 	}
@@ -89,10 +89,10 @@ func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.
 	var outOrder = &entity.Order{
 		ClientID:  order.ClientID,
 		VoucherID: order.VoucherID,
-		Status: valueObject.Status{
+		Status: com.Status{
 			Value: order.Status.Value,
 		},
-		VerificationCode: valueObject.VerificationCode{
+		VerificationCode: com.VerificationCode{
 			Value: order.VerificationCode.Value,
 		},
 	}

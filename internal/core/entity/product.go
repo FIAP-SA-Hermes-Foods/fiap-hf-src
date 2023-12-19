@@ -2,20 +2,20 @@ package entity
 
 import (
 	"encoding/json"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	com "fiap-hf-src/internal/core/entity/common"
 	"log"
 )
 
 type (
 	Product struct {
-		ID            int64                     `json:"id,omitempty"`
-		Name          string                    `json:"name,omitempty"`
-		Category      valueObject.Category      `json:"category,omitempty"`
-		Image         string                    `json:"image,omitempty"`
-		Description   string                    `json:"description,omitempty"`
-		Price         float64                   `json:"price,omitempty"`
-		CreatedAt     valueObject.CreatedAt     `json:"createdAt,omitempty"`
-		DeactivatedAt valueObject.DeactivatedAt `json:"deactivatedAt,omitempty"`
+		ID            int64             `json:"id,omitempty"`
+		Name          string            `json:"name,omitempty"`
+		Category      com.Category      `json:"category,omitempty"`
+		Image         string            `json:"image,omitempty"`
+		Description   string            `json:"description,omitempty"`
+		Price         float64           `json:"price,omitempty"`
+		CreatedAt     com.CreatedAt     `json:"createdAt,omitempty"`
+		DeactivatedAt com.DeactivatedAt `json:"deactivatedAt,omitempty"`
 	}
 
 	RequestProduct struct {

@@ -1,6 +1,6 @@
 package repository
 
-import "fiap-hf-src/internal/core/domain/entity"
+import "fiap-hf-src/internal/core/entity"
 
 type ClientRepository interface {
 	GetClientByID(id int64) (*entity.Client, error)

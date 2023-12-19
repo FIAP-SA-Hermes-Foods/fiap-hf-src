@@ -43,7 +43,7 @@ services:
     ports:
       - '8083:8080'
     volumes:
-      - ${PWD}/infrastructure/swagger_doc/swagger.json:/swagger.json
+      - ${PWD}/docs/swagger/swagger.json:/swagger.json
     networks:
       default:
         ipv4_address: 204.7.9.4

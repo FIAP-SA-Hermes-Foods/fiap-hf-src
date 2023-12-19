@@ -2,17 +2,17 @@ package entity
 
 import (
 	"encoding/json"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	com "fiap-hf-src/internal/core/entity/common"
 	"log"
 )
 
 type (
 	Client struct {
-		ID        int64                 `json:"id,omitempty"`
-		Name      string                `json:"name,omitempty"`
-		CPF       valueObject.Cpf       `json:"cpf,omitempty"`
-		Email     string                `json:"email,omitempty"`
-		CreatedAt valueObject.CreatedAt ` json:"createdAt,omitempty"`
+		ID        int64         `json:"id,omitempty"`
+		Name      string        `json:"name,omitempty"`
+		CPF       com.Cpf       `json:"cpf,omitempty"`
+		Email     string        `json:"email,omitempty"`
+		CreatedAt com.CreatedAt ` json:"createdAt,omitempty"`
 	}
 
 	RequestClient struct {

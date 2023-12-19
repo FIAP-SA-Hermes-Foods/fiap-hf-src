@@ -2,7 +2,7 @@ package api_mercadoPago
 
 import (
 	"encoding/json"
-	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/entity"
 	"log"
 	"net/http"
 )
