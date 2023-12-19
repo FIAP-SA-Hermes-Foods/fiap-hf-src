@@ -14,4 +14,4 @@ spec:
   storageClassName: hf-postgres-db
   persistentVolumeReclaimPolicy: Retain
   hostPath:
-    path: /docker-entrypoint-initdb.d/init-database.sh
+    path: "/infrastructure/scripts/init-database.sh"
