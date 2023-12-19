@@ -30,7 +30,7 @@ spec:
               name: hf-deploy-secret
           volumeMounts:
             - mountPath: /docker-entrypoint-initdb.d
-            - name: postgresql-initdb
+              name: postgresql-initdb
  
       imagePullSecrets:
       - name: hfregcred
