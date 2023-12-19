@@ -30,7 +30,7 @@ spec:
             name: hf-deploy-secret
         volumeMounts:
         - name: shared
-          mountPath: /docker-entrypoint-initdb.d/init-database.sh
+          mountPath: ./docker-entrypoint-initdb.d/init-database.sh
 
       imagePullSecrets:
       - name: hfregcred
