@@ -1,0 +1,896 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "HermesFoods API",
+        "description": "This is an API to create and buy your meal through a food totem.",
+        "version": "1.0.0"
+    },
+    "host": "127.0.0.1:8080",
+    "basePath": "/hermes_foods",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/order/": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Get all orders.",
+                "description": "Get all orders registered in the system.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/order-output-list"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Partially update a order.",
+                "description": "Partially update a order by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "orderBody",
+                        "in": "body",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/order-input"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/order-output"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/{orderID}": {
+            "get": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Get a Order.",
+                "description": "Get the order by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "orderID",
+                        "in": "path",
+                        "description": "Input subscription to save order at api's database",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/order-output"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Partially update a order.",
+                "description": "Partially update a order by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "orderID",
+                        "in": "path",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "orderBody",
+                        "in": "body",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/order-input-patch"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/order-output-patch"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/client/{clientCPF}": {
+            "get": {
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Get a Client CPF.",
+                "description": "Get the client by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "clientCPF",
+                        "in": "path",
+                        "description": "Input subscription to save client at api's database",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/client-output"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/client/": {
+            "post": {
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Save a client",
+                "description": "Save a client that subscribed at hermes-foods app.",
+                "parameters": [
+                    {
+                        "name": "clientBody",
+                        "in": "body",
+                        "description": "Input subscription to save client at api's database",
+                        "schema": {
+                            "$ref": "#/definitions/client-input"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully saved a client in totem's database.",
+                        "schema": {
+                            "$ref": "#/definitions/client-output"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get product by category.",
+                "description": "Get all products registered in the system by their category.",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Input subscription to save client at api's database",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/product-output-category"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Save a product",
+                "description": "Save a product that subscribed at hermes-foods app.",
+                "parameters": [
+                    {
+                        "name": "productBody",
+                        "in": "body",
+                        "description": "Input subscription to save product at api's database",
+                        "schema": {
+                            "$ref": "#/definitions/product-input"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully saved a product totem's database.",
+                        "schema": {
+                            "$ref": "#/definitions/product-output"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/product/{productID}": {
+            "put": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update a product.",
+                "description": "Update the product by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "productID",
+                        "in": "path",
+                        "description": "Input subscription to update client at api's database",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "productBody",
+                        "in": "body",
+                        "description": "Input subscription to update client at api's database",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/product-input"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/product-output"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Delete a product.",
+                "description": "Delete the product by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "productID",
+                        "in": "path",
+                        "description": "Input subscription to delete product at api's database",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/success-200"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/voucher/": {
+            "post": {
+                "tags": [
+                    "Voucher"
+                ],
+                "summary": "Save voucher in database.",
+                "description": "Partially update a order by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "voucherBody",
+                        "in": "body",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        },
+        "/voucher/{voucherID}": {
+            "get": {
+                "tags": [
+                    "Voucher"
+                ],
+                "summary": "Get a voucher.",
+                "description": "Get the voucher by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "voucherID",
+                        "in": "path",
+                        "description": "Input subscription to get voucher at api's database",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Voucher"
+                ],
+                "summary": "Partially update a voucher.",
+                "description": "Partially update a voucher by it's unique identifier.",
+                "parameters": [
+                    {
+                        "name": "voucherID",
+                        "in": "path",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "voucherBody",
+                        "in": "body",
+                        "description": "The unique identifier of the order to be partially updated.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/voucher"
+                        }
+                    },
+                    "405": {
+                        "description": "Method not allowed",
+                        "schema": {
+                            "$ref": "#/definitions/error-405"
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "schema": {
+                            "$ref": "#/definitions/error-404"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/error-500"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "client-input": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "some_name"
+                },
+                "cpf": {
+                    "type": "string",
+                    "example": "0000011111"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "teste@email.com"
+                }
+            }
+        },
+        "client-output": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "some_name"
+                },
+                "cpf": {
+                    "type": "string",
+                    "example": "0000011111"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "teste@email.com"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "30-10-2023 16:57:22"
+                }
+            }
+        },
+        "product-input": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "sandwitch"
+                },
+                "category": {
+                    "type": "string",
+                    "example": "in progress"
+                },
+                "image": {
+                    "type": "string",
+                    "example": "https://cache-backend-mcd.mcdonaldscupones.com/media/image/product$kMX5kx4H/200/200/original?country=br"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "with onion"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 3.90
+                }
+            }
+        },
+        "product-output-category": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/product-output"
+            }
+        },
+        "product-output": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "sandwitch"
+                },
+                "category": {
+                    "type": "string",
+                    "example": "in progress"
+                },
+                "image": {
+                    "type": "string",
+                    "example": "https://cache-backend-mcd.mcdonaldscupones.com/media/image/product$kMX5kx4H/200/200/original?country=br"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "with onion"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 3.90
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "30-10-2023 16:57:22"
+                }
+            }
+        },
+        "order-items": {
+            "type": "object",
+            "properties": {
+                "productId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "order-input": {
+            "type": "object",
+            "properties": {
+                "clientId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "voucherId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/order-items"
+                    }
+                }
+            }
+        },
+        "order-input-patch": {
+            "type": "object",
+            "properties": {
+                "clientId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "voucherId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Paid",
+                }
+
+            }
+        },
+        "order-output-list": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/order-output"
+            }
+        },
+        "order-output": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "client": {
+                    "type": "object",
+                    "$ref": "#/definitions/client-output"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/product-output"
+                    }
+                },
+                "voucherId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Paid"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "30-10-2023 16:57:22"
+                },
+                "totalPrice": {
+                    "type": "number",
+                    "example": 3.9
+                }
+            }
+        },
+        "order-output-patch": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "client": {
+                    "type": "object",
+                    "$ref": "#/definitions/client-output"
+                },
+                "voucherId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "status": {
+                    "type": "string",
+                    "example": "Paid"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "30-10-2023 16:57:22"
+                }
+            }
+        },
+        "voucher": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "MYDISCOUNTCODE10"
+                },
+                "percentage": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "expiresAt": {
+                    "type": "string",
+                    "example": "30-10-2023 16:57:22"
+                }
+            }
+        },
+        "success-200": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "string",
+                    "example": "OK"
+                }
+            }
+        },
+        "error-401": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error: Not Authorized"
+                }
+            }
+        },
+        "error-404": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error: item not Found"
+                }
+            }
+        },
+        "error-405": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error: method not allowed"
+                }
+            }
+        },
+        "error-500": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error: error description"
+                }
+            }
+        }
+    }
+}
