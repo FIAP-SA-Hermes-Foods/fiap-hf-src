@@ -2,19 +2,19 @@ package entity
 
 import (
 	"encoding/json"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	com "fiap-hf-src/internal/core/entity/common"
 	"log"
 )
 
 type (
 	Order struct {
-		ID               int64                        `json:"id,omitempty"`
-		ClientID         int64                        `json:"clientId,omitempty"`
-		VoucherID        *int64                       `json:"voucherId,omitempty"`
-		Items            []OrderItems                 `json:"items,omitempty"`
-		Status           valueObject.Status           `json:"status,omitempty"`
-		VerificationCode valueObject.VerificationCode `json:"verificationCode,omitempty"`
-		CreatedAt        valueObject.CreatedAt        `json:"createdAt,omitempty"`
+		ID               int64                `json:"id,omitempty"`
+		ClientID         int64                `json:"clientId,omitempty"`
+		VoucherID        *int64               `json:"voucherId,omitempty"`
+		Items            []OrderItems         `json:"items,omitempty"`
+		Status           com.Status           `json:"status,omitempty"`
+		VerificationCode com.VerificationCode `json:"verificationCode,omitempty"`
+		CreatedAt        com.CreatedAt        `json:"createdAt,omitempty"`
 	}
 
 	RequestOrder struct {

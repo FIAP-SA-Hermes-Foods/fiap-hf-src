@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/entity"
 )
 
 type OrderProductService interface {

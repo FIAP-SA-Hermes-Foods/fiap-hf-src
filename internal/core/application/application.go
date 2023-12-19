@@ -3,12 +3,12 @@ package application
 import (
 	"context"
 	"errors"
-	l "fiap-hf-src/infrastructure/logger"
-	"fiap-hf-src/internal/core/domain/entity"
-	httpHF "fiap-hf-src/internal/core/domain/http"
-	"fiap-hf-src/internal/core/domain/repository"
-	"fiap-hf-src/internal/core/domain/valueObject"
-	"fiap-hf-src/internal/core/service"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
+	httpHF "fiap-hf-src/internal/core/useCase/http"
+	"fiap-hf-src/internal/core/useCase/repository"
+	"fiap-hf-src/internal/core/useCase/service"
+	l "fiap-hf-src/pkg/logger"
 	"fmt"
 	"strings"
 )
@@ -337,7 +337,7 @@ func (app hermesFoodsApp) GetOrders() ([]entity.OutputOrder, error) {
 			CreatedAt:        orders[i].CreatedAt.Format(),
 		}
 
-		if strings.ToLower(order.Status) != valueObject.FinishedStatusKey {
+		if strings.ToLower(order.Status) != com.FinishedStatusKey {
 			orderList = append(orderList, order)
 		}
 	}
@@ -480,11 +480,11 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*entity.OutputOrder, er
 		Client: entity.Client{
 			ID:   c.ID,
 			Name: c.Name,
-			CPF: valueObject.Cpf{
+			CPF: com.Cpf{
 				Value: c.CPF.Value,
 			},
 			Email: c.Email,
-			CreatedAt: valueObject.CreatedAt{
+			CreatedAt: com.CreatedAt{
 				Value: c.CreatedAt.Value,
 			},
 		},

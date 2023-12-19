@@ -2,10 +2,10 @@ package client
 
 import (
 	"context"
-	l "fiap-hf-src/infrastructure/logger"
-	"fiap-hf-src/internal/core/db"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
+	"fiap-hf-src/internal/core/useCase/db"
+	l "fiap-hf-src/pkg/logger"
 )
 
 var (
@@ -110,7 +110,7 @@ func (c clientRepository) SaveClient(client entity.Client) (*entity.Client, erro
 
 	var outClient = &entity.Client{
 		Name: client.Name,
-		CPF: valueObject.Cpf{
+		CPF: com.Cpf{
 			Value: client.CPF.Value,
 		},
 		Email: client.Email,

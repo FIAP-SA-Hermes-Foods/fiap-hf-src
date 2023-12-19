@@ -2,9 +2,9 @@ package orderproduct
 
 import (
 	"context"
-	l "fiap-hf-src/infrastructure/logger"
-	"fiap-hf-src/internal/core/db"
-	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/entity"
+	"fiap-hf-src/internal/core/useCase/db"
+	l "fiap-hf-src/pkg/logger"
 )
 
 var (

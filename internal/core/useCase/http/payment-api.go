@@ -2,7 +2,7 @@ package http
 
 import (
 	"context"
-	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/entity"
 )
 
 type PaymentAPI interface {

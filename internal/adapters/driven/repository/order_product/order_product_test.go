@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fiap-hf-src/internal/core/domain/entity"
+	"fiap-hf-src/internal/core/entity"
 	"fmt"
 	"log"
 	"os/exec"

@@ -1,11 +1,11 @@
-package ui
+package web
 
 import (
 	"bytes"
 	"encoding/json"
 	"fiap-hf-src/internal/core/application"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -82,7 +82,7 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 		ClientID:  reqOrder.ClientID,
 		VoucherID: reqOrder.VoucherID,
 		Items:     reqOrder.Items,
-		Status: valueObject.Status{
+		Status: com.Status{
 			Value: reqOrder.Status,
 		},
 	}
@@ -185,7 +185,7 @@ func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.R
 	order := entity.Order{
 		ClientID:  reqOrder.ClientID,
 		VoucherID: reqOrder.VoucherID,
-		Status: valueObject.Status{
+		Status: com.Status{
 			Value: reqOrder.Status,
 		},
 	}

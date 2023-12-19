@@ -1,11 +1,11 @@
-package ui
+package web
 
 import (
 	"bytes"
 	"encoding/json"
 	"fiap-hf-src/internal/core/application"
-	"fiap-hf-src/internal/core/domain/entity"
-	"fiap-hf-src/internal/core/domain/valueObject"
+	"fiap-hf-src/internal/core/entity"
+	com "fiap-hf-src/internal/core/entity/common"
 	"fmt"
 	"net/http"
 	"strings"
@@ -75,7 +75,7 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 
 	client := entity.Client{
 		Name: reqClient.Name,
-		CPF: valueObject.Cpf{
+		CPF: com.Cpf{
 			Value: reqClient.CPF,
 		},
 		Email: reqClient.Email,
