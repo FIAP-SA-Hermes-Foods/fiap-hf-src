@@ -37,19 +37,19 @@ func (m mercadoPagoAPI) DoPayment(ctx context.Context, input entity.InputPayment
 	ctxReq, cancel := context.WithTimeout(ctx, m.Timeout)
 	defer cancel()
 
-	l.Infof("DoPayment received input: ", input.MarshalString())
+	l.Infof("DoPayment received input: ", " | ", input.MarshalString())
 
 	var buff bytes.Buffer
 
 	if _, err := buff.ReadFrom(strings.NewReader(input.MarshalString())); err != nil {
-		l.Errorf("DoPayment error: ", err)
+		l.Errorf("DoPayment error: ", " | ", err)
 		return nil, err
 	}
 
 	req, err := http.NewRequestWithContext(ctxReq, http.MethodPost, m.URL, &buff)
 
 	if err != nil {
-		l.Errorf("DoPayment error: ", err)
+		l.Errorf("DoPayment error: ", " | ", err)
 		return nil, err
 	}
 
@@ -60,7 +60,7 @@ func (m mercadoPagoAPI) DoPayment(ctx context.Context, input entity.InputPayment
 	resp, err := httpClient.Do(req)
 
 	if err != nil {
-		l.Errorf("DoPayment error: ", err)
+		l.Errorf("DoPayment error: ", " | ", err)
 		return nil, err
 	}
 
@@ -69,24 +69,24 @@ func (m mercadoPagoAPI) DoPayment(ctx context.Context, input entity.InputPayment
 	rBody, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		l.Errorf("DoPayment error: ", err)
+		l.Errorf("DoPayment error: ", " | ", err)
 		return nil, err
 	}
 
 	cleanSpaces(&rBody)
 
-	l.Infof("received httpAdapter response: ", string(rBody))
+	l.Infof("received httpAdapter response: ", " | ", string(rBody))
 
 	var out = new(entity.OutputPaymentAPI)
 
 	out.HTTPStatus = resp.StatusCode
 
 	if err := json.Unmarshal(rBody, out); err != nil {
-		l.Errorf("DoPayment error: ", err)
+		l.Errorf("DoPayment error: ", " | ", err)
 		return nil, err
 	}
 
-	l.Infof("DoPayment output: ", out.MarshalString())
+	l.Infof("DoPayment output: ", " | ", out.MarshalString())
 
 	return out, nil
 }
