@@ -1,4 +1,4 @@
-package valueObject
+package common
 
 import (
 	"fmt"
