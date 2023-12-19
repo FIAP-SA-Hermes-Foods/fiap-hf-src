@@ -4,12 +4,12 @@ metadata:
   name: hf-pv-claim-postgres
   namespace: dev
   labels:
-    name: hf-pv-claim-postgres
+    app: hermes-foods-postgres-app
 
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadOnlyMany
   resources:
     requests:
-      storage: 1Gi 
+      storage: 1Mi 
   storageClassName: hf-postgres-db

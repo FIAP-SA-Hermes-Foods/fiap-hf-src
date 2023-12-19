@@ -4,13 +4,14 @@ metadata:
   name: hf-pv-postgres
   namespace: dev
   labels:
-    name: hf-pv-postgres
+    type: local
+    app: hermes-foods-postgres-app
 
 spec:
   capacity:
-    storage: 1Gi
+    storage: 1Mi
   accessModes:
-    - ReadWriteOnce
+    - ReadOnlyMany
   storageClassName: hf-postgres-db
   persistentVolumeReclaimPolicy: Retain
   hostPath:

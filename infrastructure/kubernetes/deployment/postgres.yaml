@@ -20,25 +20,25 @@ spec:
         app: hermes-foods-postgres-app
     spec:
       containers:
-      - name: postgresql-hermes-foods
-        image: "{{REPOSITORY_POSTGRES_URL}}:{{IMAGE_TAG}}"
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 5432
-        envFrom:
-        - secretRef:
-            name: hf-deploy-secret
-        volumeMounts:
-        - name: postgresql-initdb
-          mountPath: /docker-entrypoint-initdb.d
+        - name: postgresql-hermes-foods
+          image: "{{REPOSITORY_POSTGRES_URL}}:{{IMAGE_TAG}}"
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 5432
+          envFrom:
+          - secretRef:
+              name: hf-deploy-secret
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+            - name: postgresql-initdb
  
       imagePullSecrets:
       - name: hfregcred
 
       volumes:
-      - name: postgresql-initdb
-        persistentVolumeClaim:
-          claimName: hf-pv-claim-postgres
+        - name: postgresql-initdb
+          persistentVolumeClaim:
+            claimName: hf-pv-claim-postgres
 
 ---
 
