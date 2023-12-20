@@ -41,12 +41,12 @@ metadata:
   namespace: dev
 
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app.kubernetes.io/name: hermes-foods-swagger-app 
+    app: hermes-foods-swagger-app 
 
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8083 
-      nodePort: 30803
+      #nodePort: 30803
