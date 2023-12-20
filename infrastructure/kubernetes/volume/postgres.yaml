@@ -1,6 +1,6 @@
-# ===========================================================================================
-# Not in use for now because of AWS resources issues. But we will be used in other oportunity
-# ===========================================================================================
+# ===============================================================================================
+# Not in use for now because of AWS resources issues. But we will be use it in another oportunity
+# ===============================================================================================
 
 apiVersion: v1
 kind: PersistentVolume
