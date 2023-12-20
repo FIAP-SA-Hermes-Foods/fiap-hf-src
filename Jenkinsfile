@@ -116,6 +116,16 @@ pipeline {
                 }
             }
         }
+        
+         stage('Updating Pods') { 
+            steps{ 
+                script {
+                    sh """kubectl rollout restart deployment hermes-foods-go-deployment -n dev"""
+                    sh """kubectl rollout restart deployment hermes-foods-postgres-deployment -n dev"""
+                    sh """kubectl rollout restart deployment hermes-foods-swagger-deployment -n dev"""
+                }
+            }
+        }
     }
 }      
     
