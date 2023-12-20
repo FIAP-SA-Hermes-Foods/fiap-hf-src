@@ -1,3 +1,7 @@
+# ===========================================================================================
+# Not in use for now because of AWS resources issues. But we will be used in other oportunity
+# ===========================================================================================
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
