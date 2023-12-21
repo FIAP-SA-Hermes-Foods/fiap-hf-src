@@ -29,8 +29,12 @@ spec:
         - secretRef:
             name: hf-deploy-secret
         volumeMounts:
-          - mountPath: /etc
+          - mountPath: /swagger_file
             name: swagger-init-config
+        lifecycle:
+          postStart:
+            exec:
+              command: ["sh", "-c", "cp /swagger_file/swagger.json /"]
 
       imagePullSecrets:
       - name: hfregcred
