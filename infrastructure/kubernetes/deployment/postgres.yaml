@@ -24,7 +24,7 @@ spec:
           image: "{{REPOSITORY_POSTGRES_URL}}:{{IMAGE_TAG}}"
           imagePullPolicy: Always
           ports:
-          - containerPort: 5432
+            - containerPort: 5432
           envFrom:
           - secretRef:
               name: hf-deploy-secret
@@ -48,12 +48,9 @@ kind: Service
 metadata:
   name: hermes-foods-postgres-service
   namespace: dev
-
 spec:
-  type: ClusterIP
   selector:
-    app.kubernetes.io/name: hermes-foods-postgres-app 
-
+    app: hermes-foods-postgres-app 
   ports:
     - protocol: TCP
       port: 5432
