@@ -28,8 +28,17 @@ spec:
         envFrom:
         - secretRef:
             name: hf-deploy-secret
+        volumeMounts:
+          - mountPath: /docker-entrypoint-initdb.d
+            name: swagger-init-config
+
       imagePullSecrets:
       - name: hfregcred
+
+      volumes:
+        - name: swagger-init-config
+          configMap:
+            name: hf-swagger-config
 
 ---
 

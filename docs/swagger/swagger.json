@@ -759,7 +759,7 @@
                 },
                 "status": {
                     "type": "string",
-                    "example": "Paid",
+                    "example": "Paid"
                 }
 
             }
