@@ -29,7 +29,7 @@ spec:
         - secretRef:
             name: hf-deploy-secret
         volumeMounts:
-          - mountPath: /
+          - mountPath: "/"
             name: swagger-init-config
 
       imagePullSecrets:
