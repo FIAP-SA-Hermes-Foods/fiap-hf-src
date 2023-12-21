@@ -22,7 +22,7 @@ spec:
       containers:
       - name: go-hermes-foods-app
         image: "{{REPOSITORY_API_URL}}:{{IMAGE_TAG}}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         envFrom:
         - secretRef:
             name: hf-deploy-secret

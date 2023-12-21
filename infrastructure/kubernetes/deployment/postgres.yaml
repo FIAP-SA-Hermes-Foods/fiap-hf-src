@@ -22,7 +22,7 @@ spec:
       containers:
         - name: postgresql-hermes-foods
           image: "{{REPOSITORY_POSTGRES_URL}}:{{IMAGE_TAG}}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
           - containerPort: 5432
           envFrom:
