@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
 	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
@@ -16,8 +17,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
+
+func init() {
+	if err := defineEnvs(".env"); err != nil {
+		log.Fatalf("Error to load .env -> %v", err)
+	}
+}
 
 func main() {
 	printArt()
@@ -89,4 +97,42 @@ func main() {
 	router.HandleFunc("/hermes_foods/voucher/", hanldersVoucher.Handler)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func defineEnvs(filename string) error {
+	file, err := os.Open(filename)
+
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Printf("error on close -> %v", err)
+		}
+	}(file)
+
+	if err != nil {
+		return err
+	}
+
+	sc := bufio.NewScanner(file)
+
+	for sc.Scan() {
+		indexComment := strings.Index(sc.Text(), "#")
+		if indexComment != -1 && len(strings.TrimSpace(sc.Text()[:indexComment])) == 0 {
+			continue
+		}
+		envEqualSign := strings.Index(sc.Text(), "=")
+		if envEqualSign != -1 {
+			envMatchKey := sc.Text()[:envEqualSign]
+			envMatchValue := sc.Text()[envEqualSign+1:]
+			if len(envMatchKey) != 0 || len(envMatchValue) != 0 {
+				err := os.Setenv(envMatchKey, envMatchValue)
+				if err != nil {
+					return err
+				}
+			}
+
+		}
+	}
+
+	return nil
 }
