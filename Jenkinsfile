@@ -21,6 +21,8 @@ pipeline {
             AWS_ECR_USERNAME = credentials("AWS_ECR_USERNAME")
             AWS_ECR_PASSWORD = credentials("AWS_ECR_PASSWORD")
             AWS_ECR_EMAIL = credentials("AWS_ECR_EMAIL")
+
+            API_TOKEN = credentials("API_TOKEN")
         }
 
     stages { 
@@ -46,7 +48,7 @@ pipeline {
                 script { 
                     sh """git secret reveal -p '${GPG_PASSWORD}'"""
                     sh """git secret cat .env > .env"""
-                    sh """cat .env"""
+                    sh """sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env"""
                     sh """#!/bin/bash
                     if [ -d $HOME/envs ]; then 
                         echo ""
