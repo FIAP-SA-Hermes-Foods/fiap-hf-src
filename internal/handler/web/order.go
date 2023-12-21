@@ -7,7 +7,6 @@ import (
 	"fiap-hf-src/internal/core/entity"
 	com "fiap-hf-src/internal/core/entity/common"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -26,7 +25,6 @@ func NewHandlerOrder(app application.HermesFoodsApp) HandlerOrder {
 }
 
 func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
-	log.Printf("all headers -> %v\n", req.Header)
 	apiHToken := req.Header.Get("Auth-token")
 
 	if err := tokenValidate(apiHToken); err != nil {

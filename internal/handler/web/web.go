@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	l "fiap-hf-src/pkg/logger"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -29,7 +28,6 @@ func HealthCheck(rw http.ResponseWriter, req *http.Request) {
 
 func tokenValidate(tokenInput string) error {
 	apiHTokenDecode, err := base64.StdEncoding.DecodeString(tokenInput)
-	log.Printf("inputheader token -> %v\n", tokenInput)
 
 	if err != nil {
 		l.Warningf("request blocked, invalid token: ", " | ", tokenInput)
@@ -37,7 +35,6 @@ func tokenValidate(tokenInput string) error {
 	}
 
 	envToken := os.Getenv("API_TOKEN")
-	log.Printf("env token -> %v\n", envToken)
 
 	envTokenDecode, err := base64.StdEncoding.DecodeString(envToken)
 
