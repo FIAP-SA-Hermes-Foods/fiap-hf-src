@@ -55,12 +55,14 @@ func defineEnvs(filename string) error {
 
 	for sc.Scan() {
 		envEqualSign := strings.Index(sc.Text(), "=")
-		envMatchKey := sc.Text()[:envEqualSign]
-		envMatchValue := sc.Text()[envEqualSign+1:]
-		if len(envMatchKey) != 0 || len(envMatchValue) != 0 {
-			err := os.Setenv(envMatchKey, envMatchValue)
-			if err != nil {
-				return err
+		if envEqualSign != -1 {
+			envMatchKey := sc.Text()[:envEqualSign]
+			envMatchValue := sc.Text()[envEqualSign+1:]
+			if len(envMatchKey) != 0 || len(envMatchValue) != 0 {
+				err := os.Setenv(envMatchKey, envMatchValue)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
