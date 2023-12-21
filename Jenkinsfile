@@ -108,6 +108,7 @@ pipeline {
         stage('Deploy at k8s') { 
             steps{ 
                 script {
+                    sh """kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml"""
