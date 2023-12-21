@@ -54,6 +54,10 @@ func defineEnvs(filename string) error {
 	sc := bufio.NewScanner(file)
 
 	for sc.Scan() {
+		indexComment := strings.Index(sc.Text(), "#")
+		if indexComment != -1 && len(strings.TrimSpace(sc.Text()[:indexComment])) == 0 {
+			continue
+		}
 		envEqualSign := strings.Index(sc.Text(), "=")
 		if envEqualSign != -1 {
 			envMatchKey := sc.Text()[:envEqualSign]
@@ -64,6 +68,7 @@ func defineEnvs(filename string) error {
 					return err
 				}
 			}
+
 		}
 	}
 
