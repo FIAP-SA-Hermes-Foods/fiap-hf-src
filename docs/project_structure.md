@@ -78,8 +78,8 @@ This folder is a document about the architecture chosen to make the project.
 ```
 
 **cmd** - This folder is responsible for executables.
-- **migration** - This folder is realated to initialization of Database, for example to avoid starting with everything empty;  
-- **server** - This folder is realated to Mercado Pago Mock and Hermes Foods API;  
+- **migration** - This folder is related to initialization of Database, for example to avoid starting with everything empty;  
+- **server** - This folder is related to Mercado Pago Mock and Hermes Foods API;  
 
 ---
 <br>
@@ -90,8 +90,8 @@ This folder is a document about the architecture chosen to make the project.
 │   └── swagger
 ```
 **docs** - This folder is responsible for documentation, for example: how to contribute in this project, postman collections and swagger json template;
-- **postman_collection** - This folder is realated to postman_collection json collection to import requests easily;  
-- **swagger** - This folder is realated to swagger json template;  
+- **postman_collection** - This folder is related to postman_collection json collection to import requests easily;  
+- **swagger** - This folder is related to swagger json template;  
 
 ---
 <br>
@@ -117,13 +117,14 @@ This folder is a document about the architecture chosen to make the project.
 │   └── scripts
 ```
 **infrastructure** - This folder is responsible for all infrastructure configs like: docker images, manifest and helper scripts.
-- **db** - This folder is realated to database config;  
-    - **DML** - This folder is realated to .SQL files that perform our data manipulation;  
-- **kubernetes** - This folder is realated to app manifest;  
+- **db** - This folder is related to database config;  
+    - **DML** - This folder is related to .SQL files that perform our data manipulation;  
+- **kubernetes** - This folder is related to app manifest;  
     - **config** - This folder is related to ConfigMaps;
     - **deployment** - This folder is related to Deployment and Service;
     - **volume** - This folder is related to Volumes kind PV (Persistent Volume) and PVC (Persistent Volume Claim);
-- **scripts** - This folder is realated to scripts, for example setting up docker network;
+- **docker** - This folder is related to docker images;
+- **scripts** - This folder is related to scripts, for example setting up docker network;
 
 ---
 <br>
@@ -159,16 +160,16 @@ This folder is a document about the architecture chosen to make the project.
 ```
 **internal** - This folder is responsible to have all resources about the server, like: external connections, business logic, entity management, etc...
 - **adapter** - This folder is responsible for interfaces and structures that define the desired interface about external connections related to persistence like: SQL, NoSQL, Cache, etc...;  
-    - **driven** - This folder is realated to out Database;  
-        - **repository** - This folder is realated to interfaces definition, logic related to data persistence and concrete implementations;  
+    - **driven** - This folder is related to out Database;  
+        - **repository** - This folder is related to interfaces definition, logic related to data persistence and concrete implementations;  
     - **driver** - This folder is responsible for interfaces and structures that define the desired interface about external connections not related to persistence like: HTTP, RPC, Message Broker;  
-        - **http** - This folder is realated to payment API;
+        - **http** - This folder is related to payment API;
 - **core** - This folder is used to store the project's core or foundational code, which may include essential functionality;
-    - **application** - This folder is realated to the aplication, where have business logic that all layers communicate. Example: (application -> service -> adapters -> driver -> http -> api-mercadoPago -> adapters -> repository);
-    - **entity** - This folder is realated to store domain entity definitions;  
-        - **common** - This folder is realated to store definitions of structures that could be used by entities;  
-    - **service** - This folder is realated to services, where have the all business logic about one entity. Example: OrderService;  
-    - **useCase** - This folder is realated to contracts, where have the all connections that could be used by adapters or application;  
+    - **application** - This folder is related to the aplication, where have business logic that all layers communicate. Example: (application -> service -> adapters -> driver -> http -> api-mercadoPago -> adapters -> repository);
+    - **entity** - This folder is related to store domain entity definitions;  
+        - **common** - This folder is related to store definitions of structures that could be used by entities;  
+    - **service** - This folder is related to services, where have the all business logic about one entity. Example: OrderService;  
+    - **useCase** - This folder is related to contracts, where have the all connections that could be used by adapters or application;  
 - **handler** - This folder is related to handle user requests like: http1/2, RabbitMq, RPC, etc..;
     - **web** - This folder is related to handle user http requests.
 
@@ -182,8 +183,8 @@ This folder is a document about the architecture chosen to make the project.
 │   └── postgres
 ```
 **pkg** - This folder is responsible for all external resources that our application communicates with.
-- **logger** - This folder is realated to logger implementation;
-- **migration** - This folder is realated to migration implementation;
-- **postgres** - This folder is realated to postgresql database implementation;
+- **logger** - This folder is related to logger implementation;
+- **migration** - This folder is related to migration implementation;
+- **postgres** - This folder is related to postgresql database implementation;
 
 
