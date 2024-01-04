@@ -1,0 +1,35 @@
+# ===============================================================================================
+# Not in use for now because of AWS resources issues. But we will be use it in another oportunity
+# ===============================================================================================
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hf-pv-postgres
+  namespace: dev
+  labels:
+    type: local
+    app: hermes-foods-postgres-app
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadOnlyMany
+  storageClassName: hf-postgres-db
+  hostPath:
+    path: "{{PWD}}/infrastructure/scripts/init-database.sh"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hf-pv-claim-postgres
+  namespace: dev
+  labels:
+    app: hermes-foods-postgres-app
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Mi 
+  storageClassName: hf-postgres-db

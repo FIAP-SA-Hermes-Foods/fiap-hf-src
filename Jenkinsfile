@@ -21,6 +21,8 @@ pipeline {
             AWS_ECR_USERNAME = credentials("AWS_ECR_USERNAME")
             AWS_ECR_PASSWORD = credentials("AWS_ECR_PASSWORD")
             AWS_ECR_EMAIL = credentials("AWS_ECR_EMAIL")
+
+            API_TOKEN = credentials("API_TOKEN")
         }
 
     stages { 
@@ -46,6 +48,7 @@ pipeline {
                 script { 
                     sh """git secret reveal -p '${GPG_PASSWORD}'"""
                     sh """git secret cat .env > .env"""
+                    sh """sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env"""
                     sh """#!/bin/bash
                     if [ -d $HOME/envs ]; then 
                         echo ""
@@ -108,10 +111,22 @@ pipeline {
         stage('Deploy at k8s') { 
             steps{ 
                 script {
+                    sh """kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml"""
+                }
+            }
+        }
+        
+         stage('Updating Pods') { 
+            steps{ 
+                script {
+                    sh """kubectl rollout restart deployment hermes-foods-go-deployment -n dev"""
+                    sh """kubectl rollout restart deployment hermes-foods-postgres-deployment -n dev"""
+                    sh """kubectl rollout restart deployment hermes-foods-swagger-deployment -n dev"""
                 }
             }
         }

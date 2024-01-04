@@ -8,7 +8,7 @@ metadata:
     app: hermes-foods-swagger-app
 
 spec:
-  replicas: 1 
+  # replicas: 1
 
   selector:
     matchLabels:
@@ -22,14 +22,27 @@ spec:
       containers:
       - name: swagger-hermes-foods
         image: "{{REPOSITORY_SWAGGER_URL}}:{{IMAGE_TAG}}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8083
+        - containerPort: 8080
         envFrom:
         - secretRef:
             name: hf-deploy-secret
+        volumeMounts:
+          - mountPath: /swagger_file
+            name: swagger-init-config
+        lifecycle:
+          postStart:
+            exec:
+              command: ["sh", "-c", "cp /swagger_file/swagger.json /"]
+
       imagePullSecrets:
       - name: hfregcred
+
+      volumes:
+        - name: swagger-init-config
+          configMap:
+            name: hf-swagger-config
 
 ---
 
@@ -41,12 +54,12 @@ metadata:
   namespace: dev
 
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app.kubernetes.io/name: hermes-foods-swagger-app 
+    app: hermes-foods-swagger-app 
 
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8083 
-      nodePort: 30803
+      port: 8083
+      targetPort: 8080 
+      #nodePort: 30803

@@ -8,7 +8,7 @@ metadata:
     app: hermes-foods-go-app
 
 spec:
-  replicas: 1 
+  # replicas: 1
 
   selector:
     matchLabels:
@@ -22,7 +22,7 @@ spec:
       containers:
       - name: go-hermes-foods-app
         image: "{{REPOSITORY_API_URL}}:{{IMAGE_TAG}}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         envFrom:
         - secretRef:
             name: hf-deploy-secret
@@ -42,18 +42,19 @@ metadata:
   namespace: dev
 
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app.kubernetes.io/name: hermes-foods-go-app 
+    app: hermes-foods-go-app 
 
   ports:
     - protocol: TCP
       name: go-api-port
       port: 8080
       targetPort: 8080 
-      nodePort: 30800
+      #nodePort: 30800
     - protocol: TCP
       name: api-fake-mp-port
       port: 8081
       targetPort: 8081 
-      nodePort: 30801
+      #nodePort: 30801
+
