@@ -8,7 +8,6 @@ metadata:
     app: hermes-foods-go-app
 
 spec:
-  # replicas: 1
 
   selector:
     matchLabels:
