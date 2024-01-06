@@ -117,6 +117,9 @@ pipeline {
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml"""
                     sh """kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/hpa/app.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/hpa/postgres.yaml"""
+                    sh """kubectl apply -f ./infrastructure/kubernetes/hpa/swagger.yaml"""
                 }
             }
         }
