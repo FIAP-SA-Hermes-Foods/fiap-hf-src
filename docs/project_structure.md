@@ -34,7 +34,7 @@ This folder is a document about the architecture chosen to make the project.
 │   
 ├── internal
 │   ├── adapters
-│   │   ├── driven
+│   │   ├── driver
 │   │   │   └── repository
 │   │   │       ├── client
 │   │   │       ├── order
@@ -42,7 +42,7 @@ This folder is a document about the architecture chosen to make the project.
 │   │   │       ├── product
 │   │   │       └── voucher
 │   │   │
-│   │   └── driver
+│   │   └── driven
 │   │       └── http
 │   │           └── api-mercadoPago
 │   │
@@ -133,7 +133,7 @@ This folder is a document about the architecture chosen to make the project.
 ```
 ├── internal
 │   ├── adapters
-│   │   ├── driven
+│   │   ├── driver
 │   │   │   └── repository
 │   │   │       ├── client
 │   │   │       ├── order
@@ -141,7 +141,7 @@ This folder is a document about the architecture chosen to make the project.
 │   │   │       ├── product
 │   │   │       └── voucher
 │   │   │
-│   │   └── driver
+│   │   └── driven
 │   │       └── http
 │   │           └── api-mercadoPago
 │   │
@@ -160,12 +160,12 @@ This folder is a document about the architecture chosen to make the project.
 ```
 **internal** - This folder is responsible to have all resources about the server, like: external connections, business logic, entity management, etc...
 - **adapter** - This folder is responsible for interfaces and structures that define the desired interface about external connections related to persistence like: SQL, NoSQL, Cache, etc...;  
-    - **driven** - This folder is related to out Database;  
+    - **driver** - This folder is related to out Database;  
         - **repository** - This folder is related to interfaces definition, logic related to data persistence and concrete implementations;  
-    - **driver** - This folder is responsible for interfaces and structures that define the desired interface about external connections not related to persistence like: HTTP, RPC, Message Broker;  
+    - **driven** - This folder is responsible for interfaces and structures that define the desired interface about external connections not related to persistence like: HTTP, RPC, Message Broker;  
         - **http** - This folder is related to payment API;
 - **core** - This folder is used to store the project's core or foundational code, which may include essential functionality;
-    - **application** - This folder is related to the aplication, where have business logic that all layers communicate. Example: (application -> service -> adapters -> driver -> http -> api-mercadoPago -> adapters -> repository);
+    - **application** - This folder is related to the aplication, where have business logic that all layers communicate. Example: (application -> service -> adapters -> driven -> http -> api-mercadoPago -> adapters -> repository);
     - **entity** - This folder is related to store domain entity definitions;  
         - **common** - This folder is related to store definitions of structures that could be used by entities;  
     - **service** - This folder is related to services, where have the all business logic about one entity. Example: OrderService;  

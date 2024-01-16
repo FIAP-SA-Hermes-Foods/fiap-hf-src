@@ -3,12 +3,12 @@ package main
 import (
 	"bufio"
 	"context"
-	cRepo "fiap-hf-src/internal/adapters/driven/repository/client"
-	oRepo "fiap-hf-src/internal/adapters/driven/repository/order"
-	opRepo "fiap-hf-src/internal/adapters/driven/repository/order_product"
-	pRepo "fiap-hf-src/internal/adapters/driven/repository/product"
-	vRepo "fiap-hf-src/internal/adapters/driven/repository/voucher"
-	apiMercadoPago "fiap-hf-src/internal/adapters/driver/http/api-mercadoPago"
+	apiMercadoPago "fiap-hf-src/internal/adapters/driven/http/api-mercadoPago"
+	cRepo "fiap-hf-src/internal/adapters/driver/repository/client"
+	oRepo "fiap-hf-src/internal/adapters/driver/repository/order"
+	opRepo "fiap-hf-src/internal/adapters/driver/repository/order_product"
+	pRepo "fiap-hf-src/internal/adapters/driver/repository/product"
+	vRepo "fiap-hf-src/internal/adapters/driver/repository/voucher"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
 	"fiap-hf-src/internal/handler/web"
@@ -19,6 +19,14 @@ import (
 	"os"
 	"strings"
 	"time"
+)
+
+const (
+	notFindIndex       = -1
+	indexMatchedValue  = 1
+	nullMatch          = 0
+	commentCharacter   = "#"
+	separatorCharacter = "="
 )
 
 func init() {
@@ -90,12 +98,11 @@ func main() {
 	handlersProduct := web.NewHandlerProduct(app)
 	hanldersVoucher := web.NewHandlerVoucher(app)
 
-	router.HandleFunc("/hermes_foods/health", web.HealthCheck)
-	router.HandleFunc("/hermes_foods/client/", handlersClient.Handler)
-	router.HandleFunc("/hermes_foods/order/", handlersOrder.Handler)
-	router.HandleFunc("/hermes_foods/product/", handlersProduct.Handler)
-	router.HandleFunc("/hermes_foods/voucher/", hanldersVoucher.Handler)
-
+	router.Handle("/hermes_foods/health/", http.StripPrefix("/", web.Middleware(web.HealthCheck)))
+	router.Handle("/hermes_foods/client/", http.StripPrefix("/", web.Middleware(handlersClient.Handler)))
+	router.Handle("/hermes_foods/order/", http.StripPrefix("/", web.Middleware(handlersOrder.Handler)))
+	router.Handle("/hermes_foods/product/", http.StripPrefix("/", web.Middleware(handlersProduct.Handler)))
+	router.Handle("/hermes_foods/voucher/", http.StripPrefix("/", web.Middleware(hanldersVoucher.Handler)))
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
@@ -116,21 +123,20 @@ func defineEnvs(filename string) error {
 	sc := bufio.NewScanner(file)
 
 	for sc.Scan() {
-		indexComment := strings.Index(sc.Text(), "#")
-		if indexComment != -1 && len(strings.TrimSpace(sc.Text()[:indexComment])) == 0 {
+		indexComment := strings.Index(sc.Text(), commentCharacter)
+		if indexComment != notFindIndex && len(strings.TrimSpace(sc.Text()[:indexComment])) == nullMatch {
 			continue
 		}
-		envEqualSign := strings.Index(sc.Text(), "=")
-		if envEqualSign != -1 {
+		envEqualSign := strings.Index(sc.Text(), separatorCharacter)
+		if envEqualSign != notFindIndex {
 			envMatchKey := sc.Text()[:envEqualSign]
-			envMatchValue := sc.Text()[envEqualSign+1:]
-			if len(envMatchKey) != 0 || len(envMatchValue) != 0 {
+			envMatchValue := sc.Text()[envEqualSign+indexMatchedValue:]
+			if len(envMatchKey) != nullMatch || len(envMatchValue) != nullMatch {
 				err := os.Setenv(envMatchKey, envMatchValue)
 				if err != nil {
 					return err
 				}
 			}
-
 		}
 	}
 
