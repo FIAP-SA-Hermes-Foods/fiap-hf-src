@@ -33,12 +33,6 @@ func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	rw.Header().Add("Access-Control-Allow-Origin", "*")
-	rw.Header().Add("Access-Control-Allow-Credentials", "true")
-	rw.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-	rw.Header().Add("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, PATCH, DELETE")
-	rw.Header().Add("Content-Type", "application/json")
-
 	if strings.ContainsAny("/order/", req.URL.Path) {
 		switch req.Method {
 		case http.MethodPost:
