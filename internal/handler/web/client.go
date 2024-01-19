@@ -32,28 +32,42 @@ func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if strings.ContainsAny("/client/", req.URL.Path) {
-		switch req.Method {
-		case http.MethodPost:
-			h.handlerSaveClient(rw, req)
-		case http.MethodGet:
-			if len(getCpf(req.URL.Path)) > 0 {
-				h.handlerGetClientByCPF(rw, req)
-				return
-			}
-		case http.MethodPatch:
-		default:
-			rw.WriteHeader(http.StatusNotFound)
-			rw.Write([]byte(`{"error": "route not found"} `))
-			return
+	var routesClient = map[string]http.HandlerFunc{
+		"get hermes_foods/client":  h.handlerGetClientByCPF,
+		"post hermes_foods/client": h.handlerSaveClient,
+	}
+
+	if err := tokenValidate(apiHToken); err != nil {
+		rw.WriteHeader(http.StatusUnauthorized)
+		rw.Write([]byte(`{"error": "not authorized"} `))
+		return
+	}
+
+	route := ""
+
+	for k := range routesClient {
+		isValidRoute, rr, m := ValidRoute(k, req.URL.Path, req.Method)
+		if isValidRoute && m == strings.ToLower(req.Method) {
+			route = rr
 		}
 	}
+
+	if handler, ok := routesClient[route]; ok {
+		handler(rw, req)
+		return
+	}
+
+	rw.WriteHeader(http.StatusNotFound)
+	rw.Write([]byte(`{"error": "route ` + req.URL.Path + ` not found"} `))
 }
 
 func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Request) {
-	var buff bytes.Buffer
+	var (
+		buff      bytes.Buffer
+		reqClient entity.RequestClient
+	)
 
-	var reqClient entity.RequestClient
+	rw.Header().Set("Content-Type", "application-json")
 
 	if _, err := buff.ReadFrom(req.Body); err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)

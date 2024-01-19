@@ -27,28 +27,34 @@ func NewHandlerVoucher(app application.HermesFoodsApp) HandlerVoucher {
 func (h handlerVoucher) Handler(rw http.ResponseWriter, req *http.Request) {
 	apiHToken := req.Header.Get("Auth-token")
 
+	var routeVoucher = map[string]http.HandlerFunc{
+		"get hermes_foods/voucher":      h.getVoucherByID,
+		"post hermes_foods/voucher":     h.saveVoucher,
+		"put hermes_foods/voucher/{id}": h.updateVoucherByID,
+	}
+
 	if err := tokenValidate(apiHToken); err != nil {
 		rw.WriteHeader(http.StatusUnauthorized)
 		rw.Write([]byte(`{"error": "not authorized"} `))
 		return
 	}
 
-	if strings.ContainsAny("/voucher/", req.URL.Path) {
-		switch req.Method {
-		case http.MethodPost:
-			h.saveVoucher(rw, req)
-		case http.MethodPut:
-			if len(getID("voucher", req.URL.Path)) > 0 {
-				h.updateVoucherByID(rw, req)
-			}
-		case http.MethodGet:
-			h.getVoucherByID(rw, req)
-		default:
-			rw.WriteHeader(http.StatusNotFound)
-			rw.Write([]byte(`{"error": "route not found"} `))
-			return
+	route := ""
+
+	for k := range routeVoucher {
+		isValidRoute, rr, m := ValidRoute(k, req.URL.Path, req.Method)
+		if isValidRoute && m == strings.ToLower(req.Method) {
+			route = rr
 		}
 	}
+
+	if handler, ok := routeVoucher[route]; ok {
+		handler(rw, req)
+		return
+	}
+
+	rw.WriteHeader(http.StatusNotFound)
+	rw.Write([]byte(`{"error": "route ` + req.URL.Path + ` not found"} `))
 }
 
 func (h handlerVoucher) saveVoucher(rw http.ResponseWriter, req *http.Request) {

@@ -34,28 +34,38 @@ func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if strings.ContainsAny("/product/", req.URL.Path) {
-		switch req.Method {
-		case http.MethodPost:
-			h.saveProduct(rw, req)
-		case http.MethodPut:
-			if len(getID("product", req.URL.Path)) > 0 {
-				h.updateProductByID(rw, req)
-			}
-		case http.MethodGet:
-			h.getProductByCategory(rw, req)
-		case http.MethodDelete:
-			h.deleteProductByID(rw, req)
-		default:
-			rw.WriteHeader(http.StatusNotFound)
-			rw.Write([]byte(`{"error": "route not found"} `))
-			return
+	var routeProducts = map[string]http.HandlerFunc{
+		"get hermes_foods/product":         h.getProductByCategory,
+		"post hermes_foods/product":        h.saveProduct,
+		"put hermes_foods/product/{id}":    h.updateProductByID,
+		"delete hermes_foods/product/{id}": h.deleteProductByID,
+	}
+
+	if err := tokenValidate(apiHToken); err != nil {
+		rw.WriteHeader(http.StatusUnauthorized)
+		rw.Write([]byte(`{"error": "not authorized"} `))
+		return
+	}
+
+	route := ""
+
+	for k := range routeProducts {
+		isValidRoute, rr, m := ValidRoute(k, req.URL.Path, req.Method)
+		if isValidRoute && m == strings.ToLower(req.Method) {
+			route = rr
 		}
 	}
+
+	if handler, ok := routeProducts[route]; ok {
+		handler(rw, req)
+		return
+	}
+
+	rw.WriteHeader(http.StatusNotFound)
+	rw.Write([]byte(`{"error": "route ` + req.URL.Path + ` not found"} `))
 }
 
 func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
-
 	if req.Method != http.MethodPost {
 		rw.WriteHeader(http.StatusMethodNotAllowed)
 		rw.Write([]byte(`{"error": "method not allowed"} `))
