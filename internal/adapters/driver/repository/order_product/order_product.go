@@ -2,6 +2,7 @@ package orderproduct
 
 import (
 	"context"
+	"encoding/json"
 	"fiap-hf-src/internal/core/entity"
 	"fiap-hf-src/internal/core/useCase/db"
 	l "fiap-hf-src/pkg/logger"
@@ -69,7 +70,14 @@ func (o orderProductRepository) GetAllOrderProduct() ([]entity.OrderProduct, err
 		orderList = append(orderList, orderItem)
 	}
 
-	l.Infof("GetAllOrderProduct output: ", " | ", orderList)
+	olStr, err := json.Marshal(orderList)
+
+	if err != nil {
+		l.Errorf("GetAllOrderProductByOrderID error to unmarshal: ", " | ", err)
+		return nil, err
+	}
+
+	l.Infof("GetAllOrderProductByOrderID output: ", " | ", string(olStr))
 	return orderList, nil
 }
 
@@ -114,7 +122,14 @@ func (o orderProductRepository) GetAllOrderProductByOrderID(id int64) ([]entity.
 		orderList = append(orderList, orderItem)
 	}
 
-	l.Infof("GetAllOrderProductByOrderID output: ", " | ", orderList)
+	olStr, err := json.Marshal(orderList)
+
+	if err != nil {
+		l.Errorf("GetAllOrderProductByOrderID error to unmarshal: ", " | ", err)
+		return nil, err
+	}
+
+	l.Infof("GetAllOrderProductByOrderID output: ", " | ", string(olStr))
 	return orderList, nil
 }
 
@@ -149,6 +164,6 @@ func (o orderProductRepository) SaveOrderProduct(order entity.OrderProduct) (*en
 		return nil, err
 	}
 
-	l.Infof("SaveOrderProduct output: ", " | ", outOrder)
+	l.Infof("SaveOrderProduct output: ", " | ", outOrder.MarshalString())
 	return outOrder, nil
 }

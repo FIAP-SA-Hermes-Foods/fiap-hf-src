@@ -131,6 +131,7 @@ func (v voucherRepository) UpdateVoucherByID(id int64, voucher entity.Voucher) (
 		l.Errorf("UpdateVoucherByID scan error: ", " | ", err)
 		return nil, err
 	}
+
 	l.Infof("UpdateVoucherByID output: ", " | ", outVoucher.MarshalString())
 	return outVoucher, nil
 }

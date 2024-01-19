@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"encoding/json"
 	"fiap-hf-src/internal/core/entity"
 	com "fiap-hf-src/internal/core/entity/common"
 	"fiap-hf-src/internal/core/useCase/db"
@@ -103,6 +104,7 @@ func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.
 		l.Errorf("UpdateOrderByID scan error: ", " | ", err)
 		return nil, err
 	}
+
 	l.Infof("UpdateOrderByID output: ", " | ", outOrder.MarshalString())
 	return outOrder, nil
 }
@@ -142,6 +144,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 		return nil, nil
 	}
 
+	l.Infof("GetOrderByID output: ", " | ", outOrder.MarshalString())
 	return outOrder, nil
 }
 
@@ -185,5 +188,13 @@ func (o orderRepository) GetOrders() ([]entity.Order, error) {
 		orderList = append(orderList, orderItem)
 	}
 
+	olStr, err := json.Marshal(orderList)
+
+	if err != nil {
+		l.Errorf("GetOrders error to unmarshal: ", " | ", err)
+		return nil, err
+	}
+
+	l.Infof("GetOrders output: ", " | ", string(olStr))
 	return orderList, nil
 }

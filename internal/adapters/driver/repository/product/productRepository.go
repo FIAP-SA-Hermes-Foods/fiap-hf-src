@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"encoding/json"
 	"fiap-hf-src/internal/core/entity"
 	com "fiap-hf-src/internal/core/entity/common"
 	"fiap-hf-src/internal/core/useCase/db"
@@ -147,6 +148,7 @@ func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
 		return nil, nil
 	}
 
+	l.Infof("GetProductByID output: ", " | ", outProduct.MarshalString())
 	return outProduct, nil
 }
 
@@ -192,6 +194,14 @@ func (p productRepository) GetProductByCategory(category string) ([]entity.Produ
 		productList = append(productList, productItem)
 	}
 
+	plStr, err := json.Marshal(productList)
+
+	if err != nil {
+		l.Errorf("GetProductByCategory error to unmarshal: ", " | ", err)
+		return nil, err
+	}
+
+	l.Infof("GetProductByCategory output: ", " | ", string(plStr))
 	return productList, nil
 }
 
