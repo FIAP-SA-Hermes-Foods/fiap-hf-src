@@ -5,6 +5,7 @@ import (
 	l "fiap-hf-src/pkg/logger"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -37,11 +38,17 @@ func tokenValidate(tokenInput string) error {
 }
 
 func getID(handlerName, url string) string {
-	indexCpf := strings.Index(url, handlerName+"/")
+	index := strings.Index(url, handlerName+"/")
 
-	if indexCpf == -1 {
+	if index == -1 {
 		return ""
 	}
 
-	return strings.ReplaceAll(url[indexCpf:], handlerName+"/", "")
+	id := strings.ReplaceAll(url[index:], handlerName+"/", "")
+
+	if _, err := strconv.Atoi(id); err != nil {
+		return ""
+	}
+
+	return id
 }

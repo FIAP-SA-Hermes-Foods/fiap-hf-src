@@ -87,6 +87,7 @@ func (c clientRepository) GetClientByCPF(cpf string) (*entity.Client, error) {
 		l.Infof("GetClientByCPF output: ", " | ", "nil")
 		return nil, nil
 	}
+
 	l.Infof("GetClientByCPF output: ", " | ", outClient.MarshalString())
 	return outClient, nil
 }
@@ -123,5 +124,6 @@ func (c clientRepository) SaveClient(client entity.Client) (*entity.Client, erro
 		return nil, err
 	}
 
+	l.Infof("SaveClient output: ", " | ", outClient.MarshalString())
 	return outClient, nil
 }
