@@ -13,7 +13,7 @@ const (
 	PaidStatusKey       = "paid"
 	CanceledStatusKey   = "canceled"
 	ReceivedStatusKey   = "received"
-	InProgressStatusKey = "in Progress"
+	InProgressStatusKey = "in progress"
 	DoneStatusKey       = "done"
 	FinishedStatusKey   = "finished"
 )
