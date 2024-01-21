@@ -32,7 +32,7 @@ func (o voucherService) SaveVoucher(voucher entity.Voucher) (*entity.Voucher, er
 		return nil, errors.New("the voucher code is null or not valid")
 	}
 
-	if voucher.Porcentage < 0 && voucher.Porcentage > 101 {
+	if voucher.Porcentage < 0 || voucher.Porcentage > 101 {
 		return nil, errors.New("the porcentage is not valid try a number between 0 and 100")
 	}
 
@@ -52,7 +52,7 @@ func (o voucherService) UpdateVoucherByID(id int64, voucher entity.Voucher) (*en
 		return nil, errors.New("the voucher code is null or not valid")
 	}
 
-	if voucher.Porcentage < 0 && voucher.Porcentage > 101 {
+	if voucher.Porcentage < 0 || voucher.Porcentage > 101 {
 		return nil, errors.New("the porcentage is not valid try a number between 0 and 100")
 	}
 
