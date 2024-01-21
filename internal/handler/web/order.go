@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type HandlerOrder interface {
@@ -26,13 +25,6 @@ func NewHandlerOrder(app application.HermesFoodsApp) HandlerOrder {
 
 func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 
-	var routesOrders = map[string]http.HandlerFunc{
-		"get hermes_foods/order":        h.handlerGetOrders,
-		"get hermes_foods/order/{id}":   h.handlerGetOrderByID,
-		"post hermes_foods/order":       h.saveOrder,
-		"patch hermes_foods/order/{id}": h.handlerUpdateOrderByID,
-	}
-
 	apiHToken := req.Header.Get("Auth-token")
 
 	if err := tokenValidate(apiHToken); err != nil {
@@ -41,27 +33,26 @@ func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	route := ""
-
-	for k := range routesOrders {
-		isValidRoute, rr, m := ValidRoute(k, req.URL.Path, req.Method)
-		if isValidRoute && m == strings.ToLower(req.Method) {
-			route = rr
-		}
+	var routesOrders = map[string]http.HandlerFunc{
+		"get hermes_foods/order":        h.handlerGetOrders,
+		"get hermes_foods/order/{id}":   h.handlerGetOrderByID,
+		"post hermes_foods/order":       h.saveOrder,
+		"patch hermes_foods/order/{id}": h.handlerUpdateOrderByID,
 	}
 
-	if handler, ok := routesOrders[route]; ok {
+	handler, err := router(req.Method, req.URL.Path, routesOrders)
+
+	if err == nil {
 		handler(rw, req)
 		return
 	}
 
 	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.URL.Path + ` not found"} `))
+	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
 }
 
 func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 	var buff bytes.Buffer
-
 	var reqOrder entity.RequestOrder
 
 	if _, err := buff.ReadFrom(req.Body); err != nil {
