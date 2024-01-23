@@ -33,14 +33,8 @@ func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	var routesClient = map[string]http.HandlerFunc{
-		"get hermes_foods/client":  h.handlerGetClientByCPF,
-		"post hermes_foods/client": h.handlerSaveClient,
-	}
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
+		"get hermes_foods/client/{cpf}": h.handlerGetClientByCPF,
+		"post hermes_foods/client":      h.handlerSaveClient,
 	}
 
 	handler, err := router(req.Method, req.URL.Path, routesClient)

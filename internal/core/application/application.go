@@ -14,28 +14,25 @@ import (
 )
 
 type HermesFoodsApp interface {
-	// Client Methods
 
+	// Client Methods
 	SaveClient(client entity.Client) (*entity.OutputClient, error)
 	GetClientByCPF(cpf string) (*entity.OutputClient, error)
 	GetClientByID(id int64) (*entity.OutputClient, error)
 
 	// Order Methods
-
 	SaveOrder(order entity.Order) (*entity.OutputOrder, error)
 	GetOrderByID(id int64) (*entity.OutputOrder, error)
 	UpdateOrderByID(id int64, order entity.Order) (*entity.OutputOrder, error)
 	GetOrders() ([]entity.OutputOrder, error)
 
 	// Product Methods
-
 	SaveProduct(product entity.Product) (*entity.OutputProduct, error)
 	GetProductByCategory(category string) ([]entity.OutputProduct, error)
 	UpdateProductByID(id int64, product entity.Product) (*entity.OutputProduct, error)
 	DeleteProductByID(id int64) error
 
 	// Voucher Methods
-
 	SaveVoucher(voucher entity.Voucher) (*entity.OutputVoucher, error)
 	GetVoucherByID(id int64) (*entity.OutputVoucher, error)
 	UpdateVoucherByID(id int64, voucher entity.Voucher) (*entity.OutputVoucher, error)

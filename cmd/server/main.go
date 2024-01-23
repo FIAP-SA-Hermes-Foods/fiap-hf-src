@@ -98,11 +98,19 @@ func main() {
 	handlersProduct := web.NewHandlerProduct(app)
 	hanldersVoucher := web.NewHandlerVoucher(app)
 
-	router.Handle("/hermes_foods/health/", http.StripPrefix("/", web.Middleware(web.HealthCheck)))
+	router.Handle("/hermes_foods/health", http.StripPrefix("/", web.Middleware(web.HealthCheck)))
+
 	router.Handle("/hermes_foods/client/", http.StripPrefix("/", web.Middleware(handlersClient.Handler)))
+	router.Handle("/hermes_foods/client", http.StripPrefix("/", web.Middleware(handlersClient.Handler)))
+
 	router.Handle("/hermes_foods/order/", http.StripPrefix("/", web.Middleware(handlersOrder.Handler)))
+	router.Handle("/hermes_foods/order", http.StripPrefix("/", web.Middleware(handlersOrder.Handler)))
+
 	router.Handle("/hermes_foods/product/", http.StripPrefix("/", web.Middleware(handlersProduct.Handler)))
+	router.Handle("/hermes_foods/product", http.StripPrefix("/", web.Middleware(handlersProduct.Handler)))
+
 	router.Handle("/hermes_foods/voucher/", http.StripPrefix("/", web.Middleware(hanldersVoucher.Handler)))
+	router.Handle("/hermes_foods/voucher", http.StripPrefix("/", web.Middleware(hanldersVoucher.Handler)))
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 

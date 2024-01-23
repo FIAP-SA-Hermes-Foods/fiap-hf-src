@@ -40,12 +40,6 @@ func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
 		"delete hermes_foods/product/{id}": h.deleteProductByID,
 	}
 
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
-
 	handler, err := router(req.Method, req.URL.Path, routeProducts)
 
 	if err == nil {

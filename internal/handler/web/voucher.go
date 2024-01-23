@@ -27,7 +27,7 @@ func (h handlerVoucher) Handler(rw http.ResponseWriter, req *http.Request) {
 	apiHToken := req.Header.Get("Auth-token")
 
 	var routeVoucher = map[string]http.HandlerFunc{
-		"get hermes_foods/voucher":      h.getVoucherByID,
+		"get hermes_foods/voucher/{id}": h.getVoucherByID,
 		"post hermes_foods/voucher":     h.saveVoucher,
 		"put hermes_foods/voucher/{id}": h.updateVoucherByID,
 	}
