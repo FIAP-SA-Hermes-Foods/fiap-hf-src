@@ -51,11 +51,11 @@ func (m migrationDB) Migrate() error {
 
 	pwdOutFormatted := formatCommandOutputToStr(pwdOut)
 
-	path := filepath.Join(pwdOutFormatted, "..", "..", "infrastructure", "db", "DML")
+	path := filepath.Join(pwdOutFormatted, "infrastructure", "db", "DML")
 
 	// for unity tests
-	if strings.Contains(path, "/infrastructure/db/migration/infrastructure/db/DML") {
-		path = strings.ReplaceAll(path, "/db/migration/infrastructure/db/DML", "/db/DML/")
+	if strings.Contains(path, "/pkg/migration/infrastructure/db/DML") {
+		path = filepath.Join(pwdOutFormatted, "..", "..", "infrastructure", "db", "DML")
 	}
 
 	file, err := os.Open(path)
