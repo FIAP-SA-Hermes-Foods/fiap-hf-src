@@ -10,15 +10,18 @@ type Category struct {
 }
 
 const (
-	LancheCategory         = "LANCHE"
-	AcompanhamentoCategory = "ACOMPANHAMENTO"
-	BebidaCategory         = "BEBIDA"
+	MealCategory       = "MEAL"
+	ComplementCategory = "COMPLEMENT"
+	DrinkCategory      = "DRINK"
 )
 
 var CategoryMap = map[string]string{
-	"lanche":         LancheCategory,
-	"acompanhamento": AcompanhamentoCategory,
-	"bebida":         BebidaCategory,
+	"meal":           MealCategory,
+	"complement":     ComplementCategory,
+	"drink":          DrinkCategory,
+	"lanche":         MealCategory,
+	"acompanhamento": ComplementCategory,
+	"bebida":         DrinkCategory,
 }
 
 func (v *Category) Validate() error {

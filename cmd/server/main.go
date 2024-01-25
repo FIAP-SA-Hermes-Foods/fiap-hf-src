@@ -3,14 +3,14 @@ package main
 import (
 	"bufio"
 	"context"
-	apiMercadoPago "fiap-hf-src/internal/adapters/driven/http/api-mercadoPago"
-	cRepo "fiap-hf-src/internal/adapters/driver/repository/client"
-	oRepo "fiap-hf-src/internal/adapters/driver/repository/order"
-	opRepo "fiap-hf-src/internal/adapters/driver/repository/order_product"
-	pRepo "fiap-hf-src/internal/adapters/driver/repository/product"
-	vRepo "fiap-hf-src/internal/adapters/driver/repository/voucher"
 	"fiap-hf-src/internal/core/application"
 	"fiap-hf-src/internal/core/service"
+	apiMercadoPago "fiap-hf-src/internal/gateways/http/api-mercadoPago"
+	cRepo "fiap-hf-src/internal/gateways/repository/client"
+	oRepo "fiap-hf-src/internal/gateways/repository/order"
+	opRepo "fiap-hf-src/internal/gateways/repository/order_product"
+	pRepo "fiap-hf-src/internal/gateways/repository/product"
+	vRepo "fiap-hf-src/internal/gateways/repository/voucher"
 	"fiap-hf-src/internal/handler/web"
 	"fiap-hf-src/pkg/postgres"
 	"fmt"
@@ -98,11 +98,20 @@ func main() {
 	handlersProduct := web.NewHandlerProduct(app)
 	hanldersVoucher := web.NewHandlerVoucher(app)
 
-	router.Handle("/hermes_foods/health/", http.StripPrefix("/", web.Middleware(web.HealthCheck)))
+	router.Handle("/hermes_foods/health", http.StripPrefix("/", web.Middleware(web.HealthCheck)))
+
 	router.Handle("/hermes_foods/client/", http.StripPrefix("/", web.Middleware(handlersClient.Handler)))
+	router.Handle("/hermes_foods/client", http.StripPrefix("/", web.Middleware(handlersClient.Handler)))
+
 	router.Handle("/hermes_foods/order/", http.StripPrefix("/", web.Middleware(handlersOrder.Handler)))
+	router.Handle("/hermes_foods/order", http.StripPrefix("/", web.Middleware(handlersOrder.Handler)))
+
 	router.Handle("/hermes_foods/product/", http.StripPrefix("/", web.Middleware(handlersProduct.Handler)))
+	router.Handle("/hermes_foods/product", http.StripPrefix("/", web.Middleware(handlersProduct.Handler)))
+
 	router.Handle("/hermes_foods/voucher/", http.StripPrefix("/", web.Middleware(hanldersVoucher.Handler)))
+	router.Handle("/hermes_foods/voucher", http.StripPrefix("/", web.Middleware(hanldersVoucher.Handler)))
+
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 

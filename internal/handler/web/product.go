@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -41,28 +40,15 @@ func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
 		"delete hermes_foods/product/{id}": h.deleteProductByID,
 	}
 
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
+	handler, err := router(req.Method, req.URL.Path, routeProducts)
 
-	route := ""
-
-	for k := range routeProducts {
-		isValidRoute, rr, m := ValidRoute(k, req.URL.Path, req.Method)
-		if isValidRoute && m == strings.ToLower(req.Method) {
-			route = rr
-		}
-	}
-
-	if handler, ok := routeProducts[route]; ok {
+	if err == nil {
 		handler(rw, req)
 		return
 	}
 
 	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.URL.Path + ` not found"} `))
+	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
 }
 
 func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {

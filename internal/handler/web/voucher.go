@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -28,7 +27,7 @@ func (h handlerVoucher) Handler(rw http.ResponseWriter, req *http.Request) {
 	apiHToken := req.Header.Get("Auth-token")
 
 	var routeVoucher = map[string]http.HandlerFunc{
-		"get hermes_foods/voucher":      h.getVoucherByID,
+		"get hermes_foods/voucher/{id}": h.getVoucherByID,
 		"post hermes_foods/voucher":     h.saveVoucher,
 		"put hermes_foods/voucher/{id}": h.updateVoucherByID,
 	}
@@ -39,22 +38,15 @@ func (h handlerVoucher) Handler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	route := ""
+	handler, err := router(req.Method, req.URL.Path, routeVoucher)
 
-	for k := range routeVoucher {
-		isValidRoute, rr, m := ValidRoute(k, req.URL.Path, req.Method)
-		if isValidRoute && m == strings.ToLower(req.Method) {
-			route = rr
-		}
-	}
-
-	if handler, ok := routeVoucher[route]; ok {
+	if err == nil {
 		handler(rw, req)
 		return
 	}
 
 	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.URL.Path + ` not found"} `))
+	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
 }
 
 func (h handlerVoucher) saveVoucher(rw http.ResponseWriter, req *http.Request) {

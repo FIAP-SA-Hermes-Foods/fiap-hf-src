@@ -58,9 +58,7 @@ func (p productService) GetProductByCategory(category string) error {
 		return errors.New("the category is not valid for consult")
 	}
 
-	_, ok := c.CategoryMap[strings.ToLower(category)]
-
-	if !ok {
+	if _, ok := c.CategoryMap[strings.ToLower(category)]; !ok {
 		return errors.New("category is not valid")
 	}
 

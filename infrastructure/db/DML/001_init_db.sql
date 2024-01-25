@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS orders
     client_id         int NOT NULL,
     voucher_id        int NULL,
     CONSTRAINT PK_orders PRIMARY KEY ( "id" ),
-    CONSTRAINT FK_client_id FOREIGN KEY ( client_id ) REFERENCES client ( "id" ),
-    CONSTRAINT FK_voucher_id FOREIGN KEY ( voucher_id ) REFERENCES voucher ( "id" )
+    CONSTRAINT FK_client_id FOREIGN KEY ( client_id ) REFERENCES client ( "id" ) ON DELETE CASCADE,
+    CONSTRAINT FK_voucher_id FOREIGN KEY ( voucher_id ) REFERENCES voucher ( "id" ) ON DELETE CASCADE
 );
 CREATE INDEX FK_client_id ON orders (client_id);
 CREATE INDEX FK_voucher_id ON orders (voucher_id);
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS orders_products
     product_id  int NOT NULL,
     created_at timestamp DEFAULT NOW(),
     CONSTRAINT PK_orders_products PRIMARY KEY ( "id" ),
-    CONSTRAINT FK_orders_id FOREIGN KEY ( orders_id ) REFERENCES orders ( "id" ),
-    CONSTRAINT FK_product_id FOREIGN KEY ( product_id ) REFERENCES product ( "id" )
+    CONSTRAINT FK_orders_id FOREIGN KEY ( orders_id ) REFERENCES orders ( "id" ) ON DELETE CASCADE,
+    CONSTRAINT FK_product_id FOREIGN KEY ( product_id ) REFERENCES product ( "id" ) ON DELETE CASCADE
 );
 CREATE INDEX FK_orders_id ON orders_products (orders_id);
 CREATE INDEX FK_product_id ON orders_products (product_id);

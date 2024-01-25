@@ -28,7 +28,9 @@ func (o orderService) SaveOrder(order entity.Order) (*entity.Order, error) {
 		return nil, err
 	}
 
-	order.VerificationCode.Generate()
+	if len(order.VerificationCode.Value) == 0 {
+		order.VerificationCode.Generate()
+	}
 
 	if err := order.VerificationCode.Validate(); err != nil {
 		order.VerificationCode.Generate()

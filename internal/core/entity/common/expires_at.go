@@ -14,7 +14,7 @@ func (e *ExpiresAt) Validate() error {
 		return errors.New("is requred a valid expiration time value")
 	}
 
-	if len(e.Format()) == 0 {
+	if len(e.Format()) == 0 || e.Format() == "null" {
 		return errors.New("is requred a valid expiration time value")
 	}
 
