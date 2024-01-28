@@ -201,7 +201,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{api_path}}/order/",
+							"raw": "http://{{api_path}}/voucher",
 							"protocol": "http",
 							"host": [
 								"{{api_path}}"
@@ -293,6 +293,102 @@
 				}
 			]
 		},
+
+
+
+
+
+		{
+			"name": "Voucher",
+			"item": [
+				{
+					"name": "Create Voucher",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\":\"MYDISCOUNTCODE10\", \n    \"percentage\": 10, \n    \"expiresAt\":\"30-10-2023 16:57:22\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{api_path}}/voucher",
+							"protocol": "http",
+							"host": [
+								"{{api_path}}"
+							],
+							"path": [
+								"voucher",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Voucher",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Auth-token",
+								"value": "{{api_token}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://{{api_path}}/voucher/3",
+							"protocol": "http",
+							"host": [
+								"{{api_path}}"
+							],
+							"path": [
+								"voucher",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Voucher",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\":\"MYDISCOUNTCODE10\", \n    \"percentage\": 10, \n    \"expiresAt\":\"30-10-2023 16:57:22\" \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{api_path}}/voucher/3",
+							"protocol": "http",
+							"host": [
+								"{{api_path}}"
+							],
+							"path": [
+								"voucher",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+
+
+
+
+
 		{
 			"name": "healthcheck",
 			"request": {

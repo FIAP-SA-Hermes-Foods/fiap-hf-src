@@ -18,7 +18,7 @@
         "application/json"
     ],
     "paths": {
-        "/order/": {
+        "/order": {
             "get": {
                 "tags": [
                     "Order"
@@ -236,7 +236,7 @@
                 }
             }
         },
-        "/client/": {
+        "/client": {
             "post": {
                 "tags": [
                     "Client"
@@ -282,7 +282,7 @@
                 }
             }
         },
-        "/product/": {
+        "/product": {
             "get": {
                 "tags": [
                     "Product"
@@ -465,7 +465,7 @@
                 }
             }
         },
-        "/voucher/": {
+        "/voucher": {
             "post": {
                 "tags": [
                     "Voucher"
@@ -613,15 +613,15 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "example": "some_name"
+                    "example": "some"
                 },
                 "cpf": {
                     "type": "string",
-                    "example": "0000011111"
+                    "example": "999999909"
                 },
                 "email": {
                     "type": "string",
-                    "example": "teste@email.com"
+                    "example": "some@testeemail.com"
                 }
             }
         },
@@ -634,15 +634,15 @@
                 },
                 "name": {
                     "type": "string",
-                    "example": "some_name"
+                    "example": "some"
                 },
                 "cpf": {
                     "type": "string",
-                    "example": "0000011111"
+                    "example": "999999909"
                 },
                 "email": {
                     "type": "string",
-                    "example": "teste@email.com"
+                    "example": "some@testeemail.com"
                 },
                 "createdAt": {
                     "type": "string",
@@ -655,11 +655,11 @@
             "properties": {
                 "name": {
                     "type": "string",
-                    "example": "sandwitch"
+                    "example": "X-Salada"
                 },
                 "category": {
                     "type": "string",
-                    "example": "in progress"
+                    "example": "MEAL"
                 },
                 "image": {
                     "type": "string",
@@ -667,11 +667,11 @@
                 },
                 "description": {
                     "type": "string",
-                    "example": "with onion"
+                    "example": "Lanche"
                 },
                 "price": {
                     "type": "number",
-                    "example": 3.90
+                    "example": 39.90
                 }
             }
         },
@@ -690,11 +690,11 @@
                 },
                 "name": {
                     "type": "string",
-                    "example": "sandwitch"
+                    "example": "X-Salada"
                 },
                 "category": {
                     "type": "string",
-                    "example": "in progress"
+                    "example": "MEAL"
                 },
                 "image": {
                     "type": "string",
@@ -702,11 +702,11 @@
                 },
                 "description": {
                     "type": "string",
-                    "example": "with onion"
+                    "example": "Lanche"
                 },
                 "price": {
                     "type": "number",
-                    "example": 3.90
+                    "example": 39.90
                 },
                 "createdAt": {
                     "type": "string",
@@ -795,13 +795,17 @@
                     "type": "string",
                     "example": "Paid"
                 },
+                 "verificationCode": {
+                    "type": "string",
+                    "example": "XUh427"
+                },
                 "createdAt": {
                     "type": "string",
                     "example": "30-10-2023 16:57:22"
                 },
                 "totalPrice": {
                     "type": "number",
-                    "example": 3.9
+                    "example": 23
                 }
             }
         },
@@ -827,6 +831,10 @@
                 "createdAt": {
                     "type": "string",
                     "example": "30-10-2023 16:57:22"
+                },
+                 "totalPrice": {
+                    "type": "number",
+                    "example": 0
                 }
             }
         },
