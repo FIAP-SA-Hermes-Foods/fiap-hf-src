@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fiap-hf-src/src/base/dto"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"io"
 	"net/http"
 	"strings"
@@ -38,11 +38,11 @@ func (m mercadoPagoAPI) DoPayment(ctx context.Context, input dto.InputPaymentAPI
 	ctxReq, cancel := context.WithTimeout(ctx, m.Timeout)
 	defer cancel()
 
-	l.Infof("DoPayment received input: ", " | ", presenter.MarshalString(input))
+	l.Infof("DoPayment received input: ", " | ", ps.MarshalString(input))
 
 	var buff bytes.Buffer
 
-	if _, err := buff.ReadFrom(strings.NewReader(presenter.MarshalString(input))); err != nil {
+	if _, err := buff.ReadFrom(strings.NewReader(ps.MarshalString(input))); err != nil {
 		l.Errorf("DoPayment error: ", " | ", err)
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (m mercadoPagoAPI) DoPayment(ctx context.Context, input dto.InputPaymentAPI
 		return nil, err
 	}
 
-	l.Infof("DoPayment output: ", " | ", presenter.MarshalString(out))
+	l.Infof("DoPayment output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 

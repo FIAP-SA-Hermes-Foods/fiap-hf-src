@@ -6,7 +6,7 @@ import (
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 )
 
 var (
@@ -165,6 +165,6 @@ func (o orderProductRepository) SaveOrderProduct(order entity.OrderProduct) (*en
 		return nil, err
 	}
 
-	l.Infof("SaveOrderProduct output: ", " | ", presenter.MarshalString(outOrder))
+	l.Infof("SaveOrderProduct output: ", " | ", ps.MarshalString(outOrder))
 	return outOrder, nil
 }

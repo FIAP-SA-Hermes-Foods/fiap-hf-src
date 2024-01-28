@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/base/interfaces"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -85,7 +85,7 @@ func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(presenter.MarshalString(p)))
+	rw.Write([]byte(ps.MarshalString(p)))
 }
 
 func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Request) {
@@ -135,7 +135,7 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 	}
 
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(presenter.MarshalString(p)))
+	rw.Write([]byte(ps.MarshalString(p)))
 }
 
 func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Request) {

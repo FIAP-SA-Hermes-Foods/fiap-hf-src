@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"io"
 	"log"
@@ -42,7 +42,7 @@ func Test_Integration(t *testing.T) {
 
 	if out != nil {
 
-		log.Printf("Output -> %s\nErr -> %v", presenter.MarshalString(out), err)
+		log.Printf("Output -> %s\nErr -> %v", ps.MarshalString(out), err)
 		return
 	}
 
@@ -198,8 +198,8 @@ func Test_DoPayment(t *testing.T) {
 				return
 			}
 
-			if resp != nil && presenter.MarshalString(resp) != presenter.MarshalString(tc.wantOutput) {
-				t.Errorf("was suppose to have: %s\nand got:%s\n", presenter.MarshalString(tc.wantOutput), presenter.MarshalString(resp))
+			if resp != nil && ps.MarshalString(resp) != ps.MarshalString(tc.wantOutput) {
+				t.Errorf("was suppose to have: %s\nand got:%s\n", ps.MarshalString(tc.wantOutput), ps.MarshalString(resp))
 				return
 			}
 		})

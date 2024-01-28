@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 )
 
 var (
@@ -67,7 +67,7 @@ func (p productRepository) SaveProduct(product entity.Product) (*entity.Product,
 		l.Infof("SaveProduct scan error: ", " | ", err)
 		return nil, err
 	}
-	l.Infof("SaveProduct output: ", " | ", presenter.MarshalString(outProduct))
+	l.Infof("SaveProduct output: ", " | ", ps.MarshalString(outProduct))
 	return outProduct, nil
 }
 
@@ -107,7 +107,7 @@ func (p productRepository) UpdateProductByID(id int64, product entity.Product) (
 		return nil, err
 	}
 
-	l.Infof("UpdateProductByID output: ", " | ", presenter.MarshalString(outProduct))
+	l.Infof("UpdateProductByID output: ", " | ", ps.MarshalString(outProduct))
 	return outProduct, nil
 }
 
@@ -148,7 +148,7 @@ func (p productRepository) GetProductByID(id int64) (*entity.Product, error) {
 		return nil, nil
 	}
 
-	l.Infof("GetProductByID output: ", " | ", presenter.MarshalString(outProduct))
+	l.Infof("GetProductByID output: ", " | ", ps.MarshalString(outProduct))
 	return outProduct, nil
 }
 

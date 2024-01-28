@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"reflect"
 )
 
@@ -68,7 +68,7 @@ func (o orderRepository) SaveOrder(order entity.Order) (*entity.Order, error) {
 		return nil, err
 	}
 
-	l.Infof("SaveOrder output: ", " | ", presenter.MarshalString(outOrder))
+	l.Infof("SaveOrder output: ", " | ", ps.MarshalString(outOrder))
 	return outOrder, nil
 }
 
@@ -106,7 +106,7 @@ func (o orderRepository) UpdateOrderByID(id int64, order entity.Order) (*entity.
 		return nil, err
 	}
 
-	l.Infof("UpdateOrderByID output: ", " | ", presenter.MarshalString(outOrder))
+	l.Infof("UpdateOrderByID output: ", " | ", ps.MarshalString(outOrder))
 	return outOrder, nil
 }
 
@@ -145,7 +145,7 @@ func (o orderRepository) GetOrderByID(id int64) (*entity.Order, error) {
 		return nil, nil
 	}
 
-	l.Infof("GetOrderByID output: ", " | ", presenter.MarshalString(outOrder))
+	l.Infof("GetOrderByID output: ", " | ", ps.MarshalString(outOrder))
 	return outOrder, nil
 }
 

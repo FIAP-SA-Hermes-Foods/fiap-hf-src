@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"log"
 	"os/exec"
@@ -106,8 +106,8 @@ func Test_SaveProduct(t *testing.T) {
 				t.Errorf("was not suppose to have an error here and %v got", err)
 			}
 
-			if out != nil && (presenter.MarshalString(out) != presenter.MarshalString(tc.WantOutput)) {
-				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", presenter.MarshalString(tc.WantOutput), presenter.MarshalString(out))
+			if out != nil && (ps.MarshalString(out) != ps.MarshalString(tc.WantOutput)) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", ps.MarshalString(tc.WantOutput), ps.MarshalString(out))
 			}
 
 		})
@@ -233,8 +233,8 @@ func Test_GetProductByID(t *testing.T) {
 				t.Errorf("was not suppose to have an error here and %v got", err)
 			}
 
-			if out != nil && (presenter.MarshalString(out) != presenter.MarshalString(tc.WantOutput)) {
-				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", presenter.MarshalString(tc.WantOutput), presenter.MarshalString(out))
+			if out != nil && (ps.MarshalString(out) != ps.MarshalString(tc.WantOutput)) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", ps.MarshalString(tc.WantOutput), ps.MarshalString(out))
 			}
 		})
 	}
@@ -457,8 +457,8 @@ func Test_UpdateProductByID(t *testing.T) {
 				t.Errorf("was not suppose to have an error here and %v got", err)
 			}
 
-			if out != nil && (presenter.MarshalString(out) != presenter.MarshalString(tc.WantOutput)) {
-				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", presenter.MarshalString(tc.WantOutput), presenter.MarshalString(out))
+			if out != nil && (ps.MarshalString(out) != ps.MarshalString(tc.WantOutput)) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", ps.MarshalString(tc.WantOutput), ps.MarshalString(out))
 			}
 
 		})

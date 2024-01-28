@@ -6,7 +6,7 @@ import (
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -91,7 +91,7 @@ func (h handlerVoucher) saveVoucher(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(presenter.MarshalString(v)))
+	rw.Write([]byte(ps.MarshalString(v)))
 }
 
 func (h handlerVoucher) updateVoucherByID(rw http.ResponseWriter, req *http.Request) {
@@ -144,7 +144,7 @@ func (h handlerVoucher) updateVoucherByID(rw http.ResponseWriter, req *http.Requ
 	}
 
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(presenter.MarshalString(v)))
+	rw.Write([]byte(ps.MarshalString(v)))
 }
 
 func (h handlerVoucher) getVoucherByID(rw http.ResponseWriter, req *http.Request) {
@@ -167,5 +167,5 @@ func (h handlerVoucher) getVoucherByID(rw http.ResponseWriter, req *http.Request
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(presenter.MarshalString(v)))
+	rw.Write([]byte(ps.MarshalString(v)))
 }

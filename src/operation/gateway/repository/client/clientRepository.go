@@ -4,9 +4,9 @@ import (
 	"context"
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 )
 
 var (
@@ -58,7 +58,7 @@ func (c clientRepository) GetClientByID(id int64) (*entity.Client, error) {
 		return nil, nil
 	}
 
-	l.Infof("GetClientByID output: ", " | ", presenter.MarshalString(outClient))
+	l.Infof("GetClientByID output: ", " | ", ps.MarshalString(outClient))
 	return outClient, nil
 }
 
@@ -89,7 +89,7 @@ func (c clientRepository) GetClientByCPF(cpf string) (*entity.Client, error) {
 		return nil, nil
 	}
 
-	l.Infof("GetClientByCPF output: ", " | ", presenter.MarshalString(outClient))
+	l.Infof("GetClientByCPF output: ", " | ", ps.MarshalString(outClient))
 	return outClient, nil
 }
 
@@ -125,6 +125,6 @@ func (c clientRepository) SaveClient(client entity.Client) (*entity.Client, erro
 		return nil, err
 	}
 
-	l.Infof("SaveClient output: ", " | ", presenter.MarshalString(outClient))
+	l.Infof("SaveClient output: ", " | ", ps.MarshalString(outClient))
 	return outClient, nil
 }

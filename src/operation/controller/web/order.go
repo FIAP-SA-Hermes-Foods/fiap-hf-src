@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/base/interfaces"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -78,7 +78,7 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(presenter.MarshalString(o)))
+	rw.Write([]byte(ps.MarshalString(o)))
 }
 
 func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Request) {
@@ -107,7 +107,7 @@ func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Requ
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(presenter.MarshalString(o)))
+	rw.Write([]byte(ps.MarshalString(o)))
 }
 
 func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request) {
@@ -181,5 +181,5 @@ func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.R
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(presenter.MarshalString(o)))
+	rw.Write([]byte(ps.MarshalString(o)))
 }

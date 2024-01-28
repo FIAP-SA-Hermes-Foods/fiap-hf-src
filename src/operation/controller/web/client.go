@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/base/interfaces"
-	"fiap-hf-src/src/operation/presenter"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"net/http"
 	"strings"
@@ -77,7 +77,7 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 	}
 
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte(presenter.MarshalString(c)))
+	rw.Write([]byte(ps.MarshalString(c)))
 }
 
 func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.Request) {
@@ -98,7 +98,7 @@ func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.R
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(presenter.MarshalString(c)))
+	rw.Write([]byte(ps.MarshalString(c)))
 }
 
 func getCpf(url string) string {

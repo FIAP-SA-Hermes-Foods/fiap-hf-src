@@ -4,9 +4,9 @@ import (
 	"context"
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 )
 
 var (
@@ -61,7 +61,7 @@ func (v voucherRepository) GetVoucherByID(id int64) (*entity.Voucher, error) {
 		}
 	}
 
-	l.Infof("GetVoucherByID output: ", " | ", presenter.MarshalString(outVoucher))
+	l.Infof("GetVoucherByID output: ", " | ", ps.MarshalString(outVoucher))
 	return outVoucher, nil
 }
 
@@ -95,7 +95,7 @@ func (v voucherRepository) SaveVoucher(voucher entity.Voucher) (*entity.Voucher,
 		l.Errorf("SaveVoucher scan error: ", " | ", err)
 		return nil, err
 	}
-	l.Infof("SaveVoucher output: ", " | ", presenter.MarshalString(outVoucher))
+	l.Infof("SaveVoucher output: ", " | ", ps.MarshalString(outVoucher))
 	return outVoucher, nil
 }
 
@@ -133,6 +133,6 @@ func (v voucherRepository) UpdateVoucherByID(id int64, voucher entity.Voucher) (
 		return nil, err
 	}
 
-	l.Infof("UpdateVoucherByID output: ", " | ", presenter.MarshalString(outVoucher))
+	l.Infof("UpdateVoucherByID output: ", " | ", ps.MarshalString(outVoucher))
 	return outVoucher, nil
 }

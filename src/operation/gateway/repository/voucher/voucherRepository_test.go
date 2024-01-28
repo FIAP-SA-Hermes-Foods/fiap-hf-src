@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"log"
 	"os/exec"
@@ -119,8 +119,8 @@ func Test_SaveVoucher(t *testing.T) {
 				t.Errorf("was not suppose to have an error here and %v got", err)
 			}
 
-			if out != nil && (presenter.MarshalString(out) != presenter.MarshalString(tc.WantOutput)) {
-				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", presenter.MarshalString(tc.WantOutput), presenter.MarshalString(out))
+			if out != nil && (ps.MarshalString(out) != ps.MarshalString(tc.WantOutput)) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", ps.MarshalString(tc.WantOutput), ps.MarshalString(out))
 			}
 
 		})
@@ -257,8 +257,8 @@ func Test_GetVoucherByID(t *testing.T) {
 				t.Errorf("was not suppose to have an error here and %v got", err)
 			}
 
-			if out != nil && (presenter.MarshalString(out) != presenter.MarshalString(tc.WantOutput)) {
-				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", presenter.MarshalString(tc.WantOutput), presenter.MarshalString(out))
+			if out != nil && (ps.MarshalString(out) != ps.MarshalString(tc.WantOutput)) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", ps.MarshalString(tc.WantOutput), ps.MarshalString(out))
 			}
 		})
 	}
@@ -390,8 +390,8 @@ func Test_UpdateVoucherByID(t *testing.T) {
 				t.Errorf("was not suppose to have an error here and %v got", err)
 			}
 
-			if out != nil && (presenter.MarshalString(out) != presenter.MarshalString(tc.WantOutput)) {
-				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", presenter.MarshalString(tc.WantOutput), presenter.MarshalString(out))
+			if out != nil && (ps.MarshalString(out) != ps.MarshalString(tc.WantOutput)) {
+				t.Errorf("was not suppose to have:\n%s\n and got:\n%s\n", ps.MarshalString(tc.WantOutput), ps.MarshalString(out))
 			}
 		})
 	}
