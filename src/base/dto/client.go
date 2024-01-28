@@ -2,7 +2,7 @@ package dto
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
+	"fiap-hf-src/src/operation/presenter/common"
 )
 
 type (
@@ -29,6 +29,6 @@ func (r RequestClient) Client() entity.Client {
 		CPF: common.Cpf{
 			Value: r.CPF,
 		},
-		Email: "",
+		Email: r.Email,
 	}
 }

@@ -3,7 +3,7 @@ package service
 import (
 	"errors"
 	"fiap-hf-src/src/core/entity"
-	c "fiap-hf-src/src/core/entity/common"
+	c "fiap-hf-src/src/operation/presenter/common"
 	"strings"
 )
 

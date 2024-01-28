@@ -2,7 +2,7 @@ package dto
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
+	com "fiap-hf-src/src/operation/presenter/common"
 )
 
 type (
@@ -32,7 +32,7 @@ type (
 func (r RequestProduct) Product() entity.Product {
 	product := entity.Product{
 		Name: r.Name,
-		Category: common.Category{
+		Category: com.Category{
 			Value: r.Category,
 		},
 		Image:       r.Image,

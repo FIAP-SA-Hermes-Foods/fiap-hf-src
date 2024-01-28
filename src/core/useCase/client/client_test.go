@@ -2,8 +2,8 @@ package service
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
-	"fiap-hf-src/src/operation/presenter"
+	"fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
 )
 
@@ -69,11 +69,11 @@ func Test_SaveClient(t *testing.T) {
 
 			clientOutStr, wantClientOutStr := "nil", "nil"
 			if c != nil {
-				clientOutStr = presenter.MarshalString(c)
+				clientOutStr = ps.MarshalString(c)
 			}
 
 			if tc.wantClient != nil {
-				wantClientOutStr = presenter.MarshalString(tc.wantClient)
+				wantClientOutStr = ps.MarshalString(tc.wantClient)
 			}
 
 			if clientOutStr != wantClientOutStr {

@@ -1,7 +1,7 @@
 package entity
 
 import (
-	com "fiap-hf-src/src/core/entity/common"
+	com "fiap-hf-src/src/operation/presenter/common"
 )
 
 type (

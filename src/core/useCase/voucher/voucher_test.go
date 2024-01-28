@@ -2,7 +2,8 @@ package service
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
+	"fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
 	"time"
 )
@@ -134,11 +135,11 @@ func Test_SaveVoucher(t *testing.T) {
 			vStr, wantVoucherStr := "nil", "nil"
 
 			if v != nil {
-				vStr = v.MarshalString()
+				vStr = ps.MarshalString(v)
 			}
 
 			if tc.wantVoucher != nil {
-				wantVoucherStr = tc.wantVoucher.MarshalString()
+				wantVoucherStr = ps.MarshalString(tc.wantVoucher)
 			}
 
 			if vStr != wantVoucherStr {
@@ -340,11 +341,11 @@ func Test_UpdateVoucherByID(t *testing.T) {
 			vStr, wantVoucherStr := "nil", "nil"
 
 			if v != nil {
-				vStr = v.MarshalString()
+				vStr = ps.MarshalString(v)
 			}
 
 			if tc.wantVoucher != nil {
-				wantVoucherStr = tc.wantVoucher.MarshalString()
+				wantVoucherStr = ps.MarshalString(tc.wantVoucher)
 			}
 
 			if vStr != wantVoucherStr {

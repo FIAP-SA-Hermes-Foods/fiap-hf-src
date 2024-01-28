@@ -2,7 +2,7 @@ package dto
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
+	com "fiap-hf-src/src/operation/presenter/common"
 )
 
 type (
@@ -33,7 +33,7 @@ func (r RequestOrder) Order() entity.Order {
 		ClientID:  r.ClientID,
 		VoucherID: r.VoucherID,
 		Items:     r.Items,
-		Status: common.Status{
+		Status: com.Status{
 			Value: r.Status,
 		},
 	}

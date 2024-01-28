@@ -2,7 +2,8 @@ package service
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
+	"fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
 	"time"
 )
@@ -134,11 +135,11 @@ func Test_SaveProduct(t *testing.T) {
 			pStr, wantPStr := "nil", "nil"
 
 			if p != nil {
-				pStr = p.MarshalString()
+				pStr = ps.MarshalString(p)
 			}
 
 			if tc.wantProduct != nil {
-				wantPStr = tc.wantProduct.MarshalString()
+				wantPStr = ps.MarshalString(tc.wantProduct)
 			}
 
 			if pStr != wantPStr {
@@ -303,11 +304,11 @@ func Test_UpdateProductByID(t *testing.T) {
 			pStr, wantPStr := "nil", "nil"
 
 			if p != nil {
-				pStr = p.MarshalString()
+				pStr = ps.MarshalString(p)
 			}
 
 			if tc.wantProduct != nil {
-				wantPStr = tc.wantProduct.MarshalString()
+				wantPStr = ps.MarshalString(tc.wantProduct)
 			}
 
 			if pStr != wantPStr {

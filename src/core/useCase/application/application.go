@@ -6,9 +6,9 @@ import (
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/base/interfaces"
 	"fiap-hf-src/src/core/entity"
-	com "fiap-hf-src/src/core/entity/common"
 	l "fiap-hf-src/src/external/logger"
-	"fiap-hf-src/src/operation/presenter"
+	com "fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"strings"
 )
@@ -99,7 +99,7 @@ func (app hermesFoodsApp) GetClientByID(id int64) (*dto.OutputClient, error) {
 		CreatedAt: c.CreatedAt.Format(),
 	}
 
-	l.Infof("GetClientByID output: ", " | ", presenter.MarshalString(out))
+	l.Infof("GetClientByID output: ", " | ", ps.MarshalString(out))
 	return out, err
 }
 
@@ -130,12 +130,12 @@ func (app hermesFoodsApp) GetClientByCPF(cpf string) (*dto.OutputClient, error) 
 		CreatedAt: c.CreatedAt.Format(),
 	}
 
-	l.Infof("GetClientByCPF output: ", " | ", presenter.MarshalString(out))
+	l.Infof("GetClientByCPF output: ", " | ", ps.MarshalString(out))
 	return out, err
 }
 
 func (app hermesFoodsApp) SaveClient(client entity.Client) (*dto.OutputClient, error) {
-	l.Infof("SaveClient: ", " | ", presenter.MarshalString(client))
+	l.Infof("SaveClient: ", " | ", ps.MarshalString(client))
 	clientWithCpf, err := app.GetClientByCPF(client.CPF.Value)
 
 	if err != nil {
@@ -161,7 +161,7 @@ func (app hermesFoodsApp) SaveClient(client entity.Client) (*dto.OutputClient, e
 	}
 
 	cRepo, err := app.SaveClientRepository(*c)
-	l.Infof("SaveClient output: ", " | ", presenter.MarshalString(cRepo))
+	l.Infof("SaveClient output: ", " | ", ps.MarshalString(cRepo))
 
 	if err != nil {
 		l.Errorf("SaveClient error: ", " | ", err)
@@ -176,14 +176,14 @@ func (app hermesFoodsApp) SaveClient(client entity.Client) (*dto.OutputClient, e
 		CreatedAt: cRepo.CreatedAt.Format(),
 	}
 
-	l.Infof("SaveClient output: ", " | ", presenter.MarshalString(out))
+	l.Infof("SaveClient output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 
 // ========== Order ==========
 
 func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*dto.OutputOrder, error) {
-	l.Infof("UpdateOrderByID: ", " | ", id, " | ", presenter.MarshalString(order))
+	l.Infof("UpdateOrderByID: ", " | ", id, " | ", ps.MarshalString(order))
 	oSvc, err := app.UpdateOrderByIDService(id, order)
 
 	if err != nil {
@@ -224,7 +224,7 @@ func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*dto.Ou
 		CreatedAt:        oRepo.CreatedAt.Format(),
 	}
 
-	l.Infof("UpdateOrderByID output: ", " | ", presenter.MarshalString(out))
+	l.Infof("UpdateOrderByID output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 
@@ -454,12 +454,12 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 		CreatedAt:        o.CreatedAt.Format(),
 	}
 
-	l.Infof("GetOrderByID output: ", " | ", presenter.MarshalString(out))
+	l.Infof("GetOrderByID output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 
 func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error) {
-	l.Infof("SaveOrder: ", " | ", presenter.MarshalString(order))
+	l.Infof("SaveOrder: ", " | ", ps.MarshalString(order))
 	if err := app.GetClientByIDService(order.ClientID); err != nil {
 		l.Errorf("SaveOrder error: ", " | ", err)
 		return nil, err
@@ -515,7 +515,7 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 	}
 
 	oRepo, err := app.SaveOrderRepository(*o)
-	l.Infof("SaveOrder output: ", " | ", presenter.MarshalString(oRepo))
+	l.Infof("SaveOrder output: ", " | ", ps.MarshalString(oRepo))
 
 	if err != nil {
 		l.Errorf("SaveOrder error: ", " | ", err)
@@ -531,7 +531,7 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 	if order.VoucherID != nil {
 
 		v, err := app.GetVoucherByID(*order.VoucherID)
-		l.Infof("SaveOrder output: ", " | ", presenter.MarshalString(v))
+		l.Infof("SaveOrder output: ", " | ", ps.MarshalString(v))
 
 		if err != nil {
 			l.Errorf("SaveOrder error: ", " | ", err)
@@ -648,14 +648,14 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 		CreatedAt:        oRepo.CreatedAt.Format(),
 	}
 
-	l.Infof("SaveOrder output: ", " | ", presenter.MarshalString(outOrder))
+	l.Infof("SaveOrder output: ", " | ", ps.MarshalString(outOrder))
 	return outOrder, nil
 }
 
 // ========== Product ==========
 
 func (app hermesFoodsApp) SaveProduct(product entity.Product) (*dto.OutputProduct, error) {
-	l.Infof("SaveProduct: ", " | ", presenter.MarshalString(product))
+	l.Infof("SaveProduct: ", " | ", ps.MarshalString(product))
 	p, err := app.SaveProductService(product)
 
 	if err != nil {
@@ -686,7 +686,7 @@ func (app hermesFoodsApp) SaveProduct(product entity.Product) (*dto.OutputProduc
 		DeactivatedAt: pRepo.DeactivatedAt.Format(),
 	}
 
-	l.Infof("SaveProduct output: ", " | ", presenter.MarshalString(out))
+	l.Infof("SaveProduct output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 
@@ -730,7 +730,7 @@ func (app hermesFoodsApp) GetProductByCategory(category string) ([]dto.OutputPro
 }
 
 func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*dto.OutputProduct, error) {
-	l.Infof("UpdateProductByID: ", " | ", id, " | ", presenter.MarshalString(product))
+	l.Infof("UpdateProductByID: ", " | ", id, " | ", ps.MarshalString(product))
 
 	if err := app.GetProductByIDService(id); err != nil {
 		l.Errorf("UpdateProductByID error: ", " | ", err)
@@ -781,7 +781,7 @@ func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*
 		DeactivatedAt: pRepo.DeactivatedAt.Format(),
 	}
 
-	l.Infof("UpdateProductByID output: ", " | ", presenter.MarshalString(out))
+	l.Infof("UpdateProductByID output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 
@@ -818,7 +818,7 @@ func (app hermesFoodsApp) DeleteProductByID(id int64) error {
 // ========== Voucher ==========
 
 func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*dto.OutputVoucher, error) {
-	l.Infof("SaveVoucher: ", " | ", presenter.MarshalString(voucher))
+	l.Infof("SaveVoucher: ", " | ", ps.MarshalString(voucher))
 	voucherSvc, err := app.SaveVoucherService(voucher)
 
 	if err != nil {
@@ -853,7 +853,7 @@ func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*dto.OutputVouche
 		ExpiresAt:  rVoucher.ExpiresAt.Format(),
 	}
 
-	l.Infof("SaveVoucher output: ", " | ", presenter.MarshalString(vOut))
+	l.Infof("SaveVoucher output: ", " | ", ps.MarshalString(vOut))
 	return &vOut, nil
 }
 
@@ -885,12 +885,12 @@ func (app hermesFoodsApp) GetVoucherByID(id int64) (*dto.OutputVoucher, error) {
 		ExpiresAt:  rVoucher.ExpiresAt.Format(),
 	}
 
-	l.Infof("GetVoucherByID output: ", " | ", presenter.MarshalString(vOut))
+	l.Infof("GetVoucherByID output: ", " | ", ps.MarshalString(vOut))
 	return &vOut, nil
 }
 
 func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*dto.OutputVoucher, error) {
-	l.Infof("UpdateVoucherByID: ", " | ", id, " | ", presenter.MarshalString(voucher))
+	l.Infof("UpdateVoucherByID: ", " | ", id, " | ", ps.MarshalString(voucher))
 	voucherSvc, err := app.UpdateVoucherByIDService(id, voucher)
 
 	if err != nil {
@@ -925,7 +925,7 @@ func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*
 		ExpiresAt:  rVoucher.ExpiresAt.Format(),
 	}
 
-	l.Infof("UpdateVoucherByID output: ", " | ", presenter.MarshalString(vOut))
+	l.Infof("UpdateVoucherByID output: ", " | ", ps.MarshalString(vOut))
 	return &vOut, nil
 }
 

@@ -2,8 +2,9 @@ package service
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
-	"fiap-hf-src/src/operation/presenter"
+	"fiap-hf-src/src/operation/presenter/common"
+
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
 	"time"
 )
@@ -138,7 +139,7 @@ func Test_SaveOrder(t *testing.T) {
 					Status:    o.Status,
 					CreatedAt: o.CreatedAt,
 				}
-				orderOutStr = presenter.MarshalString(oWithoutVerifyCode)
+				orderOutStr = ps.MarshalString(oWithoutVerifyCode)
 			}
 
 			if tc.wantOrder != nil {
@@ -150,7 +151,7 @@ func Test_SaveOrder(t *testing.T) {
 					Status:    tc.wantOrder.Status,
 					CreatedAt: tc.wantOrder.CreatedAt,
 				}
-				wantOrderOutStr = presenter.MarshalString(oWithoutVerifyCode)
+				wantOrderOutStr = ps.MarshalString(oWithoutVerifyCode)
 			}
 
 			if orderOutStr != wantOrderOutStr {
@@ -281,7 +282,7 @@ func Test_UpdateOrderByID(t *testing.T) {
 					Status:    o.Status,
 					CreatedAt: o.CreatedAt,
 				}
-				orderOutStr = presenter.MarshalString(oWithoutVerifyCode)
+				orderOutStr = ps.MarshalString(oWithoutVerifyCode)
 			}
 
 			if tc.wantOrder != nil {
@@ -293,7 +294,7 @@ func Test_UpdateOrderByID(t *testing.T) {
 					Status:    tc.wantOrder.Status,
 					CreatedAt: tc.wantOrder.CreatedAt,
 				}
-				wantOrderOutStr = presenter.MarshalString(oWithoutVerifyCode)
+				wantOrderOutStr = ps.MarshalString(oWithoutVerifyCode)
 			}
 
 			if orderOutStr != wantOrderOutStr {

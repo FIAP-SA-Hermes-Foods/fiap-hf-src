@@ -2,7 +2,8 @@ package service
 
 import (
 	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/core/entity/common"
+	"fiap-hf-src/src/operation/presenter/common"
+	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
 	"time"
 )
@@ -111,11 +112,11 @@ func Test_SaveOrderProduct(t *testing.T) {
 			orderOutStr, wantOrderOutStr := "nil", "nil"
 
 			if o != nil {
-				orderOutStr = o.MarshalString()
+				orderOutStr = ps.MarshalString(o)
 			}
 
 			if tc.wantOrder != nil {
-				wantOrderOutStr = tc.wantOrder.MarshalString()
+				wantOrderOutStr = ps.MarshalString(tc.wantOrder)
 			}
 
 			if orderOutStr != wantOrderOutStr {
