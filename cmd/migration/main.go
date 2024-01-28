@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"context"
-	"fiap-hf-src/pkg/migration"
-	"fiap-hf-src/pkg/postgres"
+	"fiap-hf-src/migration"
+	"fiap-hf-src/src/external/db/postgres"
 	"log"
 	"os"
 	"strings"
