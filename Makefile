@@ -21,5 +21,9 @@ migrate:
 
 tests:
 	@docker exec -it go-hermes-foods-app /fiap-hf-src/src/app/infrastructure/scripts/coverage.sh;
-	
+
+test-local:
+	./infrastructure/scripts/coverage.sh
+
+
 
