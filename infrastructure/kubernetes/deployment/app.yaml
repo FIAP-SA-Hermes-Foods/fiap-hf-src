@@ -1,0 +1,59 @@
+# Deployment config
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-foods-go-deployment
+  namespace: dev
+  labels:
+    app: hermes-foods-go-app
+
+spec:
+
+  selector:
+    matchLabels:
+      app: hermes-foods-go-app 
+
+  template:
+    metadata:
+      labels:
+        app: hermes-foods-go-app
+    spec:
+      containers:
+      - name: go-hermes-foods-app
+        image: "{{REPOSITORY_API_URL}}:{{IMAGE_TAG}}"
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: hf-deploy-secret
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+      imagePullSecrets:
+      - name: hfregcred
+
+---
+
+# Service config
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-foods-go-service
+  namespace: dev
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: hermes-foods-go-app 
+
+  ports:
+    - protocol: TCP
+      name: go-api-port
+      port: 8080
+      targetPort: 8080 
+      #nodePort: 30800
+    - protocol: TCP
+      name: api-fake-mp-port
+      port: 8081
+      targetPort: 8081 
+      #nodePort: 30801
+

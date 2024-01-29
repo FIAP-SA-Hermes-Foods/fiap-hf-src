@@ -3,14 +3,12 @@ package main
 import (
 	"bufio"
 	"context"
-	"fiap-hf-src/infrastructure/db/migration"
-	"fiap-hf-src/infrastructure/db/postgres"
+	"fiap-hf-src/migration"
+	"fiap-hf-src/src/external/db/postgres"
 	"log"
 	"os"
-	"regexp"
+	"strings"
 )
-
-var regexEnvs = regexp.MustCompile(`(\S+)=(\S+)`)
 
 func init() {
 	if err := defineEnvs(".env"); err != nil {
@@ -56,12 +54,21 @@ func defineEnvs(filename string) error {
 	sc := bufio.NewScanner(file)
 
 	for sc.Scan() {
-		envMatch := regexEnvs.FindStringSubmatch(sc.Text())
-		if envMatch != nil {
-			err := os.Setenv(envMatch[1], envMatch[2])
-			if err != nil {
-				return err
+		indexComment := strings.Index(sc.Text(), "#")
+		if indexComment != -1 && len(strings.TrimSpace(sc.Text()[:indexComment])) == 0 {
+			continue
+		}
+		envEqualSign := strings.Index(sc.Text(), "=")
+		if envEqualSign != -1 {
+			envMatchKey := sc.Text()[:envEqualSign]
+			envMatchValue := sc.Text()[envEqualSign+1:]
+			if len(envMatchKey) != 0 || len(envMatchValue) != 0 {
+				err := os.Setenv(envMatchKey, envMatchValue)
+				if err != nil {
+					return err
+				}
 			}
+
 		}
 	}
 

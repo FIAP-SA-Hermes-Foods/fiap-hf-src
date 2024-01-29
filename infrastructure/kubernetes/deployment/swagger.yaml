@@ -1,0 +1,64 @@
+# Deployment config
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-foods-swagger-deployment
+  namespace: dev
+  labels:
+    app: hermes-foods-swagger-app
+
+spec:
+
+  selector:
+    matchLabels:
+      app: hermes-foods-swagger-app 
+
+  template:
+    metadata:
+      labels:
+        app: hermes-foods-swagger-app
+    spec:
+      containers:
+      - name: swagger-hermes-foods
+        image: "{{REPOSITORY_SWAGGER_URL}}:{{IMAGE_TAG}}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: hf-deploy-secret
+        volumeMounts:
+          - mountPath: /swagger_file
+            name: swagger-init-config
+        lifecycle:
+          postStart:
+            exec:
+              command: ["sh", "-c", "cp /swagger_file/swagger.json /"]
+
+      imagePullSecrets:
+      - name: hfregcred
+
+      volumes:
+        - name: swagger-init-config
+          configMap:
+            name: hf-swagger-config
+
+---
+
+# Service config
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-foods-swagger-service
+  namespace: dev
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: hermes-foods-swagger-app 
+
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8080 
+      #nodePort: 30803
