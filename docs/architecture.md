@@ -1,0 +1,2 @@
+# Architecture Diagram
+![Architecture](https://media.discordapp.net/attachments/1171597706309935126/1201668316641362011/arch_final1.jpg?ex=65caa7d4&is=65b832d4&hm=c4e8ae31af558ded275ce275a0a8ba6393a78b51971462b7060a021f458620fa&=&format=webp&width=1002&height=682)
