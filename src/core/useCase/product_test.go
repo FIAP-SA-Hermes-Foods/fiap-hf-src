@@ -1,129 +1,114 @@
-package service
+package useCase
 
 import (
-	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/operation/presenter/common"
+	"fiap-hf-src/src/base/dto"
+	"fiap-hf-src/src/base/mocks"
 	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
-	"time"
 )
 
 // go test -v -count=1 -failfast -run ^Test_SaveProduct$
 func Test_SaveProduct(t *testing.T) {
-	serviceProduct := NewProductService(nil)
 
 	type args struct {
-		product entity.Product
+		product dto.RequestProduct
 	}
 
 	tests := []struct {
 		name        string
 		args        args
-		wantProduct *entity.Product
+		wantProduct *dto.OutputProduct
+		mockGateway *mocks.ProductGatewayMock
 		wantError   bool
 	}{
 		{
 			name: "success_english_category",
 			args: args{
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "drink",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "drink",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
-			wantProduct: &entity.Product{
-				ID:   1,
-				Name: "",
-				Category: common.Category{
-					Value: "DRINK",
-				},
+			wantProduct: &dto.OutputProduct{
+				ID:          1,
+				Name:        "",
+				Category:    "DRINK",
 				Image:       "",
 				Description: "",
 				Price:       0.0,
-				CreatedAt: common.CreatedAt{
-					Value: time.Time{},
+			},
+			mockGateway: &mocks.ProductGatewayMock{
+				WantOut: &dto.OutputProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "DRINK",
+					Image:       "",
+					Description: "",
+					Price:       0.0,
 				},
-				DeactivatedAt: common.DeactivatedAt{
-					Value: &time.Time{},
-				},
+				WantOutList: []dto.OutputProduct{},
+				WantErr:     nil,
 			},
 			wantError: false,
 		},
 		{
 			name: "success_portuguese_category",
 			args: args{
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "acompanhamento",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "acompanhamento",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
-			wantProduct: &entity.Product{
-				ID:   1,
-				Name: "",
-				Category: common.Category{
-					Value: "COMPLEMENT",
-				},
+			wantProduct: &dto.OutputProduct{
+				ID:          1,
+				Name:        "",
+				Category:    "COMPLEMENT",
 				Image:       "",
 				Description: "",
 				Price:       0.0,
-				CreatedAt: common.CreatedAt{
-					Value: time.Time{},
+			},
+			mockGateway: &mocks.ProductGatewayMock{
+				WantOut: &dto.OutputProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "COMPLEMENT",
+					Image:       "",
+					Description: "",
+					Price:       0.0,
 				},
-				DeactivatedAt: common.DeactivatedAt{
-					Value: &time.Time{},
-				},
+				WantOutList: []dto.OutputProduct{},
+				WantErr:     nil,
 			},
 			wantError: false,
 		},
 		{
 			name: "error_invalid_category",
 			args: args{
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "acompanhament",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "acompanhament",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
 			wantProduct: nil,
+			mockGateway: &mocks.ProductGatewayMock{},
 			wantError:   true,
 		},
 	}
 
 	for _, tc := range tests {
+		serviceProduct := NewProductUseCase(tc.mockGateway)
 		t.Run(tc.name, func(*testing.T) {
 
 			p, err := serviceProduct.SaveProduct(tc.args.product)
@@ -148,60 +133,55 @@ func Test_SaveProduct(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 // go test -v -count=1 -failfast -run ^Test_UpdateProductByID$
 func Test_UpdateProductByID(t *testing.T) {
-	serviceProduct := NewProductService(nil)
 
 	type args struct {
 		id      int64
-		product entity.Product
+		product dto.RequestProduct
 	}
 
 	tests := []struct {
 		name        string
 		args        args
 		wantError   bool
-		wantProduct *entity.Product
+		mockGateway *mocks.ProductGatewayMock
+		wantProduct *dto.OutputProduct
 	}{
 		{
 			name: "success_english_category",
 			args: args{
 				id: 1,
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "drink",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "drink",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
-			wantProduct: &entity.Product{
-				ID:   1,
-				Name: "",
-				Category: common.Category{
-					Value: "DRINK",
-				},
+			wantProduct: &dto.OutputProduct{
+				ID:          1,
+				Name:        "",
+				Category:    "DRINK",
 				Image:       "",
 				Description: "",
 				Price:       0.0,
-				CreatedAt: common.CreatedAt{
-					Value: time.Time{},
+			},
+			mockGateway: &mocks.ProductGatewayMock{
+				WantOut: &dto.OutputProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "DRINK",
+					Image:       "",
+					Description: "",
+					Price:       0.0,
 				},
-				DeactivatedAt: common.DeactivatedAt{
-					Value: &time.Time{},
-				},
+				WantOutList: []dto.OutputProduct{},
+				WantErr:     nil,
 			},
 			wantError: false,
 		},
@@ -209,38 +189,34 @@ func Test_UpdateProductByID(t *testing.T) {
 			name: "success_portuguese_category",
 			args: args{
 				id: 1,
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "acompanhamento",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "acompanhamento",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
-			wantProduct: &entity.Product{
-				ID:   1,
-				Name: "",
-				Category: common.Category{
-					Value: "COMPLEMENT",
-				},
+			wantProduct: &dto.OutputProduct{
+				ID:          1,
+				Name:        "",
+				Category:    "COMPLEMENT",
 				Image:       "",
 				Description: "",
 				Price:       0.0,
-				CreatedAt: common.CreatedAt{
-					Value: time.Time{},
+			},
+			mockGateway: &mocks.ProductGatewayMock{
+				WantOut: &dto.OutputProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "COMPLEMENT",
+					Image:       "",
+					Description: "",
+					Price:       0.0,
 				},
-				DeactivatedAt: common.DeactivatedAt{
-					Value: &time.Time{},
-				},
+				WantOutList: []dto.OutputProduct{},
+				WantErr:     nil,
 			},
 			wantError: false,
 		},
@@ -248,52 +224,39 @@ func Test_UpdateProductByID(t *testing.T) {
 			name: "error_invalid_category",
 			args: args{
 				id: 1,
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "acompanhament",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "acompanhament",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
 			wantProduct: nil,
+			mockGateway: &mocks.ProductGatewayMock{},
 			wantError:   true,
 		},
 		{
 			name: "error_invalid_id",
 			args: args{
-				product: entity.Product{
-					ID:   1,
-					Name: "",
-					Category: common.Category{
-						Value: "acompanhament",
-					},
+				product: dto.RequestProduct{
+					ID:          1,
+					Name:        "",
+					Category:    "acompanhament",
 					Image:       "",
 					Description: "",
 					Price:       0.0,
-					CreatedAt: common.CreatedAt{
-						Value: time.Time{},
-					},
-					DeactivatedAt: common.DeactivatedAt{
-						Value: &time.Time{},
-					},
 				},
 			},
 			wantProduct: nil,
+			mockGateway: &mocks.ProductGatewayMock{},
 			wantError:   true,
 		},
 	}
 
 	for _, tc := range tests {
+		serviceProduct := NewProductUseCase(tc.mockGateway)
 		t.Run(tc.name, func(*testing.T) {
 			p, err := serviceProduct.UpdateProductByID(tc.args.id, tc.args.product)
 
@@ -321,36 +284,39 @@ func Test_UpdateProductByID(t *testing.T) {
 
 // go test -v -count=1 -failfast -run ^Test_GetProductByID$
 func Test_GetProductByID(t *testing.T) {
-	serviceProduct := NewProductService(nil)
 
 	type args struct {
 		id int64
 	}
 
 	tests := []struct {
-		name      string
-		args      args
-		wantError bool
+		name        string
+		args        args
+		mockGateway *mocks.ProductGatewayMock
+		wantError   bool
 	}{
 		{
 			name: "success",
 			args: args{
 				id: 1,
 			},
-			wantError: false,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   false,
 		},
 		{
 			name: "error_invalid_id",
 			args: args{
 				id: 0,
 			},
-			wantError: true,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   true,
 		},
 	}
 
 	for _, tc := range tests {
+		serviceProduct := NewProductUseCase(tc.mockGateway)
 		t.Run(tc.name, func(*testing.T) {
-			err := serviceProduct.GetProductByID(tc.args.id)
+			_, err := serviceProduct.GetProductByID(tc.args.id)
 			if (!tc.wantError) && err != nil {
 				t.Fatalf("error: %v", err)
 			}
@@ -360,43 +326,47 @@ func Test_GetProductByID(t *testing.T) {
 
 // go test -v -count=1 -failfast -run ^Test_GetProductByCategory$
 func Test_GetProductByCategory(t *testing.T) {
-	serviceProduct := NewProductService(nil)
 
 	type args struct {
 		category string
 	}
 
 	tests := []struct {
-		name      string
-		args      args
-		wantError bool
+		name        string
+		args        args
+		mockGateway *mocks.ProductGatewayMock
+		wantError   bool
 	}{
 		{
 			name: "success",
 			args: args{
 				category: "meal",
 			},
-			wantError: false,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   false,
 		},
 		{
 			name: "error_empty_category",
 			args: args{
 				category: "",
 			},
-			wantError: true,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   true,
 		},
 		{
 			name: "error_invalid_category",
 			args: args{
 				category: "drinke",
 			},
-			wantError: true,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   true,
 		},
 	}
 
 	for _, tc := range tests {
+		serviceProduct := NewProductUseCase(tc.mockGateway)
 		t.Run(tc.name, func(*testing.T) {
-			err := serviceProduct.GetProductByCategory(tc.args.category)
+			_, err := serviceProduct.GetProductByCategory(tc.args.category)
 			if (!tc.wantError) && err != nil {
 				t.Fatalf("error: %v", err)
 			}
@@ -406,35 +376,37 @@ func Test_GetProductByCategory(t *testing.T) {
 
 // go test -v -count=1 -failfast -run ^Test_DeleteProductByI$
 func Test_DeleteProductByI(t *testing.T) {
-	p := entity.Product{}
-	serviceProduct := NewProductService(&p)
 
 	type args struct {
 		id int64
 	}
 
 	tests := []struct {
-		name      string
-		args      args
-		wantError bool
+		name        string
+		args        args
+		mockGateway *mocks.ProductGatewayMock
+		wantError   bool
 	}{
 		{
 			name: "success",
 			args: args{
 				id: 1,
 			},
-			wantError: false,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   false,
 		},
 		{
 			name: "error_invalid_id",
 			args: args{
 				id: 0,
 			},
-			wantError: true,
+			mockGateway: &mocks.ProductGatewayMock{},
+			wantError:   true,
 		},
 	}
 
 	for _, tc := range tests {
+		serviceProduct := NewProductUseCase(tc.mockGateway)
 		t.Run(tc.name, func(*testing.T) {
 			err := serviceProduct.DeleteProductByID(tc.args.id)
 			if (!tc.wantError) && err != nil {

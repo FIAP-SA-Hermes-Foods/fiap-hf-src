@@ -1,85 +1,47 @@
-package application
+package useCase
 
 import (
 	"context"
 	"errors"
 	"fiap-hf-src/src/base/dto"
 	"fiap-hf-src/src/base/interfaces"
+	l "fiap-hf-src/src/base/logger"
 	"fiap-hf-src/src/core/entity"
-	l "fiap-hf-src/src/external/logger"
 	com "fiap-hf-src/src/operation/presenter/common"
 	ps "fiap-hf-src/src/operation/presenter/strings"
 	"fmt"
 	"strings"
 )
 
-type HermesFoodsApp interface {
-
-	// Client Methods
-	SaveClient(client entity.Client) (*dto.OutputClient, error)
-	GetClientByCPF(cpf string) (*dto.OutputClient, error)
-	GetClientByID(id int64) (*dto.OutputClient, error)
-
-	// Order Methods
-	SaveOrder(order entity.Order) (*dto.OutputOrder, error)
-	GetOrderByID(id int64) (*dto.OutputOrder, error)
-	UpdateOrderByID(id int64, order entity.Order) (*dto.OutputOrder, error)
-	GetOrders() ([]dto.OutputOrder, error)
-
-	// Product Methods
-	SaveProduct(product entity.Product) (*dto.OutputProduct, error)
-	GetProductByCategory(category string) ([]dto.OutputProduct, error)
-	UpdateProductByID(id int64, product entity.Product) (*dto.OutputProduct, error)
-	DeleteProductByID(id int64) error
-
-	// Voucher Methods
-	SaveVoucher(voucher entity.Voucher) (*dto.OutputVoucher, error)
-	GetVoucherByID(id int64) (*dto.OutputVoucher, error)
-	UpdateVoucherByID(id int64, voucher entity.Voucher) (*dto.OutputVoucher, error)
-}
+var _ interfaces.HermesFoodsUseCase = (*hermesFoodsApp)(nil)
 
 type hermesFoodsApp struct {
-	Ctx                 context.Context
-	paymentAPI          interfaces.PaymentAPI
-	clientRepo          interfaces.ClientRepository
-	clientService       interfaces.ClientService
-	orderRepo           interfaces.OrderRepository
-	orderService        interfaces.OrderService
-	orderProductRepo    interfaces.OrderProductRepository
-	orderProductService interfaces.OrderProductService
-	productRepo         interfaces.ProductRepository
-	productService      interfaces.ProductService
-	voucherRepo         interfaces.VoucherRepository
-	voucherService      interfaces.VoucherService
+	ctx                 context.Context
+	paymentAPI          interfaces.PaymentUseCase
+	clientUseCase       interfaces.ClientUseCase
+	orderUseCase        interfaces.OrderUseCase
+	orderProductUseCase interfaces.OrderProductUseCase
+	productUseCase      interfaces.ProductUseCase
+	voucherUseCase      interfaces.VoucherUseCase
 }
 
-func NewHermesFoodsApp(ctx context.Context, paymentAPI interfaces.PaymentAPI, clientRepo interfaces.ClientRepository, orderRepo interfaces.OrderRepository, orderProductRepo interfaces.OrderProductRepository, productRepo interfaces.ProductRepository, voucherRepo interfaces.VoucherRepository, clientService interfaces.ClientService, orderService interfaces.OrderService, orderProductService interfaces.OrderProductService, productService interfaces.ProductService, voucherService interfaces.VoucherService) HermesFoodsApp {
-	return hermesFoodsApp{
-		Ctx:                 ctx,
+func NewHermesFoodsApp(ctx context.Context, paymentAPI interfaces.PaymentUseCase, clientUseCase interfaces.ClientUseCase, orderUseCase interfaces.OrderUseCase, orderProductUseCase interfaces.OrderProductUseCase, productUseCase interfaces.ProductUseCase, voucherUseCase interfaces.VoucherUseCase) *hermesFoodsApp {
+	return &hermesFoodsApp{
+		ctx:                 ctx,
 		paymentAPI:          paymentAPI,
-		clientRepo:          clientRepo,
-		clientService:       clientService,
-		orderRepo:           orderRepo,
-		orderService:        orderService,
-		orderProductRepo:    orderProductRepo,
-		orderProductService: orderProductService,
-		productRepo:         productRepo,
-		productService:      productService,
-		voucherRepo:         voucherRepo,
-		voucherService:      voucherService,
+		clientUseCase:       clientUseCase,
+		orderUseCase:        orderUseCase,
+		orderProductUseCase: orderProductUseCase,
+		productUseCase:      productUseCase,
+		voucherUseCase:      voucherUseCase,
 	}
 }
 
 // ========== Client ==========
 
 func (app hermesFoodsApp) GetClientByID(id int64) (*dto.OutputClient, error) {
-	l.Infof("GetClientByID: ", " | ", id)
-	if err := app.GetClientByIDService(id); err != nil {
-		l.Errorf("GetClientByID error: ", " | ", err)
-		return nil, err
-	}
 
-	c, err := app.GetClientByIDRepository(id)
+	c, err := app.clientUseCase.GetClientByID(id)
 
 	if err != nil {
 		l.Errorf("GetClientByID error: ", " | ", err)
@@ -91,26 +53,13 @@ func (app hermesFoodsApp) GetClientByID(id int64) (*dto.OutputClient, error) {
 		return nil, nil
 	}
 
-	out := &dto.OutputClient{
-		ID:        c.ID,
-		Name:      c.Name,
-		CPF:       c.CPF.Value,
-		Email:     c.Email,
-		CreatedAt: c.CreatedAt.Format(),
-	}
-
-	l.Infof("GetClientByID output: ", " | ", ps.MarshalString(out))
-	return out, err
+	l.Infof("GetClientByID output: ", " | ", ps.MarshalString(c))
+	return c, err
 }
 
 func (app hermesFoodsApp) GetClientByCPF(cpf string) (*dto.OutputClient, error) {
-	l.Infof("GetClientByCPF: ", " | ", cpf)
-	if err := app.GetClientByCPFService(cpf); err != nil {
-		l.Errorf("GetClientByCPF error: ", " | ", err)
-		return nil, err
-	}
 
-	c, err := app.GetClientByCPFRepository(cpf)
+	c, err := app.clientUseCase.GetClientByCPF(cpf)
 
 	if err != nil {
 		l.Errorf("GetClientByCPF error: ", " | ", err)
@@ -122,21 +71,13 @@ func (app hermesFoodsApp) GetClientByCPF(cpf string) (*dto.OutputClient, error) 
 		return nil, nil
 	}
 
-	out := &dto.OutputClient{
-		ID:        c.ID,
-		Name:      c.Name,
-		CPF:       c.CPF.Value,
-		Email:     c.Email,
-		CreatedAt: c.CreatedAt.Format(),
-	}
-
-	l.Infof("GetClientByCPF output: ", " | ", ps.MarshalString(out))
-	return out, err
+	l.Infof("GetClientByCPF output: ", " | ", ps.MarshalString(c))
+	return c, err
 }
 
-func (app hermesFoodsApp) SaveClient(client entity.Client) (*dto.OutputClient, error) {
+func (app hermesFoodsApp) SaveClient(client dto.RequestClient) (*dto.OutputClient, error) {
 	l.Infof("SaveClient: ", " | ", ps.MarshalString(client))
-	clientWithCpf, err := app.GetClientByCPF(client.CPF.Value)
+	clientWithCpf, err := app.GetClientByCPF(client.CPF)
 
 	if err != nil {
 		l.Errorf("SaveClient error: ", " | ", err)
@@ -148,7 +89,7 @@ func (app hermesFoodsApp) SaveClient(client entity.Client) (*dto.OutputClient, e
 		return nil, errors.New("is not possible to save client because this cpf is already in use")
 	}
 
-	c, err := app.SaveClientService(client)
+	c, err := app.clientUseCase.SaveClient(client)
 
 	if err != nil {
 		l.Errorf("SaveClient error: ", " | ", err)
@@ -160,31 +101,15 @@ func (app hermesFoodsApp) SaveClient(client entity.Client) (*dto.OutputClient, e
 		return nil, errors.New("is not possible to save client because it's null")
 	}
 
-	cRepo, err := app.SaveClientRepository(*c)
-	l.Infof("SaveClient output: ", " | ", ps.MarshalString(cRepo))
-
-	if err != nil {
-		l.Errorf("SaveClient error: ", " | ", err)
-		return nil, err
-	}
-
-	out := &dto.OutputClient{
-		ID:        cRepo.ID,
-		Name:      cRepo.Name,
-		CPF:       cRepo.CPF.Value,
-		Email:     cRepo.Email,
-		CreatedAt: cRepo.CreatedAt.Format(),
-	}
-
-	l.Infof("SaveClient output: ", " | ", ps.MarshalString(out))
-	return out, nil
+	l.Infof("SaveClient output: ", " | ", ps.MarshalString(c))
+	return c, nil
 }
 
 // ========== Order ==========
 
-func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*dto.OutputOrder, error) {
+func (app hermesFoodsApp) UpdateOrderByID(id int64, order dto.RequestOrder) (*dto.OutputOrder, error) {
 	l.Infof("UpdateOrderByID: ", " | ", id, " | ", ps.MarshalString(order))
-	oSvc, err := app.UpdateOrderByIDService(id, order)
+	oSvc, err := app.orderUseCase.UpdateOrderByID(id, order)
 
 	if err != nil {
 		l.Errorf("UpdateOrderByID error: ", " | ", err)
@@ -196,14 +121,7 @@ func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*dto.Ou
 		return nil, errors.New("order is null, is not possible to proceed with update order")
 	}
 
-	oRepo, err := app.UpdateOrderByIDRepository(id, order)
-
-	if err != nil {
-		l.Errorf("UpdateOrderByID error: ", " | ", err)
-		return nil, err
-	}
-
-	client, err := app.GetClientByID(oRepo.ClientID)
+	client, err := app.GetClientByID(oSvc.Client.ID)
 
 	if err != nil {
 		l.Errorf("UpdateOrderByID error: ", " | ", err)
@@ -216,12 +134,12 @@ func (app hermesFoodsApp) UpdateOrderByID(id int64, order entity.Order) (*dto.Ou
 	}
 
 	out := &dto.OutputOrder{
-		ID:               oRepo.ID,
+		ID:               oSvc.ID,
 		Client:           *client,
-		VoucherID:        oRepo.VoucherID,
-		Status:           oRepo.Status.Value,
-		VerificationCode: oRepo.VerificationCode.Value,
-		CreatedAt:        oRepo.CreatedAt.Format(),
+		VoucherID:        oSvc.VoucherID,
+		Status:           oSvc.Status,
+		VerificationCode: oSvc.VerificationCode,
+		CreatedAt:        oSvc.CreatedAt,
 	}
 
 	l.Infof("UpdateOrderByID output: ", " | ", ps.MarshalString(out))
@@ -232,7 +150,7 @@ func (app hermesFoodsApp) GetOrders() ([]dto.OutputOrder, error) {
 	l.Infof("GetOrders: ", " | ")
 	orderList := make([]dto.OutputOrder, 0)
 
-	orders, err := app.GetOrdersRepository()
+	orders, err := app.orderUseCase.GetOrders()
 
 	if err != nil {
 		l.Errorf("GetOrders error: ", " | ", err)
@@ -241,19 +159,14 @@ func (app hermesFoodsApp) GetOrders() ([]dto.OutputOrder, error) {
 
 	for i := range orders {
 
-		client, err := app.GetClientByID(orders[i].ClientID)
+		client, err := app.GetClientByID(orders[i].Client.ID)
 
 		if err != nil {
 			l.Errorf("GetOrders error: ", " | ", err)
 			return nil, err
 		}
 
-		if err := app.GetAllOrderProductByIdService(orders[i].ID); err != nil {
-			l.Errorf("GetOrders error: ", " | ", err)
-			return nil, err
-		}
-
-		orderProductList, err := app.GetAllOrderProductByIdRepository(orders[i].ID)
+		orderProductList, err := app.orderProductUseCase.GetAllOrderProductByOrderID(orders[i].ID)
 
 		if err != nil {
 			l.Errorf("GetOrders error: ", " | ", err)
@@ -285,7 +198,7 @@ func (app hermesFoodsApp) GetOrders() ([]dto.OutputOrder, error) {
 
 		for _, op := range orderProductList {
 			if op.ProductID != nil {
-				p, errGetC := app.GetProductByIDRepository(*op.ProductID)
+				p, errGetC := app.productUseCase.GetProductByID(*op.ProductID)
 
 				if errGetC != nil {
 					l.Errorf("GetOrders error: ", " | ", errGetC)
@@ -300,12 +213,12 @@ func (app hermesFoodsApp) GetOrders() ([]dto.OutputOrder, error) {
 						ID:            p.ID,
 						Name:          p.Name,
 						Quantity:      op.Quantity,
-						Category:      p.Category.Value,
+						Category:      p.Category,
 						Image:         p.Image,
 						Description:   p.Description,
 						Price:         p.Price,
-						CreatedAt:     p.CreatedAt.Format(),
-						DeactivatedAt: p.DeactivatedAt.Format(),
+						CreatedAt:     p.CreatedAt,
+						DeactivatedAt: p.DeactivatedAt,
 					}
 
 					productList = append(productList, pp)
@@ -329,9 +242,9 @@ func (app hermesFoodsApp) GetOrders() ([]dto.OutputOrder, error) {
 			Products:         productList,
 			TotalPrice:       totalPrice,
 			VoucherID:        orders[i].VoucherID,
-			Status:           orders[i].Status.Value,
-			VerificationCode: orders[i].VerificationCode.Value,
-			CreatedAt:        orders[i].CreatedAt.Format(),
+			Status:           orders[i].Status,
+			VerificationCode: orders[i].VerificationCode,
+			CreatedAt:        orders[i].CreatedAt,
 		}
 
 		if strings.ToLower(order.Status) != com.FinishedStatusKey {
@@ -339,18 +252,14 @@ func (app hermesFoodsApp) GetOrders() ([]dto.OutputOrder, error) {
 		}
 	}
 
-	l.Infof("GetOrders output: ", " | ", orderList)
+	l.Infof("GetOrders output: ", " | ", ps.MarshalString(orderList))
 	return orderList, nil
 }
 
 func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 	l.Infof("GetOrderByID: ", " | ", id)
-	if err := app.orderService.GetOrderByID(id); err != nil {
-		l.Errorf("GetOrderByID error: ", " | ", err)
-		return nil, err
-	}
 
-	o, err := app.GetOrderByIDRepository(id)
+	o, err := app.orderUseCase.GetOrderByID(id)
 
 	if err != nil {
 		l.Errorf("GetOrderByID error: ", " | ", err)
@@ -362,18 +271,14 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 		return nil, nil
 	}
 
-	outClient, err := app.GetClientByID(o.ClientID)
+	outClient, err := app.GetClientByID(o.Client.ID)
 
 	if err != nil {
 		l.Errorf("GetOrderByID error: ", " | ", err)
 		return nil, err
 	}
 
-	if err := app.GetAllOrderProductByIdService(id); err != nil {
-		l.Errorf("GetOrderByID error: ", " | ", err)
-		return nil, err
-	}
-	orderProductList, err := app.GetAllOrderProductByIdRepository(id)
+	orderProductList, err := app.orderProductUseCase.GetAllOrderProductByOrderID(id)
 
 	if err != nil {
 		l.Errorf("GetOrderByID error: ", " | ", err)
@@ -406,7 +311,7 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 
 	for _, op := range orderProductList {
 		if op.ProductID != nil {
-			p, errGetC := app.GetProductByIDRepository(*op.ProductID)
+			p, errGetC := app.productUseCase.GetProductByID(*op.ProductID)
 
 			if errGetC != nil {
 				l.Errorf("GetOrderByID error: ", " | ", errGetC)
@@ -421,12 +326,12 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 					ID:            p.ID,
 					Name:          p.Name,
 					Quantity:      op.Quantity,
-					Category:      p.Category.Value,
+					Category:      p.Category,
 					Image:         p.Image,
 					Description:   p.Description,
 					Price:         p.Price,
-					CreatedAt:     p.CreatedAt.Format(),
-					DeactivatedAt: p.DeactivatedAt.Format(),
+					CreatedAt:     p.CreatedAt,
+					DeactivatedAt: p.DeactivatedAt,
 				}
 				productList = append(productList, pp)
 			}
@@ -449,23 +354,19 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 		Products:         productList,
 		VoucherID:        o.VoucherID,
 		TotalPrice:       totalPrice,
-		Status:           o.Status.Value,
-		VerificationCode: o.VerificationCode.Value,
-		CreatedAt:        o.CreatedAt.Format(),
+		Status:           o.Status,
+		VerificationCode: o.VerificationCode,
+		CreatedAt:        o.CreatedAt,
 	}
 
 	l.Infof("GetOrderByID output: ", " | ", ps.MarshalString(out))
 	return out, nil
 }
 
-func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error) {
+func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, error) {
 	l.Infof("SaveOrder: ", " | ", ps.MarshalString(order))
-	if err := app.GetClientByIDService(order.ClientID); err != nil {
-		l.Errorf("SaveOrder error: ", " | ", err)
-		return nil, err
-	}
 
-	c, err := app.GetClientByIDRepository(order.ClientID)
+	c, err := app.clientUseCase.GetClientByID(order.ClientID)
 
 	if err != nil {
 		l.Errorf("SaveOrder error: ", " | ", err)
@@ -473,21 +374,21 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 	}
 
 	inputDoPaymentAPI := dto.InputPaymentAPI{
-		Price: 0.0,
+		// Price: 0.0,
 		Client: entity.Client{
 			ID:   c.ID,
 			Name: c.Name,
 			CPF: com.Cpf{
-				Value: c.CPF.Value,
+				Value: c.CPF,
 			},
-			Email: c.Email,
+			Email:     c.Email,
 			CreatedAt: com.CreatedAt{
-				Value: c.CreatedAt.Value,
+				// Value: c.CreatedAt,
 			},
 		},
 	}
 
-	out, err := app.DoPaymentAPI(app.Ctx, inputDoPaymentAPI)
+	out, err := app.DoPaymentAPI(app.ctx, inputDoPaymentAPI)
 
 	if err != nil {
 		l.Errorf("SaveOrder error: ", " | ", err)
@@ -499,9 +400,9 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 		return nil, fmt.Errorf("error to do payment message: %s, code: %s", out.Error.Message, out.Error.Code)
 	}
 
-	order.Status.Value = out.PaymentStatus
+	order.Status = out.PaymentStatus
 
-	o, err := app.SaveOrderService(order)
+	o, err := app.orderUseCase.SaveOrder(order)
 
 	if err != nil {
 		l.Errorf("SaveOrder error: ", " | ", err)
@@ -512,14 +413,6 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 		orderNullErr := errors.New("is not possible to save order because it's null")
 		l.Infof("SaveOrder output: ", " | ", orderNullErr)
 		return nil, orderNullErr
-	}
-
-	oRepo, err := app.SaveOrderRepository(*o)
-	l.Infof("SaveOrder output: ", " | ", ps.MarshalString(oRepo))
-
-	if err != nil {
-		l.Errorf("SaveOrder error: ", " | ", err)
-		return nil, err
 	}
 
 	productList := make([]entity.ProductItem, 0)
@@ -548,12 +441,8 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 	}
 
 	for _, orderItems := range order.Items {
-		if err := app.GetProductByIDService(orderItems.ProductID); err != nil {
-			l.Errorf("SaveOrder error: ", " | ", err)
-			return nil, err
-		}
 
-		product, err := app.GetProductByIDRepository(orderItems.ProductID)
+		product, err := app.productUseCase.GetProductByID(orderItems.ProductID)
 
 		if err != nil {
 			l.Errorf("SaveOrder error: ", " | ", err)
@@ -570,12 +459,12 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 			ID:            product.ID,
 			Name:          product.Name,
 			Quantity:      orderItems.Quantity,
-			Category:      product.Category.Value,
+			Category:      product.Category,
 			Image:         product.Image,
 			Description:   product.Description,
 			Price:         product.Price,
-			CreatedAt:     product.CreatedAt.Format(),
-			DeactivatedAt: product.DeactivatedAt.Format(),
+			CreatedAt:     product.CreatedAt,
+			DeactivatedAt: product.DeactivatedAt,
 		}
 
 		productList = append(productList, pi)
@@ -590,15 +479,15 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 			discount = calculateDiscountByPercentage(voucher.Porcentage, tPrice)
 		}
 
-		opIn := entity.OrderProduct{
+		opIn := dto.RequestOrderProduct{
 			Quantity:   orderItems.Quantity,
 			TotalPrice: tPrice,
-			OrderID:    oRepo.ID,
+			OrderID:    o.ID,
 			ProductID:  &orderItems.ProductID,
 			Discount:   discount,
 		}
 
-		opService, err := app.SaveOrderProductService(opIn)
+		opService, err := app.orderProductUseCase.SaveOrderProduct(opIn)
 
 		if err != nil {
 			l.Errorf("SaveOrder error: ", " | ", err)
@@ -610,19 +499,6 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 			l.Infof("SaveOrder output: ", " | ", orderProductNullErr)
 			return nil, orderProductNullErr
 		}
-
-		opRepo, err := app.SaveOrderProductRepository(opIn)
-
-		if err != nil {
-			l.Errorf("SaveOrder error: ", " | ", err)
-			return nil, err
-		}
-
-		if opRepo == nil {
-			l.Infof("SaveOrder output: ", " | ", nil)
-			return nil, errors.New("is not possible to save order because it's null")
-		}
-
 	}
 
 	if voucher.Porcentage > 0 {
@@ -632,20 +508,20 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 	outClient := dto.OutputClient{
 		ID:        c.ID,
 		Name:      c.Name,
-		CPF:       c.CPF.Value,
+		CPF:       c.CPF,
 		Email:     c.Email,
-		CreatedAt: c.CreatedAt.Format(),
+		CreatedAt: c.CreatedAt,
 	}
 
 	outOrder := &dto.OutputOrder{
-		ID:               oRepo.ID,
+		ID:               o.ID,
 		Client:           outClient,
 		TotalPrice:       totalPrice,
 		Products:         productList,
-		VoucherID:        oRepo.VoucherID,
-		Status:           oRepo.Status.Value,
-		VerificationCode: oRepo.VerificationCode.Value,
-		CreatedAt:        oRepo.CreatedAt.Format(),
+		VoucherID:        o.VoucherID,
+		Status:           o.Status,
+		VerificationCode: o.VerificationCode,
+		CreatedAt:        o.CreatedAt,
 	}
 
 	l.Infof("SaveOrder output: ", " | ", ps.MarshalString(outOrder))
@@ -654,36 +530,30 @@ func (app hermesFoodsApp) SaveOrder(order entity.Order) (*dto.OutputOrder, error
 
 // ========== Product ==========
 
-func (app hermesFoodsApp) SaveProduct(product entity.Product) (*dto.OutputProduct, error) {
+func (app hermesFoodsApp) SaveProduct(product dto.RequestProduct) (*dto.OutputProduct, error) {
 	l.Infof("SaveProduct: ", " | ", ps.MarshalString(product))
-	p, err := app.SaveProductService(product)
+
+	pRepo, err := app.productUseCase.SaveProduct(product)
 
 	if err != nil {
 		l.Errorf("SaveProduct error: ", " | ", err)
 		return nil, err
 	}
 
-	if p == nil {
+	if pRepo == nil {
 		l.Infof("SaveProduct output: ", " | ", nil)
 		return nil, errors.New("is not possible to save product because it's null")
-	}
-
-	pRepo, err := app.SaveProductRepository(*p)
-
-	if err != nil {
-		l.Errorf("SaveProduct error: ", " | ", err)
-		return nil, err
 	}
 
 	out := &dto.OutputProduct{
 		ID:            pRepo.ID,
 		Name:          pRepo.Name,
-		Category:      pRepo.Category.Value,
+		Category:      pRepo.Category,
 		Image:         pRepo.Image,
 		Description:   pRepo.Description,
 		Price:         pRepo.Price,
-		CreatedAt:     pRepo.CreatedAt.Format(),
-		DeactivatedAt: pRepo.DeactivatedAt.Format(),
+		CreatedAt:     pRepo.CreatedAt,
+		DeactivatedAt: pRepo.DeactivatedAt,
 	}
 
 	l.Infof("SaveProduct output: ", " | ", ps.MarshalString(out))
@@ -694,12 +564,7 @@ func (app hermesFoodsApp) GetProductByCategory(category string) ([]dto.OutputPro
 	l.Infof("GetProductByCategory: ", " | ", category)
 	productList := make([]dto.OutputProduct, 0)
 
-	if err := app.productService.GetProductByCategory(category); err != nil {
-		l.Errorf("GetProductByCategory error: ", " | ", err)
-		return nil, err
-	}
-
-	products, err := app.GetProductByCategoryRepository(category)
+	products, err := app.productUseCase.GetProductByCategory(category)
 
 	if err != nil {
 		l.Errorf("GetProductByCategory error: ", " | ", err)
@@ -715,12 +580,12 @@ func (app hermesFoodsApp) GetProductByCategory(category string) ([]dto.OutputPro
 		product := dto.OutputProduct{
 			ID:            products[i].ID,
 			Name:          products[i].Name,
-			Category:      products[i].Category.Value,
+			Category:      products[i].Category,
 			Image:         products[i].Image,
 			Description:   products[i].Description,
 			Price:         products[i].Price,
-			CreatedAt:     products[i].CreatedAt.Format(),
-			DeactivatedAt: products[i].CreatedAt.Format(),
+			CreatedAt:     products[i].CreatedAt,
+			DeactivatedAt: products[i].CreatedAt,
 		}
 		productList = append(productList, product)
 	}
@@ -729,15 +594,10 @@ func (app hermesFoodsApp) GetProductByCategory(category string) ([]dto.OutputPro
 	return productList, nil
 }
 
-func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*dto.OutputProduct, error) {
+func (app hermesFoodsApp) UpdateProductByID(id int64, product dto.RequestProduct) (*dto.OutputProduct, error) {
 	l.Infof("UpdateProductByID: ", " | ", id, " | ", ps.MarshalString(product))
 
-	if err := app.GetProductByIDService(id); err != nil {
-		l.Errorf("UpdateProductByID error: ", " | ", err)
-		return nil, err
-	}
-
-	pByID, err := app.GetProductByIDRepository(id)
+	pByID, err := app.productUseCase.GetProductByID(id)
 
 	if err != nil {
 		l.Errorf("UpdateProductByID error: ", " | ", err)
@@ -750,7 +610,7 @@ func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*
 		return nil, productNullErr
 	}
 
-	p, err := app.UpdateProductByIDService(id, product)
+	p, err := app.productUseCase.UpdateProductByID(id, product)
 
 	if err != nil {
 		l.Errorf("UpdateProductByID error: ", " | ", err)
@@ -763,22 +623,15 @@ func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*
 		return nil, productNullErr
 	}
 
-	pRepo, err := app.UpdateProductByIDRepository(id, *p)
-
-	if err != nil {
-		l.Errorf("UpdateProductByID error: ", " | ", err)
-		return nil, err
-	}
-
 	out := &dto.OutputProduct{
-		ID:            pRepo.ID,
-		Name:          pRepo.Name,
-		Category:      pRepo.Category.Value,
-		Image:         pRepo.Image,
-		Description:   pRepo.Description,
-		Price:         pRepo.Price,
-		CreatedAt:     pRepo.CreatedAt.Format(),
-		DeactivatedAt: pRepo.DeactivatedAt.Format(),
+		ID:            p.ID,
+		Name:          p.Name,
+		Category:      p.Category,
+		Image:         p.Image,
+		Description:   p.Description,
+		Price:         p.Price,
+		CreatedAt:     p.CreatedAt,
+		DeactivatedAt: p.DeactivatedAt,
 	}
 
 	l.Infof("UpdateProductByID output: ", " | ", ps.MarshalString(out))
@@ -788,12 +641,7 @@ func (app hermesFoodsApp) UpdateProductByID(id int64, product entity.Product) (*
 func (app hermesFoodsApp) DeleteProductByID(id int64) error {
 	l.Infof("DeleteProductByID: ", " | ", id)
 
-	if err := app.GetProductByIDService(id); err != nil {
-		l.Errorf("DeleteProductByID error: ", " | ", err)
-		return err
-	}
-
-	pByID, err := app.GetProductByIDRepository(id)
+	pByID, err := app.productUseCase.GetProductByID(id)
 
 	if err != nil {
 		l.Errorf("DeleteProductByID error: ", " | ", err)
@@ -806,33 +654,16 @@ func (app hermesFoodsApp) DeleteProductByID(id int64) error {
 		return productNullErr
 	}
 
-	if err := app.DeleteProductByIDService(id); err != nil {
-		l.Errorf("DeleteProductByID error: ", " | ", err)
-		return err
-	}
-
 	l.Infof("DeleteProductByID output: ", " | ", nil)
-	return app.DeleteProductByIDRepository(id)
+	return app.productUseCase.DeleteProductByID(id)
 }
 
 // ========== Voucher ==========
 
-func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*dto.OutputVoucher, error) {
+func (app hermesFoodsApp) SaveVoucher(voucher dto.RequestVoucher) (*dto.OutputVoucher, error) {
 	l.Infof("SaveVoucher: ", " | ", ps.MarshalString(voucher))
-	voucherSvc, err := app.SaveVoucherService(voucher)
 
-	if err != nil {
-		l.Errorf("SaveVoucher error: ", " | ", err)
-		return nil, err
-	}
-
-	if voucherSvc == nil {
-		voucherNullErr := errors.New("is not possible to save voucher because it's null")
-		l.Errorf("SaveVoucher output: ", " | ", voucherNullErr)
-		return nil, voucherNullErr
-	}
-
-	rVoucher, err := app.SaveVoucherRepository(voucher)
+	rVoucher, err := app.voucherUseCase.SaveVoucher(voucher)
 
 	if err != nil {
 		l.Errorf("SaveVoucher error: ", " | ", err)
@@ -849,8 +680,8 @@ func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*dto.OutputVouche
 		ID:         rVoucher.ID,
 		Code:       rVoucher.Code,
 		Porcentage: rVoucher.Porcentage,
-		CreatedAt:  rVoucher.CreatedAt.Format(),
-		ExpiresAt:  rVoucher.ExpiresAt.Format(),
+		CreatedAt:  rVoucher.CreatedAt,
+		ExpiresAt:  rVoucher.ExpiresAt,
 	}
 
 	l.Infof("SaveVoucher output: ", " | ", ps.MarshalString(vOut))
@@ -859,12 +690,8 @@ func (app hermesFoodsApp) SaveVoucher(voucher entity.Voucher) (*dto.OutputVouche
 
 func (app hermesFoodsApp) GetVoucherByID(id int64) (*dto.OutputVoucher, error) {
 	l.Infof("GetVoucherByID: ", " | ", id)
-	if err := app.GetVoucherByIDService(id); err != nil {
-		l.Errorf("GetVoucherByID error: ", " | ", err)
-		return nil, err
-	}
 
-	rVoucher, err := app.GetVoucherByIDRepository(id)
+	rVoucher, err := app.voucherUseCase.GetVoucherByID(id)
 
 	if err != nil {
 		l.Errorf("GetVoucherByID error: ", " | ", err)
@@ -881,30 +708,18 @@ func (app hermesFoodsApp) GetVoucherByID(id int64) (*dto.OutputVoucher, error) {
 		ID:         rVoucher.ID,
 		Code:       rVoucher.Code,
 		Porcentage: rVoucher.Porcentage,
-		CreatedAt:  rVoucher.CreatedAt.Format(),
-		ExpiresAt:  rVoucher.ExpiresAt.Format(),
+		CreatedAt:  rVoucher.CreatedAt,
+		ExpiresAt:  rVoucher.ExpiresAt,
 	}
 
 	l.Infof("GetVoucherByID output: ", " | ", ps.MarshalString(vOut))
 	return &vOut, nil
 }
 
-func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*dto.OutputVoucher, error) {
+func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher dto.RequestVoucher) (*dto.OutputVoucher, error) {
 	l.Infof("UpdateVoucherByID: ", " | ", id, " | ", ps.MarshalString(voucher))
-	voucherSvc, err := app.UpdateVoucherByIDService(id, voucher)
 
-	if err != nil {
-		l.Errorf("UpdateVoucherByID error: ", " | ", err)
-		return nil, err
-	}
-
-	if voucherSvc == nil {
-		voucherNullErr := errors.New("is not possible to update voucher because it's null")
-		l.Infof("UpdateVoucherByID output: ", " | ", voucherNullErr)
-		return nil, voucherNullErr
-	}
-
-	rVoucher, err := app.UpdateVoucherByIDRepository(id, voucher)
+	rVoucher, err := app.voucherUseCase.UpdateVoucherByID(id, voucher)
 
 	if err != nil {
 		l.Errorf("UpdateVoucherByID error: ", " | ", err)
@@ -921,8 +736,8 @@ func (app hermesFoodsApp) UpdateVoucherByID(id int64, voucher entity.Voucher) (*
 		ID:         rVoucher.ID,
 		Code:       rVoucher.Code,
 		Porcentage: rVoucher.Porcentage,
-		CreatedAt:  rVoucher.CreatedAt.Format(),
-		ExpiresAt:  rVoucher.ExpiresAt.Format(),
+		CreatedAt:  rVoucher.CreatedAt,
+		ExpiresAt:  rVoucher.ExpiresAt,
 	}
 
 	l.Infof("UpdateVoucherByID output: ", " | ", ps.MarshalString(vOut))

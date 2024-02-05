@@ -1,8 +1,9 @@
-package service
+package useCase
 
 import (
-	"fiap-hf-src/src/core/entity"
-	"fiap-hf-src/src/operation/presenter/common"
+	"errors"
+	"fiap-hf-src/src/base/dto"
+	"fiap-hf-src/src/base/mocks"
 	ps "fiap-hf-src/src/operation/presenter/strings"
 	"testing"
 )
@@ -10,58 +11,66 @@ import (
 // go test -v -count=1 -failfast -run ^Test_SaveClient$
 func Test_SaveClient(t *testing.T) {
 
-	serviceClient := NewClientService(nil)
-
 	type args struct {
-		client entity.Client
+		client dto.RequestClient
 	}
 
 	tests := []struct {
-		name       string
-		args       args
-		wantClient *entity.Client
-		wantError  bool
+		name        string
+		args        args
+		wantClient  *dto.OutputClient
+		wantError   bool
+		mockGateway *mocks.ClientGatewayMock
 	}{
 		{
 			name: "success",
 			args: args{
-				client: entity.Client{
-					Name: "Doc Emmet Brown",
-					CPF: common.Cpf{
-						Value: "12345",
-					},
+				client: dto.RequestClient{
+					Name:  "Doc Emmet Brown",
+					CPF:   "12345",
 					Email: "doc@delorean.com",
 				},
 			},
-			wantClient: &entity.Client{
-				Name: "Doc Emmet Brown",
-				CPF: common.Cpf{
-					Value: "12345",
-				},
+			wantClient: &dto.OutputClient{
+				Name:  "Doc Emmet Brown",
+				CPF:   "12345",
 				Email: "doc@delorean.com",
+			},
+			mockGateway: &mocks.ClientGatewayMock{
+				WantOut: &dto.OutputClient{
+					Name:  "Doc Emmet Brown",
+					CPF:   "12345",
+					Email: "doc@delorean.com",
+				},
+				WantErr: nil,
 			},
 			wantError: false,
 		},
 		{
 			name: "error",
 			args: args{
-				client: entity.Client{
-					Name: "Doc Emmet Brown",
-					CPF: common.Cpf{
-						Value: "",
-					},
+				client: dto.RequestClient{
+					Name:  "Doc Emmet Brown",
+					CPF:   "",
 					Email: "doc@delorean.com",
 				},
 			},
 			wantClient: nil,
-			wantError:  true,
+			mockGateway: &mocks.ClientGatewayMock{
+				WantOut: nil,
+				WantErr: errors.New("errSaveClient"),
+			},
+			wantError: true,
 		},
 	}
 
 	for _, tc := range tests {
+
+		useCaseClient := NewClientUseCase(tc.mockGateway)
+
 		t.Run(tc.name, func(*testing.T) {
 
-			c, err := serviceClient.SaveClient(tc.args.client)
+			c, err := useCaseClient.SaveClient(tc.args.client)
 
 			if (!tc.wantError) && err != nil {
 				t.Fatalf("error: %v", err)
@@ -81,28 +90,30 @@ func Test_SaveClient(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 // go test -v -count=1 -failfast -run ^Test_GetClientByCPF$
 func Test_GetClientByCPF(t *testing.T) {
-	newClient := entity.Client{}
-
-	clientService := NewClientService(&newClient)
-
 	type args struct {
 		cpf string
 	}
 
 	tests := []struct {
-		name      string
-		args      args
-		wantError bool
+		name        string
+		args        args
+		wantError   bool
+		mockGateway *mocks.ClientGatewayMock
 	}{
 		{
 			name: "success",
 			args: args{
 				cpf: "some",
+			},
+			mockGateway: &mocks.ClientGatewayMock{
+				WantOut: &dto.OutputClient{
+					CPF: "some",
+				},
+				WantErr: nil,
 			},
 			wantError: false,
 		},
@@ -111,14 +122,19 @@ func Test_GetClientByCPF(t *testing.T) {
 			args: args{
 				cpf: "",
 			},
+			mockGateway: &mocks.ClientGatewayMock{
+				WantOut: nil,
+				WantErr: errors.New("errGetClientByCPF"),
+			},
 			wantError: true,
 		},
 	}
 
 	for _, tc := range tests {
+		useCaseClient := NewClientUseCase(tc.mockGateway)
 		t.Run(tc.name, func(*testing.T) {
 
-			gotErr := clientService.GetClientByCPF(tc.args.cpf)
+			_, gotErr := useCaseClient.GetClientByCPF(tc.args.cpf)
 
 			if (!tc.wantError) && gotErr != nil {
 				t.Fatalf("error: %v", gotErr)
@@ -131,23 +147,27 @@ func Test_GetClientByCPF(t *testing.T) {
 
 // go test -v -count=1 -failfast -run ^Test_GetClientByID$
 func Test_GetClientByID(t *testing.T) {
-	newClient := entity.Client{}
-
-	clientService := NewClientService(&newClient)
 
 	type args struct {
 		id int64
 	}
 
 	tests := []struct {
-		name      string
-		args      args
-		wantError bool
+		name        string
+		args        args
+		wantError   bool
+		mockGateway *mocks.ClientGatewayMock
 	}{
 		{
 			name: "success",
 			args: args{
 				id: 1,
+			},
+			mockGateway: &mocks.ClientGatewayMock{
+				WantOut: &dto.OutputClient{
+					ID: 1,
+				},
+				WantErr: nil,
 			},
 			wantError: false,
 		},
@@ -156,14 +176,20 @@ func Test_GetClientByID(t *testing.T) {
 			args: args{
 				id: 0,
 			},
+			mockGateway: &mocks.ClientGatewayMock{
+				WantOut: nil,
+				WantErr: errors.New("errGetClientByID"),
+			},
 			wantError: true,
 		},
 	}
 
 	for _, tc := range tests {
+		useCaseClient := NewClientUseCase(tc.mockGateway)
+
 		t.Run(tc.name, func(*testing.T) {
 
-			gotErr := clientService.GetClientByID(tc.args.id)
+			_, gotErr := useCaseClient.GetClientByID(tc.args.id)
 
 			if (!tc.wantError) && gotErr != nil {
 				t.Fatalf("error: %v", gotErr)
