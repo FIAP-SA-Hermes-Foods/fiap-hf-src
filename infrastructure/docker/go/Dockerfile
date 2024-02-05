@@ -6,7 +6,7 @@ COPY . .
 
 ENV GOPATH=/fiap-hf-src
 
-RUN go build -ldflags "-w -s" -o bin/hermesfoods src/external/cmd/server/*.go
+RUN go build -ldflags "-w -s" -o bin/hermesfoods src/external/rest/cmd/*.go
 
 ENTRYPOINT ["./bin/hermesfoods"]
 
