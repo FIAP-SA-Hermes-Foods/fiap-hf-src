@@ -13,45 +13,17 @@ import (
 	"time"
 )
 
-type HandlerVoucher interface {
-	Handler(rw http.ResponseWriter, req *http.Request)
+var _ interfaces.VoucherController = (*voucherController)(nil)
+
+type voucherController struct {
+	app interfaces.HermesFoodsUseCase
 }
 
-type handlerVoucher struct {
-	App interfaces.HermesFoodsApp
+func NewVoucherController(app interfaces.HermesFoodsUseCase) *voucherController {
+	return &voucherController{app: app}
 }
 
-func NewHandlerVoucher(app interfaces.HermesFoodsApp) HandlerVoucher {
-	return handlerVoucher{App: app}
-}
-
-func (h handlerVoucher) Handler(rw http.ResponseWriter, req *http.Request) {
-	apiHToken := req.Header.Get("Auth-token")
-
-	var routeVoucher = map[string]http.HandlerFunc{
-		"get hermes_foods/voucher/{id}": h.getVoucherByID,
-		"post hermes_foods/voucher":     h.saveVoucher,
-		"put hermes_foods/voucher/{id}": h.updateVoucherByID,
-	}
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
-
-	handler, err := router(req.Method, req.URL.Path, routeVoucher)
-
-	if err == nil {
-		handler(rw, req)
-		return
-	}
-
-	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
-}
-
-func (h handlerVoucher) saveVoucher(rw http.ResponseWriter, req *http.Request) {
+func (h *voucherController) SaveVoucher(rw http.ResponseWriter, req *http.Request) {
 	var buff bytes.Buffer
 
 	var reqVoucher dto.RequestVoucher
@@ -82,7 +54,9 @@ func (h handlerVoucher) saveVoucher(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	v, err := h.App.SaveVoucher(voucher)
+	reqVoucher.ExpiresAt = voucher.CreatedAt.Format()
+
+	v, err := h.app.SaveVoucher(reqVoucher)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -94,7 +68,7 @@ func (h handlerVoucher) saveVoucher(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte(ps.MarshalString(v)))
 }
 
-func (h handlerVoucher) updateVoucherByID(rw http.ResponseWriter, req *http.Request) {
+func (h *voucherController) UpdateVoucherByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("voucher", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -135,7 +109,9 @@ func (h handlerVoucher) updateVoucherByID(rw http.ResponseWriter, req *http.Requ
 		}
 	}
 
-	v, err := h.App.UpdateVoucherByID(idconv, voucher)
+	reqVoucher.ExpiresAt = voucher.ExpiresAt.Format()
+
+	v, err := h.app.UpdateVoucherByID(idconv, reqVoucher)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -147,7 +123,7 @@ func (h handlerVoucher) updateVoucherByID(rw http.ResponseWriter, req *http.Requ
 	rw.Write([]byte(ps.MarshalString(v)))
 }
 
-func (h handlerVoucher) getVoucherByID(rw http.ResponseWriter, req *http.Request) {
+func (h *voucherController) GetVoucherByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("voucher", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -158,7 +134,7 @@ func (h handlerVoucher) getVoucherByID(rw http.ResponseWriter, req *http.Request
 		return
 	}
 
-	v, err := h.App.GetVoucherByID(idconv)
+	v, err := h.app.GetVoucherByID(idconv)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
