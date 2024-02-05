@@ -2,6 +2,8 @@ package dto
 
 import (
 	"fiap-hf-src/src/core/entity"
+	"fiap-hf-src/src/operation/presenter/common"
+	"time"
 )
 
 type (
@@ -23,8 +25,17 @@ type (
 )
 
 func (r RequestVoucher) Voucher() entity.Voucher {
+	expirationTime, _ := time.Parse("02-01-2006 15:04:05", r.ExpiresAt)
+	createdAt, _ := time.Parse("02-01-2006 15:04:05", r.CreatedAt)
+
 	return entity.Voucher{
 		Code:       r.Code,
 		Porcentage: r.Porcentage,
+		ExpiresAt: common.ExpiresAt{
+			Value: &expirationTime,
+		},
+		CreatedAt: common.CreatedAt{
+			Value: createdAt,
+		},
 	}
 }

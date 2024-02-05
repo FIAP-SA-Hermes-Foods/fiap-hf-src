@@ -11,47 +11,17 @@ import (
 	"strconv"
 )
 
-type HandlerOrder interface {
-	Handler(rw http.ResponseWriter, req *http.Request)
+var _ interfaces.OrderController = (*orderController)(nil)
+
+type orderController struct {
+	app interfaces.HermesFoodsUseCase
 }
 
-type handlerOrder struct {
-	App interfaces.HermesFoodsApp
+func NewOrderController(app interfaces.HermesFoodsUseCase) *orderController {
+	return &orderController{app: app}
 }
 
-func NewHandlerOrder(app interfaces.HermesFoodsApp) HandlerOrder {
-	return handlerOrder{App: app}
-}
-
-func (h handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
-
-	apiHToken := req.Header.Get("Auth-token")
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
-
-	var routesOrders = map[string]http.HandlerFunc{
-		"get hermes_foods/order":        h.handlerGetOrders,
-		"get hermes_foods/order/{id}":   h.handlerGetOrderByID,
-		"post hermes_foods/order":       h.saveOrder,
-		"patch hermes_foods/order/{id}": h.handlerUpdateOrderByID,
-	}
-
-	handler, err := router(req.Method, req.URL.Path, routesOrders)
-
-	if err == nil {
-		handler(rw, req)
-		return
-	}
-
-	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
-}
-
-func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
+func (h *orderController) SaveOrder(rw http.ResponseWriter, req *http.Request) {
 	var buff bytes.Buffer
 	var reqOrder dto.RequestOrder
 
@@ -67,9 +37,7 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	order := reqOrder.Order()
-
-	o, err := h.App.SaveOrder(order)
+	o, err := h.app.SaveOrder(reqOrder)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -81,7 +49,7 @@ func (h handlerOrder) saveOrder(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte(ps.MarshalString(o)))
 }
 
-func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Request) {
+func (h *orderController) GetOrderByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("order", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -92,7 +60,7 @@ func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	o, err := h.App.GetOrderByID(idconv)
+	o, err := h.app.GetOrderByID(idconv)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -110,8 +78,8 @@ func (h handlerOrder) handlerGetOrderByID(rw http.ResponseWriter, req *http.Requ
 	rw.Write([]byte(ps.MarshalString(o)))
 }
 
-func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request) {
-	oList, err := h.App.GetOrders()
+func (h *orderController) GetOrders(rw http.ResponseWriter, req *http.Request) {
+	oList, err := h.app.GetOrders()
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -137,7 +105,7 @@ func (h handlerOrder) handlerGetOrders(rw http.ResponseWriter, req *http.Request
 	rw.Write(b)
 }
 
-func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.Request) {
+func (h *orderController) UpdateOrderByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("order", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -164,9 +132,7 @@ func (h handlerOrder) handlerUpdateOrderByID(rw http.ResponseWriter, req *http.R
 		return
 	}
 
-	order := reqOrder.Order()
-
-	o, err := h.App.UpdateOrderByID(idconv, order)
+	o, err := h.app.UpdateOrderByID(idconv, reqOrder)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
