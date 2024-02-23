@@ -1,0 +1,138 @@
+name: pipeline
+on:
+  push:
+
+jobs:
+  hf-build:
+    env:
+        AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+        IMAGE_API_NAME: ${{ secrets.IMAGE_API_NAME }}
+        IMAGE_POSTGRES_NAME: ${{ secrets.IMAGE_POSTGRES_NAME }}
+        IMAGE_SWAGGER_NAME: ${{ secrets.IMAGE_SWAGGER_NAME }}
+        IMAGE_TAG: 'latest'
+
+        REPOSITORY_API_URL: ${{ secrets.REPOSITORY_API_URL }}
+        REPOSITORY_POSTGRES_URL: ${{ secrets.REPOSITORY_POSTGRES_URL }}
+        REPOSITORY_SWAGGER_URL: ${{ secrets.REPOSITORY_SWAGGER_URL }}
+
+        GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+        GPG_OWNER_TRUST: ${{ secrets.GPG_OWNER_TRUST }}
+        GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+
+        AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
+        AWS_ECR_USERNAME: ${{ secrets.AWS_ECR_USERNAME }}
+        AWS_ECR_PASSWORD: ${{ secrets.AWS_ECR_PASSWORD }}
+        AWS_ECR_EMAIL: ${{ secrets.AWS_ECR_EMAIL }}
+
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+
+  login-aws-ecr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Log into AWS ECR
+        run: |
+          aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+        shell: bash
+
+  import-secret:
+    runs-on: ubuntu-latest  
+    steps:
+      - uses: actions/checkout@v2
+      - name: Import secrets from git-secrets
+        run: |
+          gpg --batch --import ${GPG_SECRET_KEY}
+          gpg --import-ownertrust ${GPG_OWNER_TRUST}
+        shell: bash
+
+      - uses: actions/checkout@v2
+      - name: Create .env
+        run: |
+          git secret reveal -p '${GPG_PASSWORD}'
+          git secret cat .env > .env
+          sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env
+        shell: bash
+
+        run: |
+          if [ -d $HOME/envs ]; then 
+            echo ""
+          else
+            mkdir $HOME/envs
+          fi
+        shell: bash
+
+        run: |
+         git secret cat .env > $HOME/envs/.env
+        shell: bash
+
+  create-docker-network:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create docker network
+        run: | 
+          ./infrastructure/scripts/docker-network.sh
+        shell: bash
+
+  build-images:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Build Images
+        run: |           
+          docker build -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} .
+          docker build -f infrastructure/docker/postgres/Dockerfile -t ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} .
+          docker build -f infrastructure/docker/swagger/Dockerfile -t ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} .
+          docker images
+        shell: bash
+
+  tag-images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Tag images
+        run: |
+          docker tag ${IMAGE_API_NAME}:${IMAGE_TAG} ${REPOSITORY_API_URL}:$IMAGE_TAG
+          docker tag ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ${REPOSITORY_POSTGRES_URL}:$IMAGE_TAG
+          docker tag ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ${REPOSITORY_SWAGGER_URL}:$IMAGE_TAG
+        shell: bash
+    
+  pushing-to-ecr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Push to ECR
+        run: |
+          docker push ${REPOSITORY_API_URL}:${IMAGE_TAG}
+          docker push ${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}
+          docker push ${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}
+        shell: bash
+
+  k8s-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: K8s setup
+        run: | 
+          kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
+          kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml
+          kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml
+          kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml
+          kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml
+          kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml
+          kubectl apply -f ./infrastructure/kubernetes/hpa/app.yaml
+          kubectl apply -f ./infrastructure/kubernetes/hpa/swagger.yaml
+        shell: bash
+
+  update-pods:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update pods
+        run: | 
+          kubectl rollout restart deployment hermes-foods-go-deployment -n dev
+          kubectl rollout restart deployment hermes-foods-postgres-deployment -n dev
+          kubectl rollout restart deployment hermes-foods-swagger-deployment -n dev
+        shell: bash
