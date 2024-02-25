@@ -49,22 +49,18 @@ jobs:
         shell: bash
 
       - name: Create .env
-      - run: |
-          git secret reveal -p '${GPG_PASSWORD}'
-          git secret cat .env > .env
-          sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env
-        shell: bash
+        run: |
+          git secret reveal -p '${GPG_PASSWORD}';
+          git secret cat .env > .env;
+          sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env;
         
-      - run: |
           if [ -d $HOME/envs ]; then 
             echo ""
           else
             mkdir $HOME/envs
           fi
-        shell: bash
-
-      - run: |
-         git secret cat .env > $HOME/envs/.env
+          
+          git secret cat .env > $HOME/envs/.env
         shell: bash
 
       - name: Create docker network
