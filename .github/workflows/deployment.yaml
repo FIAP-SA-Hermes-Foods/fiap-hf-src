@@ -30,8 +30,20 @@ env:
 
 jobs:
   hf-tests:
-    name: Testing application
-    uses: FIAP-SA-Hermes-Foods/fiap-hf-src/.github/workflows/tests.yaml@main
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...
 
   hf-build:
     runs-on: [self-hosted, linux, x64]
