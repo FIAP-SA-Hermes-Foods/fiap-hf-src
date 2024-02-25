@@ -44,16 +44,18 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-
-  hf-build:
+    
+  login-aws-ecr:
     runs-on: [self-hosted, linux, x64]
-
     steps:
       - name: Log into AWS ECR
         run: |
           aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
         shell: bash
 
+  import-secret:
+    runs-on: [self-hosted, linux, x64]
+    steps:
       - name: Import secrets from git-secrets
         run: |
           gpg --batch --import ${GPG_SECRET_KEY}
@@ -62,10 +64,10 @@ jobs:
 
       - name: Create .env
         run: |
-          git secret reveal -p '${GPG_PASSWORD}';
-          git secret cat .env > .env;
-          sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env;
-        
+          git secret reveal -p '${GPG_PASSWORD}'
+          git secret cat .env > .env
+          sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env
+         
           if [ -d $HOME/envs ]; then 
             echo ""
           else
@@ -75,11 +77,17 @@ jobs:
           git secret cat .env > $HOME/envs/.env
         shell: bash
 
+  create-docker-network:
+    runs-on: [self-hosted, linux, x64]
+    steps:
       - name: Create docker network
         run: | 
           ./infrastructure/scripts/docker-network.sh
         shell: bash
 
+  build-images:
+      runs-on: ubuntu-latest
+      steps:
       - name: Build Images
         run: |           
           docker build -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} .
@@ -88,6 +96,9 @@ jobs:
           docker images
         shell: bash
 
+  tag-images:
+    runs-on: [self-hosted, linux, x64]
+    steps:
       - name: Tag images
         run: |
           docker tag ${IMAGE_API_NAME}:${IMAGE_TAG} ${REPOSITORY_API_URL}:$IMAGE_TAG
@@ -95,6 +106,9 @@ jobs:
           docker tag ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ${REPOSITORY_SWAGGER_URL}:$IMAGE_TAG
         shell: bash
     
+  pushing-to-ecr:
+    runs-on: [self-hosted, linux, x64]
+    steps:
       - name: Push to ECR
         run: |
           docker push ${REPOSITORY_API_URL}:${IMAGE_TAG}
@@ -102,6 +116,9 @@ jobs:
           docker push ${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}
         shell: bash
 
+  k8s-setup:
+    runs-on: [self-hosted, linux, x64]
+    steps:
       - name: K8s setup
         run: | 
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
@@ -114,6 +131,9 @@ jobs:
           kubectl apply -f ./infrastructure/kubernetes/hpa/swagger.yaml
         shell: bash
 
+  update-pods:
+    runs-on: [self-hosted, linux, x64]
+    steps:
       - name: Update pods
         run: | 
           kubectl rollout restart deployment hermes-foods-go-deployment -n dev
