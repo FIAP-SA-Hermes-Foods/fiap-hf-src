@@ -12,46 +12,17 @@ import (
 	"time"
 )
 
-type HandlerProduct interface {
-	Handler(rw http.ResponseWriter, req *http.Request)
+var _ interfaces.ProductController = (*productController)(nil)
+
+type productController struct {
+	app interfaces.HermesFoodsUseCase
 }
 
-type handlerProduct struct {
-	App interfaces.HermesFoodsApp
+func NewProductController(app interfaces.HermesFoodsUseCase) *productController {
+	return &productController{app: app}
 }
 
-func NewHandlerProduct(app interfaces.HermesFoodsApp) HandlerProduct {
-	return handlerProduct{App: app}
-}
-
-func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
-	apiHToken := req.Header.Get("Auth-token")
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
-
-	var routeProducts = map[string]http.HandlerFunc{
-		"get hermes_foods/product":         h.getProductByCategory,
-		"post hermes_foods/product":        h.saveProduct,
-		"put hermes_foods/product/{id}":    h.updateProductByID,
-		"delete hermes_foods/product/{id}": h.deleteProductByID,
-	}
-
-	handler, err := router(req.Method, req.URL.Path, routeProducts)
-
-	if err == nil {
-		handler(rw, req)
-		return
-	}
-
-	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
-}
-
-func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
+func (h *productController) SaveProduct(rw http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodPost {
 		rw.WriteHeader(http.StatusMethodNotAllowed)
 		rw.Write([]byte(`{"error": "method not allowed"} `))
@@ -74,9 +45,7 @@ func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	product := reqProduct.Product()
-
-	p, err := h.App.SaveProduct(product)
+	p, err := h.app.SaveProduct(reqProduct)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -88,7 +57,7 @@ func (h handlerProduct) saveProduct(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte(ps.MarshalString(p)))
 }
 
-func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Request) {
+func (h *productController) UpdateProductByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("product", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -126,7 +95,9 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 		}
 	}
 
-	p, err := h.App.UpdateProductByID(idconv, product)
+	reqProduct.DeactivatedAt = product.DeactivatedAt.Format()
+
+	p, err := h.app.UpdateProductByID(idconv, reqProduct)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -138,7 +109,7 @@ func (h handlerProduct) updateProductByID(rw http.ResponseWriter, req *http.Requ
 	rw.Write([]byte(ps.MarshalString(p)))
 }
 
-func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Request) {
+func (h *productController) DeleteProductByID(rw http.ResponseWriter, req *http.Request) {
 	id := getID("product", req.URL.Path)
 
 	idconv, err := strconv.ParseInt(id, 10, 64)
@@ -155,7 +126,7 @@ func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	if err := h.App.DeleteProductByID(idconv); err != nil {
+	if err := h.app.DeleteProductByID(idconv); err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(rw, `{"error": "error to delete product: %v"} `, err)
 		return
@@ -165,10 +136,10 @@ func (h handlerProduct) deleteProductByID(rw http.ResponseWriter, req *http.Requ
 	rw.Write([]byte(`{"status":"OK"}`))
 }
 
-func (h handlerProduct) getProductByCategory(rw http.ResponseWriter, req *http.Request) {
+func (h *productController) GetProductByCategory(rw http.ResponseWriter, req *http.Request) {
 	category := req.URL.Query().Get("category")
 
-	pList, err := h.App.GetProductByCategory(category)
+	pList, err := h.app.GetProductByCategory(category)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)

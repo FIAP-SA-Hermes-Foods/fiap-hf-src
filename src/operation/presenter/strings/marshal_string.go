@@ -2,7 +2,7 @@ package strings
 
 import (
 	"encoding/json"
-	l "fiap-hf-src/src/external/logger"
+	l "fiap-hf-src/src/base/logger"
 )
 
 func MarshalString(s interface{}) string {

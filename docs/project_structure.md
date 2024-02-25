@@ -3,11 +3,11 @@ This folder is a document about the architecture chosen to make the project.
 
 ## Folder Structure
 ```bash
-
 .
 ├── bin
+│
 ├── cmd
-│   └── migration
+│   └── migration
 │
 ├── docs
 │   ├── postman_collection
@@ -30,65 +30,54 @@ This folder is a document about the architecture chosen to make the project.
 │   │
 │   └── scripts
 │
-├── migration
-│
 ├── src
 │   ├── base
 │   │   ├── dto
-│   │   └── interfaces
+│   │   ├── interfaces
+│   │   ├── logger
+│   │   └── mocks
 │   │
 │   ├── core
 │   │   ├── entity
-│   │   │
 │   │   └── useCase
-│   │       ├── application
-│   │       ├── client
-│   │       ├── order
-│   │       ├── order_product
-│   │       ├── product
-│   │       └── voucher
 │   │
 │   ├── external
-│   │   ├── cmd
-│   │   │   └── server
 │   │   ├── db
 │   │   │   └── postgres
-│   │   └── logger
+│   │   │
+│   │   ├── http
+│   │   │
+│   │   └── rest
+│   │       └── cmd
 │   │
 │   └── operation
 │       ├── controller
 │       │   └── web
 │       │
 │       ├── gateway
-│       │   ├── http
-│       │   │   └── api-mercadoPago
-│       │   │
-│       │   └── repository
-│       │       ├── client
-│       │       ├── order
-│       │       ├── order_product
-│       │       ├── product
-│       │       └── voucher
+│       │   ├── db
+│       │   └── http
 │       │
 │       └── presenter
 │           ├── common
 │           └── strings
 │
-├── Jenkinsfile
+├── migration
+│
 ├── docker-compose.yaml
+├── Jenkinsfile
 ├── Makefile
 └── README.md
+
 ```
 ## Structure explanation
 ```
 ├── cmd 
-│   ├── migration
-│   └── server
+│   └── migration
 ```
 
 **cmd** - This folder is responsible for executables.
 - **migration** - This folder is related to initialization of Database, for example to avoid starting with everything empty;  
-- **server** - This folder is related to Mercado Pago Mock and Hermes Foods API;  
 
 ---
 <br>
@@ -141,78 +130,61 @@ This folder is a document about the architecture chosen to make the project.
 ├── src
 │   ├── base
 │   │   ├── dto
-│   │   └── interfaces
+│   │   ├── interfaces
+│   │   ├── logger
+│   │   └── mocks
 │   │
 │   ├── core
 │   │   ├── entity
-│   │   │
 │   │   └── useCase
-│   │       ├── application
-│   │       ├── client
-│   │       ├── order
-│   │       ├── order_product
-│   │       ├── product
-│   │       └── voucher
 │   │
 │   ├── external
-│   │   ├── cmd
-│   │   │   └── server
-│   │   │
 │   │   ├── db
 │   │   │   └── postgres
-│   │   │
-│   │   └── logger
+│   │   │
+│   │   ├── http
+│   │   │
+│   │   └── rest
+│   │       └── cmd
 │   │
 │   └── operation
 │       ├── controller
 │       │   └── web
 │       │
 │       ├── gateway
-│       │   ├── http
-│       │   │   └── api-mercadoPago
-│       │   │
-│       │   └── repository
-│       │       ├── client
-│       │       ├── order
-│       │       ├── order_product
-│       │       ├── product
-│       │       └── voucher
+│       │   ├── db
+│       │   └── http
 │       │
 │       └── presenter
 │           ├── common
 │           └── strings
+│
 ```
 - **src** - This folder is responsible to have all resources about the server, like: external connections, business logic, entity management, etc...
-    - **base** - This folder is responsible to contains every shared data, like interfaces and dtos;
+    - **base** - This folder is responsible to contains every shared data through the application, like interfaces and dtos, logger, etc...;
         - **dto** - This folder is related to data transfer object, this way is possible to communicate among layers using them without need to apply some rules to entities;
         - **interfaces** - This folder is related to contracts, where have the all connections that could be used by adapters or application;
+        - **logger** - This folder is related to logger implementation;
+        - **mocks** - This folder is related to mocks implementation to help in unity tests;
 
     - **core** - This folder is used to store the project's core or foundational code, which may include essential functionality;
         - **useCase** - This folder is related to services, where have the all business logic;
-            - **application** - This folder is related to the aplication, where have business logic that all layers communicate. Example: (application -> useCase -> gateways -> http -> api-mercadoPago -> gateways -> repository);
-            - **client** - This folder is related to the business logic in client layer;
-            - **order** - This folder is related to the business logic in order layer;
-            - **order_product** - This folder is related to the business logic in order_product layer;
-            - **product** - This folder is related to the business logic in product layer;
-            - **voucher** - This folder is related to the business logic in voucher layer;
         - **entity** - This folder is related to store domain entity definitions;
 
     - **external** - This layer is responsible for external resources;
-        - **cmd** - This folder is responsible for executables.
-            - **server** - This folder is related to Mercado Pago Mock and Hermes Foods API;  
-        - **db**
+        - **db** - This folder contains every domain database implemetation, in our case: client, order, product, etc...;
             - **postgres** - This folder is related to postgresql database implementation;
-        - **logger** - This folder is related to logger implementation;
-
+        - **rest** - This layer contains every handler to call each controller;
+            - **cmd** - This folder contains the executables;
         
     - **operation** - This layer is responsible for 
         - **controller** - This folder is related to handle user requests like: http1/2, RabbitMq, RPC, etc..;
-            - **web** - This folder is related to handle user http requests.
+            - **web** - This contains every domain http1/2 controller implementation;
         - **gateway** - This folder is responsible for interfaces and structures that define the desired interface about external connections: SQL, HTTP, RPC, Cache, etc...;  
-            - **repository** - This folder is related to interfaces definition, logic related to data persistence and concrete implementations;  
-            - **http** - This folder is related to interfaces definition, logic related to data http implementations;  
+            - **db** - This folder contains the gateway to access database implementation externally;  
+            - **http** - This folder contains the gateway to access http implementation externally;  
         - **presenter** - This folder is responsible for bring helper functions or types that could be used in entities or transformation data;  
-            - **strings** - This folder is related to helper stringfy functions;  
+            - **strings** - This folder is related to helper stringfy functions;
             - **common** - This folder is related to store custom types to help entities and have some useful helper methods;
 ---
 <br>
@@ -221,6 +193,4 @@ This folder is a document about the architecture chosen to make the project.
 ├── migration
 ```
 **migration** - This folder is related to migration implementation;
-
-
 

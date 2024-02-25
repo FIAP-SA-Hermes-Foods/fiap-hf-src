@@ -11,44 +11,17 @@ import (
 	"strings"
 )
 
-type HandlerClient interface {
-	Handler(rw http.ResponseWriter, req *http.Request)
+var _ interfaces.ClientController = (*clientController)(nil)
+
+type clientController struct {
+	app interfaces.HermesFoodsUseCase
 }
 
-type handlerClient struct {
-	App interfaces.HermesFoodsApp
+func NewClientController(app interfaces.HermesFoodsUseCase) *clientController {
+	return &clientController{app: app}
 }
 
-func NewHandlerClient(app interfaces.HermesFoodsApp) HandlerClient {
-	return handlerClient{App: app}
-}
-
-func (h handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
-	apiHToken := req.Header.Get("Auth-token")
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
-
-	var routesClient = map[string]http.HandlerFunc{
-		"get hermes_foods/client/{cpf}": h.handlerGetClientByCPF,
-		"post hermes_foods/client":      h.handlerSaveClient,
-	}
-
-	handler, err := router(req.Method, req.URL.Path, routesClient)
-
-	if err == nil {
-		handler(rw, req)
-		return
-	}
-
-	rw.WriteHeader(http.StatusNotFound)
-	rw.Write([]byte(`{"error": "route ` + req.Method + " " + req.URL.Path + ` not found"} `))
-}
-
-func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Request) {
+func (h *clientController) SaveClient(rw http.ResponseWriter, req *http.Request) {
 	var (
 		buff      bytes.Buffer
 		reqClient dto.RequestClient
@@ -66,9 +39,7 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	client := reqClient.Client()
-
-	c, err := h.App.SaveClient(client)
+	c, err := h.app.SaveClient(reqClient)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -80,10 +51,10 @@ func (h handlerClient) handlerSaveClient(rw http.ResponseWriter, req *http.Reque
 	rw.Write([]byte(ps.MarshalString(c)))
 }
 
-func (h handlerClient) handlerGetClientByCPF(rw http.ResponseWriter, req *http.Request) {
+func (h *clientController) GetClientByCPF(rw http.ResponseWriter, req *http.Request) {
 	cpf := getCpf(req.URL.Path)
 
-	c, err := h.App.GetClientByCPF(cpf)
+	c, err := h.app.GetClientByCPF(cpf)
 
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
