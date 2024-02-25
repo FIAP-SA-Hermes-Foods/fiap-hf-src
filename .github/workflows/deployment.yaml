@@ -1,6 +1,8 @@
-name: pipeline
+name: deployment
 on:
   push:
+    branches:
+      ['main']
 
 jobs:
   hf-build:
