@@ -31,7 +31,7 @@ env:
 jobs:
   hf-tests:
     name: Testing application
-    uses: FIAP-SA-Hermes-Foods/fiap-hf-src/.github/workflows/tests.yaml@develop
+    uses: FIAP-SA-Hermes-Foods/fiap-hf-src/.github/workflows/tests.yaml@main
 
   hf-build:
     runs-on: [self-hosted, linux, x64]
@@ -49,13 +49,13 @@ jobs:
         shell: bash
 
       - name: Create .env
-        run: |
+      - run: |
           git secret reveal -p '${GPG_PASSWORD}'
           git secret cat .env > .env
           sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env
         shell: bash
-
-        run: |
+        
+      - run: |
           if [ -d $HOME/envs ]; then 
             echo ""
           else
@@ -63,7 +63,7 @@ jobs:
           fi
         shell: bash
 
-        run: |
+      - run: |
          git secret cat .env > $HOME/envs/.env
         shell: bash
 
