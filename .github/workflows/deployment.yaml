@@ -35,22 +35,20 @@ jobs:
 
   hf-build:
     runs-on: [self-hosted, linux, x64]
+
     steps:
       - name: Log into AWS ECR
-      - uses: actions/checkout@v2
         run: |
           aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
         shell: bash
 
       - name: Import secrets from git-secrets
-      - uses: actions/checkout@v2
         run: |
           gpg --batch --import ${GPG_SECRET_KEY}
           gpg --import-ownertrust ${GPG_OWNER_TRUST}
         shell: bash
 
       - name: Create .env
-      - uses: actions/checkout@v2
         run: |
           git secret reveal -p '${GPG_PASSWORD}'
           git secret cat .env > .env
@@ -70,13 +68,11 @@ jobs:
         shell: bash
 
       - name: Create docker network
-      - uses: actions/checkout@v2
         run: | 
           ./infrastructure/scripts/docker-network.sh
         shell: bash
 
       - name: Build Images
-      - uses: actions/checkout@v2
         run: |           
           docker build -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} .
           docker build -f infrastructure/docker/postgres/Dockerfile -t ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} .
@@ -85,7 +81,6 @@ jobs:
         shell: bash
 
       - name: Tag images
-      - uses: actions/checkout@v2
         run: |
           docker tag ${IMAGE_API_NAME}:${IMAGE_TAG} ${REPOSITORY_API_URL}:$IMAGE_TAG
           docker tag ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ${REPOSITORY_POSTGRES_URL}:$IMAGE_TAG
@@ -93,7 +88,6 @@ jobs:
         shell: bash
     
       - name: Push to ECR
-      - uses: actions/checkout@v2
         run: |
           docker push ${REPOSITORY_API_URL}:${IMAGE_TAG}
           docker push ${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}
@@ -101,7 +95,6 @@ jobs:
         shell: bash
 
       - name: K8s setup
-      - uses: actions/checkout@v2
         run: | 
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
           kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml
@@ -114,7 +107,6 @@ jobs:
         shell: bash
 
       - name: Update pods
-      - uses: actions/checkout@v2
         run: | 
           kubectl rollout restart deployment hermes-foods-go-deployment -n dev
           kubectl rollout restart deployment hermes-foods-postgres-deployment -n dev
