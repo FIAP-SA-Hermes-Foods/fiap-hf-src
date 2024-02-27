@@ -54,11 +54,15 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: Log into AWS ECR
-        uses: aws/actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${AWS_ACCESS_KEY_ID}
           aws-secret-access-key: ${AWS_ACCESS_KEY}
           aws-region: ${AWS_DEFAULT_REGION}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
         
 
       - name: Import secrets from git-secrets
