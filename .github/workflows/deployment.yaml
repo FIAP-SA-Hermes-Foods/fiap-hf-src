@@ -3,6 +3,34 @@ on:
   push:
     branches:
       ['main']
+
+env:
+
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+  IMAGE_API_NAME: ${{ secrets.IMAGE_API_NAME }}
+  IMAGE_POSTGRES_NAME: ${{ secrets.IMAGE_POSTGRES_NAME }}
+  IMAGE_SWAGGER_NAME: ${{ secrets.IMAGE_SWAGGER_NAME }}
+  IMAGE_TAG: 'latest'
+
+  REPOSITORY_API_URL: ${{ secrets.REPOSITORY_API_URL }}
+  REPOSITORY_POSTGRES_URL: ${{ secrets.REPOSITORY_POSTGRES_URL }}
+  REPOSITORY_SWAGGER_URL: ${{ secrets.REPOSITORY_SWAGGER_URL }}
+
+  GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+  GPG_OWNER_TRUST: ${{ secrets.GPG_OWNER_TRUST }}
+  GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+
+  AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
+  AWS_ECR_USERNAME: ${{ secrets.AWS_ECR_USERNAME }}
+  AWS_ECR_PASSWORD: ${{ secrets.AWS_ECR_PASSWORD }}
+  AWS_ECR_EMAIL: ${{ secrets.AWS_ECR_EMAIL }}
+
+  API_TOKEN: ${{ secrets.API_TOKEN }}
+
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
+  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY}}
       
 jobs:
   hf-tests:
@@ -23,34 +51,6 @@ jobs:
     
   build:
 
-    env:
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-    
-      IMAGE_API_NAME: ${{ secrets.IMAGE_API_NAME }}
-      IMAGE_POSTGRES_NAME: ${{ secrets.IMAGE_POSTGRES_NAME }}
-      IMAGE_SWAGGER_NAME: ${{ secrets.IMAGE_SWAGGER_NAME }}
-      IMAGE_TAG: 'latest'
-    
-      REPOSITORY_API_URL: ${{ secrets.REPOSITORY_API_URL }}
-      REPOSITORY_POSTGRES_URL: ${{ secrets.REPOSITORY_POSTGRES_URL }}
-      REPOSITORY_SWAGGER_URL: ${{ secrets.REPOSITORY_SWAGGER_URL }}
-    
-      GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-      GPG_OWNER_TRUST: ${{ secrets.GPG_OWNER_TRUST }}
-      GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-    
-      AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
-      AWS_ECR_USERNAME: ${{ secrets.AWS_ECR_USERNAME }}
-      AWS_ECR_PASSWORD: ${{ secrets.AWS_ECR_PASSWORD }}
-      AWS_ECR_EMAIL: ${{ secrets.AWS_ECR_EMAIL }}
-    
-      API_TOKEN: ${{ secrets.API_TOKEN }}
-
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY}}
-      
-  
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: Log into AWS ECR
