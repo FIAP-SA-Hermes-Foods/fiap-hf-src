@@ -63,19 +63,28 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        
-
-      - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@v1
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_SECRET_KEY }}
-          PASSPHRASE: ${{ secrets.GPG_PASSWORD }}
 
       - name: Create .env
         run: |
-          git secret reveal -p '${GPG_PASSWORD}'
-          git secret cat .env > .env
-          sed -i s:{{API_TOKEN}}:${API_TOKEN}:g .env
+         echo "AWS_REGISTRY_URL=${{ secrets.AWS_ECR_URL }}\n" >> .env
+         echo "AWS_REGISTRY_API_URL=${{ secrets.REPOSITORY_API_URL }}\n" >> .env
+         echo "AWS_REGISTRY_POSTGRES_URL=${{ secrets.REPOSITORY_POSTGRES_URL }}\n" >> .env
+         echo "AWS_REGISTRY_SWAGGER_URL=${{ secrets.REPOSITORY_SWAGGER_URL }}\n" >> .env
+         echo "DB_HOST=${{ secrets.DB_HOST }}\n" >> .env
+         echo "DB_PORT=${{ secrets.DB_PORT }}\n" >> .env
+         echo "DB_USER=${{ secrets.DB_USER }}\n" >> .env
+         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}\n" >> .env
+         echo "DB_NAME=${{ secrets.DB_NAME }}\n" >> .env
+         echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}\n" >> .env
+         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\n" >> .env
+         echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}\n" >> .env
+         echo "API_TOKEN=${{ secrets.API_TOKEN }}\n" >> .env
+         echo "MERCADO_PAGO_API_HOST=${{ secrets.MERCADO_PAGO_API_HOST }}\n" >> .env
+         echo "MERCADO_PAGO_API_PORT=${{ secrets.MERCADO_PAGO_API_PORT }}\n" >> .env
+         echo "MERCADO_PAGO_API_URI=${{ secrets.MERCADO_PAGO_API_URI }}\n" >> .env
+         echo "MERCADO_PAGO_API_TIMEOUT=${{ secrets.MERCADO_PAGO_API_TIMEOUT }}\n" >> .env
+         echo "BASE_URL=${{ secrets.BASE_URL }}\n" >> .env
+         echo "SWAGGER_JSON=${{ secrets.SWAGGER_JSON }}\n" >> .env
          
           if [ -d $HOME/envs ]; then 
             echo ""
@@ -93,24 +102,24 @@ jobs:
 
       - name: Build Images
         run: |           
-          docker build -f infrastructure/docker/go/Dockerfile -t ${IMAGE_API_NAME}:${IMAGE_TAG} .
-          docker build -f infrastructure/docker/postgres/Dockerfile -t ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} .
-          docker build -f infrastructure/docker/swagger/Dockerfile -t ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} .
+          docker build -f infrastructure/docker/go/Dockerfile -t ${{ secrets.IMAGE_API_NAME}}:${{secrets.IMAGE_TAG}} .
+          docker build -f infrastructure/docker/postgres/Dockerfile -t ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker build -f infrastructure/docker/swagger/Dockerfile -t ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} .
           docker images
         shell: bash
 
       - name: Tag images
         run: |
-          docker tag ${IMAGE_API_NAME}:${IMAGE_TAG} ${REPOSITORY_API_URL}:$IMAGE_TAG
-          docker tag ${IMAGE_POSTGRES_NAME}:${IMAGE_TAG} ${REPOSITORY_POSTGRES_URL}:$IMAGE_TAG
-          docker tag ${IMAGE_SWAGGER_NAME}:${IMAGE_TAG} ${REPOSITORY_SWAGGER_URL}:$IMAGE_TAG
+          docker tag ${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
+          docker tag ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_POSTGRES_URL }}:${{ secrets.IMAGE_TAG }}
+          docker tag ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_SWAGGER_URL }}:${{ secrets.IMAGE_TAG }}
         shell: bash
     
       - name: Push to ECR
         run: |
-          docker push ${REPOSITORY_API_URL}:${IMAGE_TAG}
-          docker push ${REPOSITORY_POSTGRES_URL}:${IMAGE_TAG}
-          docker push ${REPOSITORY_SWAGGER_URL}:${IMAGE_TAG}
+          docker push ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
+          docker push ${{ secrets.REPOSITORY_POSTGRES_URL }}:${{ secrets.IMAGE_TAG }}
+          docker push ${{ secrets.REPOSITORY_SWAGGER_URL }}:${{ secrets.IMAGE_TAG }}
         shell: bash
 
       - name: K8s setup
