@@ -65,11 +65,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         
 
-      - name: Import secrets from git-secrets
-        run: |
-          gpg --batch --import ${{ secrets.GPG_SECRET_KEY }}
-          gpg --import-ownertrust ${{ secrets.GPG_OWNER_TRUST }}
-        shell: bash
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v1
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSWORD }}
 
       - name: Create .env
         run: |
