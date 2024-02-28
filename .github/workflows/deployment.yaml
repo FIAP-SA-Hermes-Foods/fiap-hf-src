@@ -95,6 +95,7 @@ jobs:
 
       - name: Create docker network
         run: | 
+          ls -la
           ./infrastructure/scripts/docker-network.sh
         shell: bash
 
