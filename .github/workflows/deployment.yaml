@@ -67,8 +67,8 @@ jobs:
 
       - name: Import secrets from git-secrets
         run: |
-          gpg --batch --import ${GPG_SECRET_KEY}
-          gpg --import-ownertrust ${GPG_OWNER_TRUST}
+          gpg --batch --import ${{ secrets.GPG_SECRET_KEY }}
+          gpg --import-ownertrust ${{ secrets.GPG_OWNER_TRUST }}
         shell: bash
 
       - name: Create .env
