@@ -104,9 +104,9 @@ jobs:
       
       - name: Build Images
         run: |           
-          docker build -f infrastructure/docker/go/Dockerfile -t ${{ secrets.IMAGE_API_NAME}}:${{secrets.IMAGE_TAG}} .
-          docker build -f infrastructure/docker/postgres/Dockerfile -t ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} .
-          docker build -f infrastructure/docker/swagger/Dockerfile -t ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker build --file infrastructure/docker/go/Dockerfile --tag ${{ secrets.IMAGE_API_NAME}}:${{secrets.IMAGE_TAG}} .
+          docker build --file infrastructure/docker/postgres/Dockerfile --tag ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker build --file infrastructure/docker/swagger/Dockerfile --tag ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} .
           docker images
         shell: bash
 
