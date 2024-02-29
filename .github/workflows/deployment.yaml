@@ -93,6 +93,9 @@ jobs:
           fi
         shell: bash
 
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
       - name: Create docker network
         run: | 
           ls -la
