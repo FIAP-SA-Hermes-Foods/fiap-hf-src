@@ -101,27 +101,28 @@ jobs:
           ls -la
           ./infrastructure/scripts/docker-network.sh
         shell: bash
+      
+      - name: Build Images
+        run: |           
+          docker build -f infrastructure/docker/go/Dockerfile -t ${{ secrets.IMAGE_API_NAME}}:${{secrets.IMAGE_TAG}} .
+          docker build -f infrastructure/docker/postgres/Dockerfile -t ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker build -f infrastructure/docker/swagger/Dockerfile -t ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker images
+        shell: bash
 
-      - name: Build and push API
-        uses: docker/build-push-action@v5
-        with:
-          context: "{{defaultContext}}:infrastructure/docker/go/Dockerfile"
-          push: true
-          tags: ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }}
-
-      - name: Build and push DB
-        uses: docker/build-push-action@v5
-        with:
-          context: "{{defaultContext}}:infrastructure/docker/postgres/Dockerfile"
-          push: true
-          tags: ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }}
-
-      - name: Build and push Swagger
-        uses: docker/build-push-action@v5
-        with:
-          context: "{{defaultContext}}:infrastructure/docker/swagger/Dockerfile"
-          push: true
-          tags: ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }}
+      - name: Tag images
+        run: |
+          docker tag ${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
+          docker tag ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_POSTGRES_URL }}:${{ secrets.IMAGE_TAG }}
+          docker tag ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_SWAGGER_URL }}:${{ secrets.IMAGE_TAG }}
+        shell: bash
+    
+      - name: Push to ECR
+        run: |
+          docker push ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
+          docker push ${{ secrets.REPOSITORY_POSTGRES_URL }}:${{ secrets.IMAGE_TAG }}
+          docker push ${{ secrets.REPOSITORY_SWAGGER_URL }}:${{ secrets.IMAGE_TAG }}
+        shell: bash
 
       - name: K8s setup
         run: | 
