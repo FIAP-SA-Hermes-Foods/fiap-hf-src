@@ -104,8 +104,8 @@ jobs:
       
       - name: Build Images
         run: |           
-          docker build --file infrastructure/docker/go/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_API_NAME}}:${{secrets.IMAGE_TAG}} .
-          docker build --file infrastructure/docker/postgres/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} .
+          docker build --file infrastructure/docker/go/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_API_NAME }} .
+          docker build --file infrastructure/docker/postgres/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_POSTGRES_NAME }} .
           docker build --file infrastructure/docker/swagger/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} .
           docker images
         shell: bash
