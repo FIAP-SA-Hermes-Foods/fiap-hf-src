@@ -102,13 +102,12 @@ jobs:
           ./infrastructure/scripts/docker-network.sh
         shell: bash
       
-      - name: Build Images
-        run: |           
-          docker build --file infrastructure/docker/go/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_API_NAME }} .
-          docker build --file infrastructure/docker/postgres/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_POSTGRES_NAME }} .
-          docker build --file infrastructure/docker/swagger/Dockerfile --tag ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_SWAGGER_NAME }} .
-          docker images
-        shell: bash
+      - name: Build and push API
+        uses: docker/build-push-action@v5
+        with:
+          context: "./infrastructure/docker/go/Dockerfile"
+          push: true
+          tags: ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }}
 
       - name: Tag images
         run: |
