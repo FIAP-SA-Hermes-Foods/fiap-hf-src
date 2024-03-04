@@ -108,6 +108,11 @@ jobs:
           context: "./infrastructure/docker/go/Dockerfile"
           push: true
           tags: ${{ secrets.AWS_ECR_URL }}/${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }}
+          build-args: |
+            AWS_ECR_URL=${{ secrets.AWS_ECR_URL }}
+            IMAGE_API_NAME=${{ secrets.IMAGE_API_NAME }}
+            IMAGE_TAG=${{ secrets.IMAGE_TAG }}
+            
 
       - name: Tag images
         run: |
