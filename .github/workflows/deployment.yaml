@@ -107,7 +107,7 @@ jobs:
         with:
           context: "./infrastructure/docker/go/Dockerfile"
           push: true
-          tags: ${{ secrets.AWS_TAG_GO }}
+          tags: latest
             
 
       - name: Tag images
