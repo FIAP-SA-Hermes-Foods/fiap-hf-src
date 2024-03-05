@@ -62,15 +62,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ACTIONS_ROLE }}
+          registry: ${{ secrets.AWS_ECR_URL }}
+          username: ${{ secrets.AWS_ECR_USERNAME }}
+          password: ${{ secrets.AWS_ECR_PASSWORD }}
          
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry: ${{ secrets.AWS_ECR_URL }}
-          username: ${{ secrets.AWS_ECR_USERNAME }}
-          password: ${{ secrets.AWS_ECR_PASSWORD }}
+          
           
         
       - name: Create .env
