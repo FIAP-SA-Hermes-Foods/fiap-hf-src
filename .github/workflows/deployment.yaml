@@ -109,8 +109,8 @@ jobs:
           NAME_API: ${{ secrets.IMAGE_API_NAME }}
           IMG_TAG: latest
         run: |
-          docker build -t $AWS_REGISTRY/NAME_API:$IMG_TAG
-          docker push $AWS_REGISTRY/NAME_API:$IMG_TAG
+          docker build -t $AWS_REGISTRY/$NAME_API:$IMG_TAG
+          docker push $AWS_REGISTRY/$NAME_API:$IMG_TAG
 
       #- name: Build API
       #  uses: docker/build-push-action@v5
