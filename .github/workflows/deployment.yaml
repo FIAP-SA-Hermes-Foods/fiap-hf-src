@@ -110,6 +110,9 @@ jobs:
           file: ./infrastructure/docker/go/Dockerfile
           push: true
           tags: latest
+        env:
+          username: ${{ secrets.AWS_ECR_USERNAME }}
+          password: ${{ secrets.AWS_ECR_PASSWORD }}
 
       - name: Tag images
         run: |
