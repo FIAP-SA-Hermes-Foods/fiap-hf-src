@@ -62,14 +62,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ACTIONS_ROLE }}
-          registry: ${{ secrets.AWS_ECR_URL }}
-          username: ${{ secrets.AWS_ECR_USERNAME }}
-          password: ${{ secrets.AWS_ECR_PASSWORD }}
          
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ secrets.AWS_ECR_URL }}
+          REPOSITORY: hermes-foods-go
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           
           
         
