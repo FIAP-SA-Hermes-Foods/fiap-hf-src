@@ -107,7 +107,7 @@ jobs:
           context: .
           file: infrastructure/docker/go/Dockerfile
           push: true
-          tags: '${{ secrets.REGISTRY_URL }}/${{ secrets.IMAGE_API_NAME }}:latest'
+          tag: latest
 
       - name: Tag images
         run: |
