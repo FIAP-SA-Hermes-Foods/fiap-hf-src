@@ -107,7 +107,7 @@ jobs:
           context: .
           file: ./infrastructure/docker/go/Dockerfile
           push: true
-          tag: latest
+          tags: latest
 
       - name: Tag images
         run: |
