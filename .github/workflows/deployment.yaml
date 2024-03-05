@@ -62,6 +62,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ACTIONS_ROLE }}
+          username: ${{ secrets.AWS_ECR_USERNAME }}
+          password: ${{ secrets.AWS_ECR_PASSWORD }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -102,6 +104,9 @@ jobs:
           ./infrastructure/scripts/docker-network.sh
         shell: bash
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build API
         uses: docker/build-push-action@v5
         with:
@@ -109,11 +114,7 @@ jobs:
           file: ./infrastructure/docker/go/Dockerfile
           push: true
           tags: latest
-        env:
-          username: ${{ secrets.AWS_ECR_USERNAME }}
-          password: ${{ secrets.AWS_ECR_PASSWORD }}
         
-
       - name: Tag images
         run: |
           docker tag ${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
