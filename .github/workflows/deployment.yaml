@@ -50,7 +50,6 @@ jobs:
       run: go test -v ./...
     
   build:
-
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: Log into AWS ECR
@@ -101,14 +100,14 @@ jobs:
           ls -la
           ./infrastructure/scripts/docker-network.sh
         shell: bash
-      
+
       - name: Build and push API
-        uses: docker/build-push-action@v5
-        with:
-          file: ./infrastructure/docker/go/Dockerfile
-          context: .
-          push: true
-          tags: latest
+        env:
+          AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
+        run: |
+          docker build --file infrastructure/docker/go/Dockerfile --tag ${{ secrets.IMAGE_TAG }} .
+          docker tag ${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
+          docker push ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }} 
             
 
       - name: Tag images
