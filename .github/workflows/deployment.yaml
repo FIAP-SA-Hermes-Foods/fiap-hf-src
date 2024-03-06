@@ -25,6 +25,41 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
+    
+    - name: Create .env
+      run: |
+           echo "AWS_REGISTRY_URL=${{ secrets.AWS_ECR_URL }}\n" >> .env
+           echo "AWS_REGISTRY_API_URL=${{ secrets.REPOSITORY_API_URL }}\n" >> .env
+           echo "AWS_REGISTRY_POSTGRES_URL=${{ secrets.REPOSITORY_POSTGRES_URL }}\n" >> .env
+           echo "AWS_REGISTRY_SWAGGER_URL=${{ secrets.REPOSITORY_SWAGGER_URL }}\n" >> .env
+           echo "DB_HOST=${{ secrets.DB_HOST }}\n" >> .env
+           echo "DB_PORT=${{ secrets.DB_PORT }}\n" >> .env
+           echo "DB_USER=${{ secrets.DB_USER }}\n" >> .env
+           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}\n" >> .env
+           echo "DB_NAME=${{ secrets.DB_NAME }}\n" >> .env
+           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}\n" >> .env
+           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\n" >> .env
+           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}\n" >> .env
+           echo "API_TOKEN=${{ secrets.API_TOKEN }}\n" >> .env
+           echo "MERCADO_PAGO_API_HOST=${{ secrets.MERCADO_PAGO_API_HOST }}\n" >> .env
+           echo "MERCADO_PAGO_API_PORT=${{ secrets.MERCADO_PAGO_API_PORT }}\n" >> .env
+           echo "MERCADO_PAGO_API_URI=${{ secrets.MERCADO_PAGO_API_URI }}\n" >> .env
+           echo "MERCADO_PAGO_API_TIMEOUT=${{ secrets.MERCADO_PAGO_API_TIMEOUT }}\n" >> .env
+           echo "BASE_URL=${{ secrets.BASE_URL }}\n" >> .env
+           echo "SWAGGER_JSON=${{ secrets.SWAGGER_JSON }}\n" >> .env
+           
+            if [ -d $HOME/envs ]; then 
+              echo ""
+            else
+              mkdir $HOME/envs
+            fi
+      shell: bash
+        
+    - name: Create docker network
+      run: | 
+          ls -la
+          ./infrastructure/scripts/docker-network.sh
+      shell: bash
 
     - name: Build, Tag, and Push the Image to Amazon ECR
       id: build-image
