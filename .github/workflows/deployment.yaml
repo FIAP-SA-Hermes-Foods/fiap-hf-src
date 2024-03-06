@@ -1,158 +1,33 @@
-name: deployment
+---
+name: Build and Push Golang Image to AWS ECR
 on:
   push:
-    branches:
-      ['main']
-
-env:
-
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-
-  IMAGE_API_NAME: ${{ secrets.IMAGE_API_NAME }}
-  IMAGE_POSTGRES_NAME: ${{ secrets.IMAGE_POSTGRES_NAME }}
-  IMAGE_SWAGGER_NAME: ${{ secrets.IMAGE_SWAGGER_NAME }}
-  IMAGE_TAG: 'latest'
-
-  REPOSITORY_API_URL: ${{ secrets.REPOSITORY_API_URL }}
-  REPOSITORY_POSTGRES_URL: ${{ secrets.REPOSITORY_POSTGRES_URL }}
-  REPOSITORY_SWAGGER_URL: ${{ secrets.REPOSITORY_SWAGGER_URL }}
-
-  GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-  GPG_OWNER_TRUST: ${{ secrets.GPG_OWNER_TRUST }}
-  GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-
-  AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
-  AWS_ECR_USERNAME: ${{ secrets.AWS_ECR_USERNAME }}
-  AWS_ECR_PASSWORD: ${{ secrets.AWS_ECR_PASSWORD }}
-  AWS_ECR_EMAIL: ${{ secrets.AWS_ECR_EMAIL }}
-
-  API_TOKEN: ${{ secrets.API_TOKEN }}
-
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
-  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY}}
-      
+    branches: [ main ]
 jobs:
-  hf-tests:
+  build-and-push:
+    name: Build and Push to ECR
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        go-version: '1.20'
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
-    - name: Build
-      run: go build -v ./...
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Test
-      run: go test -v ./...
-    
-  build:
-    runs-on: [self-hosted, linux, x64]
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-    
-      - name: Configure credentials AWS ECR
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-region: us-east-1
-          role-to-assume: ${{ secrets.AWS_ACTIONS_ROLE }}
-         
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-      
-      - name: Create .env
-        run: |
-         echo "AWS_REGISTRY_URL=${{ secrets.AWS_ECR_URL }}\n" >> .env
-         echo "AWS_REGISTRY_API_URL=${{ secrets.REPOSITORY_API_URL }}\n" >> .env
-         echo "AWS_REGISTRY_POSTGRES_URL=${{ secrets.REPOSITORY_POSTGRES_URL }}\n" >> .env
-         echo "AWS_REGISTRY_SWAGGER_URL=${{ secrets.REPOSITORY_SWAGGER_URL }}\n" >> .env
-         echo "DB_HOST=${{ secrets.DB_HOST }}\n" >> .env
-         echo "DB_PORT=${{ secrets.DB_PORT }}\n" >> .env
-         echo "DB_USER=${{ secrets.DB_USER }}\n" >> .env
-         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}\n" >> .env
-         echo "DB_NAME=${{ secrets.DB_NAME }}\n" >> .env
-         echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}\n" >> .env
-         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\n" >> .env
-         echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}\n" >> .env
-         echo "API_TOKEN=${{ secrets.API_TOKEN }}\n" >> .env
-         echo "MERCADO_PAGO_API_HOST=${{ secrets.MERCADO_PAGO_API_HOST }}\n" >> .env
-         echo "MERCADO_PAGO_API_PORT=${{ secrets.MERCADO_PAGO_API_PORT }}\n" >> .env
-         echo "MERCADO_PAGO_API_URI=${{ secrets.MERCADO_PAGO_API_URI }}\n" >> .env
-         echo "MERCADO_PAGO_API_TIMEOUT=${{ secrets.MERCADO_PAGO_API_TIMEOUT }}\n" >> .env
-         echo "BASE_URL=${{ secrets.BASE_URL }}\n" >> .env
-         echo "SWAGGER_JSON=${{ secrets.SWAGGER_JSON }}\n" >> .env
-         
-          if [ -d $HOME/envs ]; then 
-            echo ""
-          else
-            mkdir $HOME/envs
-          fi
-        shell: bash
-        
-      - name: Create docker network
-        run: | 
-          ls -la
-          ./infrastructure/scripts/docker-network.sh
-        shell: bash
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build, Tag and Push to AWS
-        id: build-image
-        env:
-          AWS_REGISTRY: ${{ steps.login-ecr.outputs.registry }} #${{ secrets.AWS_ECR_URL }}
-          NAME_API: hermes-foods-go
-          IMG_TAG: latest
-          PATH: ./infrastructure/docker/go/Dockerfile
-        run: |
-          docker build -t $AWS_REGISTRY/$NAME_API:$IMG_TAG .
-          docker push $AWS_REGISTRY/$NAME_API:$IMG_TAG
-
-      #- name: Build API
-      #  uses: docker/build-push-action@v5
-      #  with:
-      #    context: .
-      #    file: ./infrastructure/docker/go/Dockerfile
-      #    push: true
-      #    tags: latest
-        
-      - name: Tag images
-        run: |
-          docker tag ${{ secrets.IMAGE_API_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
-          docker tag ${{ secrets.IMAGE_POSTGRES_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_POSTGRES_URL }}:${{ secrets.IMAGE_TAG }}
-          docker tag ${{ secrets.IMAGE_SWAGGER_NAME }}:${{ secrets.IMAGE_TAG }} ${{ secrets.REPOSITORY_SWAGGER_URL }}:${{ secrets.IMAGE_TAG }}
-        shell: bash
-
-      - name: Push to ECR
-        run: |
-          docker push ${{ secrets.REPOSITORY_API_URL }}:${{ secrets.IMAGE_TAG }}
-          docker push ${{ secrets.REPOSITORY_POSTGRES_URL }}:${{ secrets.IMAGE_TAG }}
-          docker push ${{ secrets.REPOSITORY_SWAGGER_URL }}:${{ secrets.IMAGE_TAG }}
-        shell: bash
-
-      - name: K8s setup
-        run: | 
-          kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
-          kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml
-          kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml
-          kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml
-          kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml
-          kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml
-          kubectl apply -f ./infrastructure/kubernetes/hpa/app.yaml
-          kubectl apply -f ./infrastructure/kubernetes/hpa/swagger.yaml
-        shell: bash
-
-      - name: Update pods
-        run: | 
-          kubectl rollout restart deployment hermes-foods-go-deployment -n dev
-          kubectl rollout restart deployment hermes-foods-postgres-deployment -n dev
-          kubectl rollout restart deployment hermes-foods-swagger-deployment -n dev
-        shell: bash
+    - name: Build, Tag, and Push the Image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: hermes-foods-go
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
