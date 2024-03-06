@@ -102,6 +102,9 @@ jobs:
           ./infrastructure/scripts/docker-network.sh
         shell: bash
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build, Tag and Push to AWS
         id: build-image
         env:
