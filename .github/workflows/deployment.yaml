@@ -3,34 +3,6 @@ name: Build and Push Golang Image to AWS ECR
 on:
   push:
     branches: [ main ]
-
-env:
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-
-  IMAGE_API_NAME: ${{ secrets.IMAGE_API_NAME }}
-  IMAGE_POSTGRES_NAME: ${{ secrets.IMAGE_POSTGRES_NAME }}
-  IMAGE_SWAGGER_NAME: ${{ secrets.IMAGE_SWAGGER_NAME }}
-  IMAGE_TAG: 'latest'
-
-  REPOSITORY_API_URL: ${{ secrets.REPOSITORY_API_URL }}
-  REPOSITORY_POSTGRES_URL: ${{ secrets.REPOSITORY_POSTGRES_URL }}
-  REPOSITORY_SWAGGER_URL: ${{ secrets.REPOSITORY_SWAGGER_URL }}
-
-  GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-  GPG_OWNER_TRUST: ${{ secrets.GPG_OWNER_TRUST }}
-  GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-
-  AWS_ECR_URL: ${{ secrets.AWS_ECR_URL }}
-  AWS_ECR_USERNAME: ${{ secrets.AWS_ECR_USERNAME }}
-  AWS_ECR_PASSWORD: ${{ secrets.AWS_ECR_PASSWORD }}
-  AWS_ECR_EMAIL: ${{ secrets.AWS_ECR_EMAIL }}
-
-  API_TOKEN: ${{ secrets.API_TOKEN }}
-
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
-  AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY}}
-
 jobs:
   build-and-push:
     name: Build and Push to ECR
@@ -39,49 +11,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Configure AWS credentials
+    - name: Configure credentials AWS ECR
       uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
       with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
           aws-region: us-east-1
-    
-    - name: Create .env
-      run: |
-           echo "AWS_REGISTRY_URL=${{ secrets.AWS_ECR_URL }}\n" >> .env
-           echo "AWS_REGISTRY_API_URL=${{ secrets.REPOSITORY_API_URL }}\n" >> .env
-           echo "AWS_REGISTRY_POSTGRES_URL=${{ secrets.REPOSITORY_POSTGRES_URL }}\n" >> .env
-           echo "AWS_REGISTRY_SWAGGER_URL=${{ secrets.REPOSITORY_SWAGGER_URL }}\n" >> .env
-           echo "DB_HOST=${{ secrets.DB_HOST }}\n" >> .env
-           echo "DB_PORT=${{ secrets.DB_PORT }}\n" >> .env
-           echo "DB_USER=${{ secrets.DB_USER }}\n" >> .env
-           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}\n" >> .env
-           echo "DB_NAME=${{ secrets.DB_NAME }}\n" >> .env
-           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}\n" >> .env
-           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}\n" >> .env
-           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}\n" >> .env
-           echo "API_TOKEN=${{ secrets.API_TOKEN }}\n" >> .env
-           echo "MERCADO_PAGO_API_HOST=${{ secrets.MERCADO_PAGO_API_HOST }}\n" >> .env
-           echo "MERCADO_PAGO_API_PORT=${{ secrets.MERCADO_PAGO_API_PORT }}\n" >> .env
-           echo "MERCADO_PAGO_API_URI=${{ secrets.MERCADO_PAGO_API_URI }}\n" >> .env
-           echo "MERCADO_PAGO_API_TIMEOUT=${{ secrets.MERCADO_PAGO_API_TIMEOUT }}\n" >> .env
-           echo "BASE_URL=${{ secrets.BASE_URL }}\n" >> .env
-           echo "SWAGGER_JSON=${{ secrets.SWAGGER_JSON }}\n" >> .env
-           
-            if [ -d $HOME/envs ]; then 
-              echo ""
-            else
-              mkdir $HOME/envs
-            fi
-      shell: bash
+          role-to-assume: ${{ secrets.AWS_ACTIONS_ROLE }}
+         
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
         
     - name: Create docker network
       run: | 
