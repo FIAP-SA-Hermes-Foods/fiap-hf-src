@@ -113,7 +113,7 @@ jobs:
           IMG_TAG: latest
           PATH: ./infrastructure/docker/go/Dockerfile
         run: |
-          docker build -f $PATH -t $AWS_REGISTRY/$NAME_API:$IMG_TAG .
+          docker build -t $AWS_REGISTRY/$NAME_API:$IMG_TAG .
           docker push $AWS_REGISTRY/$NAME_API:$IMG_TAG
 
       #- name: Build API
