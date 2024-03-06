@@ -9,6 +9,8 @@ jobs:
     name: Build and Push to ECR
     runs-on: [self-hosted, linux, x64]
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
     
     - name: Configure credentials AWS ECR
       uses: aws-actions/configure-aws-credentials@v3
@@ -28,9 +30,6 @@ jobs:
           ./infrastructure/scripts/docker-network.sh
       shell: bash
 
-    - name: Checkout
-      uses: actions/checkout@v3
-
     - name: Build, Tag, and Push the Image to Amazon ECR
       id: build-image
       env:
@@ -38,5 +37,5 @@ jobs:
         ECR_REPOSITORY: hermes-foods-go
         IMAGE_TAG: latest
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
