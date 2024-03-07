@@ -107,6 +107,11 @@ jobs:
         docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+    - name: Set up kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
     - name: K8s setup
       run: | 
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
