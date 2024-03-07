@@ -42,7 +42,7 @@ jobs:
 
     - name: Create .env
       run: |
-         echo "${{ secrets.ENV_FILE }}" | base64 --decode > .env
+         echo "${{ secrets.ENV_FILE }}" | base64 -d - > .env
 
           if [ -d $HOME/envs ]; then 
             echo ""
@@ -58,32 +58,11 @@ jobs:
           ./infrastructure/scripts/docker-network.sh
       shell: bash
 
-    - name: Build, Tag, and Push the GO image to Amazon ECR
-      id: build-image-go
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: hermes-foods-go
-        IMAGE_TAG: latest
-      run: |
-        docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
     - name: Build, Tag, and Push the Postgres image to Amazon ECR
       id: build-image-postgres
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: hermes-foods-postgres
-        IMAGE_TAG: latest
-      run: |
-        docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-
-    - name: Build, Tag, and Push the Swagger image to Amazon ECR
-      id: build-image-swagger
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: hermes-foods-swagger
         IMAGE_TAG: latest
       run: |
         docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
