@@ -49,7 +49,7 @@ jobs:
           else
             mkdir $HOME/envs
           fi
-          cp .env $HOME/envs
+          mv .env $HOME/envs/.env
       shell: bash
         
     - name: Create docker network
