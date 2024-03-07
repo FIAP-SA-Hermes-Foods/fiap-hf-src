@@ -42,7 +42,7 @@ jobs:
 
     - name: Create .env
       run: |
-         echo "${{ secrets.ENV_FILE2 }}" | base64 -d - > .env
+         echo "${{ secrets.ENV_FILE }}" | base64 -d - > .env
 
           if [ -d $HOME/envs ]; then 
             echo ""
@@ -71,7 +71,7 @@ jobs:
     - name: Set up kubectl
       uses: azure/k8s-set-context@v3
       with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+        kubeconfig: ${{ secrets.KUBE_CONFIG_FILE }}
 
     - name: K8s setup
       run: | 
