@@ -58,15 +58,24 @@ jobs:
           ./infrastructure/scripts/docker-network.sh
       shell: bash
 
-    - name: Build, Tag, and Push the Postgres image to Amazon ECR
-      id: build-image-postgres
+    - name: Build, Tag, and Push images to Amazon ECR
+      id: build-images
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: hermes-foods-postgres
+        ECR_REPOSITORY_POSTGRES: hermes-foods-postgres
+        ECR_REPOSITORY_API: hermes-foods-go
+        ECR_REPOSITORY_SWAGGER: hermes-foods-swagger
         IMAGE_TAG: latest
       run: |
-        docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        cp /home/envs/.env .
+        docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG
+        
+        docker build -f ./infrastructure/docker/postgres/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_POSTGRES:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_POSTGRES:$IMAGE_TAG
+        
+        docker build -f ./infrastructure/docker/swagger/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_SWAGGER:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY_SWAGGER:$IMAGE_TAG
 
     - name: Set up kubectl
       uses: azure/k8s-set-context@v3
