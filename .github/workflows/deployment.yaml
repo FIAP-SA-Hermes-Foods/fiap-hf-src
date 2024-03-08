@@ -75,6 +75,7 @@ jobs:
 
     - name: K8s setup
       run: | 
+          ./infrastructure/scripts/kubernetes-config.sh ${{ secrets.AWS_ECR_URL }} ${{ secrets.AWS_ECR_USERNAME }} ${{ secrets.AWS_ECR_PASSWORD }} ${{ secrets.AWS_ECR_EMAIL }}
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
           kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml
           kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml
