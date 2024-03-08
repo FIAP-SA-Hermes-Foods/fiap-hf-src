@@ -74,8 +74,12 @@ jobs:
         kubeconfig: ${{ secrets.KUBE_CONFIG_FILE }}
 
     - name: K8s setup
+      env:
+        REPOSITORY_API_URL: ${{ secrets.AWS_REGISTRY_API_URL }}
+        REPOSITORY_POSTGRES_URL: ${{ secrets.AWS_REGISTRY_POSTGRES_URL }}
+        REPOSITORY_SWAGGER_URL: ${{ secrets.AWS_REGISTRY_SWAGGER_URL }}
       run: | 
-          ./infrastructure/scripts/kubernetes-config.sh ${{ secrets.AWS_ECR_URL }} ${{ secrets.AWS_ECR_USERNAME }} ${{ secrets.AWS_ECR_PASSWORD }} ${{ secrets.AWS_ECR_EMAIL }}
+          ./infrastructure/scripts/kubernetes-config.sh ${{ secrets.KUBE_REG_SERVER }} ${{ secrets.KUBE_REG_USERNAME }} ${{ secrets.KUBE_REG_PASSWORD }} ${{ secrets.KUBE_REG_EMAIL }}
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
           kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml
           kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml
