@@ -18,7 +18,7 @@ fi
 if [ ! -z "$OUT_KUBE_GET_SECRET" -a "$OUT_KUBE_GET_SECRET" != " " ]; then
     echo "secret already exists, skipping..."
 else 
-    kubectl create secret generic hf-deploy-secret --from-env-file=.env --namespace=dev
+    kubectl create secret generic hf-deploy-secret --from-env-file=/home/admin/envs/.env --namespace=dev
 fi
 
 if [ ! -z "$OUT_KUBE_GET_REG_SECRET" -a "$OUT_KUBE_GET_REG_SECRET" != " " ]; then
