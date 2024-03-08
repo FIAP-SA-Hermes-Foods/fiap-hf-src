@@ -67,7 +67,7 @@ jobs:
         ECR_REPOSITORY_SWAGGER: hermes-foods-swagger
         IMAGE_TAG: latest
       run: |
-        cp /home/envs/.env .
+        cp /home/admin/envs/.env .
         docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG
         
