@@ -78,6 +78,7 @@ jobs:
         REPOSITORY_API_URL: ${{ secrets.AWS_REGISTRY_API_URL }}
         REPOSITORY_POSTGRES_URL: ${{ secrets.AWS_REGISTRY_POSTGRES_URL }}
         REPOSITORY_SWAGGER_URL: ${{ secrets.AWS_REGISTRY_SWAGGER_URL }}
+        IMAGE_TAG: latest
       run: | 
           ./infrastructure/scripts/kubernetes-config.sh ${{ secrets.KUBE_REG_SERVER }} ${{ secrets.KUBE_REG_USERNAME }} ${{ secrets.KUBE_REG_PASSWORD }} ${{ secrets.KUBE_REG_EMAIL }}
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
