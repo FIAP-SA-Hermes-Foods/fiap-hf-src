@@ -6,33 +6,36 @@ import (
 	"errors"
 	"fiap-hf-src/src/base/interfaces"
 	"fmt"
-
-	_ "github.com/lib/pq"
+	"time"
 )
 
 var _ interfaces.SQLDatabase = (*postgresDB)(nil)
 
 type postgresDB struct {
 	Ctx        context.Context
-	Host       string
+	Region     string // us-east-1
+	Host       string // my-postgres-db-instance.123456789012.us-east-1.rds.amazonaws.com
 	Port       string
 	Schema     string
 	User       string
 	Password   string
+	Timeout    time.Duration
 	postgresDB *sql.DB
 	SqlStmt    *sql.Stmt
 	Row        *sql.Row
 	Rows       *sql.Rows
 }
 
-func NewPostgresDB(ctx context.Context, host, port, schema, user, password string) *postgresDB {
+func NewPostgresDB(ctx context.Context, region, host, port, schema, user, password string, timeout time.Duration) *postgresDB {
 	return &postgresDB{
 		Ctx:      ctx,
+		Region:   region,
 		Host:     host,
 		Port:     port,
 		Schema:   schema,
 		User:     user,
 		Password: password,
+		Timeout:  timeout,
 	}
 }
 
@@ -121,7 +124,7 @@ func (p *postgresDB) PrepareStmt(query string) error {
 }
 
 func (p postgresDB) dbURL() string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", p.User, p.Password, p.Host, p.Port, p.Schema)
+	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", p.User, p.Password, p.Host, p.Port, p.Schema)
 }
 
 // Stmt Methods

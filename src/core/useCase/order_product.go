@@ -25,10 +25,6 @@ func (o *orderProductUseCase) GetAllOrderProductByOrderID(id int64) ([]dto.Outpu
 }
 
 func (o *orderProductUseCase) SaveOrderProduct(order dto.RequestOrderProduct) (*dto.OutputOrderProduct, error) {
-	if order.OrderID < 1 {
-		return nil, errors.New("the order id is not valid for consult")
-	}
-
 	return o.gateway.SaveOrderProduct(order)
 }
 
