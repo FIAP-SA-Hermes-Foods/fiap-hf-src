@@ -11,8 +11,8 @@ import (
 
 var (
 	queryGetVoucherByID    = `SELECT * FROM voucher WHERE id = $1`
-	querySaveVoucher       = `INSERT INTO voucher (id, code, percentage, created_at, expires_at) VALUES (DEFAULT, $1, $2, now(), $3) RETURNING id, expires_at`
-	queryUpdateVoucherByID = `UPDATE voucher SET code = $1, percentage = $2, expires_at = $3 WHERE id = $4 RETURNING id, expires_at`
+	querySaveVoucher       = `INSERT INTO voucher (id, code, percentage, created_at, expires_at) VALUES (DEFAULT, $1, $2, now(), $3) RETURNING id, created_at`
+	queryUpdateVoucherByID = `UPDATE voucher SET code = $1, percentage = $2, expires_at = $3 WHERE id = $4 RETURNING id, created_at`
 )
 
 var _ interfaces.VoucherDB = (*voucherDB)(nil)
@@ -85,7 +85,7 @@ func (v *voucherDB) SaveVoucher(voucher entity.Voucher) (*entity.Voucher, error)
 		},
 	}
 
-	v.Database.QueryRow(voucher.Code, voucher.Porcentage, voucher.ExpiresAt)
+	v.Database.QueryRow(voucher.Code, voucher.Porcentage, voucher.ExpiresAt.Value)
 
 	if err := v.Database.ScanStmt(&outVoucher.ID, &outVoucher.CreatedAt.Value); err != nil {
 		l.Errorf("SaveVoucher scan error: ", " | ", err)

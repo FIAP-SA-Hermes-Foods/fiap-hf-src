@@ -65,7 +65,7 @@ func (v *voucherGateway) SaveVoucher(reqVoucher dto.RequestVoucher) (*dto.Output
 func (v *voucherGateway) UpdateVoucherByID(id int64, reqVoucher dto.RequestVoucher) (*dto.OutputVoucher, error) {
 	voucher := reqVoucher.Voucher()
 
-	outDB, err := v.db.SaveVoucher(voucher)
+	outDB, err := v.db.UpdateVoucherByID(id, voucher)
 
 	if err != nil {
 		return nil, err

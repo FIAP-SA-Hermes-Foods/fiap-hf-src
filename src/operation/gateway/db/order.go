@@ -39,7 +39,7 @@ func (o *orderGateway) SaveOrder(reqOrder dto.RequestOrder) (*dto.OutputOrder, e
 	}
 
 	out := &dto.OutputOrder{
-		ID: order.ID,
+		ID: oDb.ID,
 		Client: dto.OutputClient{
 			ID: order.ClientID,
 		},

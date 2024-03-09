@@ -364,12 +364,12 @@ func (app hermesFoodsApp) GetOrderByID(id int64) (*dto.OutputOrder, error) {
 }
 
 func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, error) {
-	l.Infof("SaveOrder: ", " | ", ps.MarshalString(order))
+	l.Infof("SaveOrderApp: ", " | ", ps.MarshalString(order))
 
 	c, err := app.clientUseCase.GetClientByID(order.ClientID)
 
 	if err != nil {
-		l.Errorf("SaveOrder error: ", " | ", err)
+		l.Errorf("SaveOrderApp error: ", " | ", err)
 		return nil, err
 	}
 
@@ -391,12 +391,12 @@ func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, e
 	out, err := app.DoPaymentAPI(app.ctx, inputDoPaymentAPI)
 
 	if err != nil {
-		l.Errorf("SaveOrder error: ", " | ", err)
+		l.Errorf("SaveOrderApp error: ", " | ", err)
 		return nil, err
 	}
 
 	if out.Error != nil {
-		l.Errorf("SaveOrder error: ", " | ", out.Error.Message, " | ", out.Error.Code)
+		l.Errorf("SaveOrderApp error: ", " | ", out.Error.Message, " | ", out.Error.Code)
 		return nil, fmt.Errorf("error to do payment message: %s, code: %s", out.Error.Message, out.Error.Code)
 	}
 
@@ -405,13 +405,13 @@ func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, e
 	o, err := app.orderUseCase.SaveOrder(order)
 
 	if err != nil {
-		l.Errorf("SaveOrder error: ", " | ", err)
+		l.Errorf("SaveOrderApp error: ", " | ", err)
 		return nil, err
 	}
 
 	if o == nil {
 		orderNullErr := errors.New("is not possible to save order because it's null")
-		l.Infof("SaveOrder output: ", " | ", orderNullErr)
+		l.Infof("SaveOrderApp output: ", " | ", orderNullErr)
 		return nil, orderNullErr
 	}
 
@@ -424,16 +424,16 @@ func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, e
 	if order.VoucherID != nil {
 
 		v, err := app.GetVoucherByID(*order.VoucherID)
-		l.Infof("SaveOrder output: ", " | ", ps.MarshalString(v))
+		l.Infof("SaveOrderApp output: ", " | ", ps.MarshalString(v))
 
 		if err != nil {
-			l.Errorf("SaveOrder error: ", " | ", err)
+			l.Errorf("SaveOrderApp error: ", " | ", err)
 			return nil, err
 		}
 
 		if v == nil {
 			voucherNullErr := errors.New("is not possible to save order because this voucher does not exist")
-			l.Infof("SaveOrder output: ", " | ", voucherNullErr)
+			l.Infof("SaveOrderApp output: ", " | ", voucherNullErr)
 			return nil, voucherNullErr
 		}
 
@@ -445,13 +445,13 @@ func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, e
 		product, err := app.productUseCase.GetProductByID(orderItems.ProductID)
 
 		if err != nil {
-			l.Errorf("SaveOrder error: ", " | ", err)
+			l.Errorf("SaveOrderApp error: ", " | ", err)
 			return nil, err
 		}
 
 		if product == nil {
 			productNullErr := errors.New("is not possible to save order because this product does not exists null")
-			l.Infof("SaveOrder output: ", " | ", productNullErr)
+			l.Infof("SaveOrderApp output: ", " | ", productNullErr)
 			return nil, productNullErr
 		}
 
@@ -490,13 +490,13 @@ func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, e
 		opService, err := app.orderProductUseCase.SaveOrderProduct(opIn)
 
 		if err != nil {
-			l.Errorf("SaveOrder error: ", " | ", err)
+			l.Errorf("SaveOrderApp error: ", " | ", err)
 			return nil, err
 		}
 
 		if opService == nil {
 			orderProductNullErr := errors.New("is not possible to save order because it's null")
-			l.Infof("SaveOrder output: ", " | ", orderProductNullErr)
+			l.Infof("SaveOrderApp output: ", " | ", orderProductNullErr)
 			return nil, orderProductNullErr
 		}
 	}
@@ -524,7 +524,7 @@ func (app hermesFoodsApp) SaveOrder(order dto.RequestOrder) (*dto.OutputOrder, e
 		CreatedAt:        o.CreatedAt,
 	}
 
-	l.Infof("SaveOrder output: ", " | ", ps.MarshalString(outOrder))
+	l.Infof("SaveOrderApp output: ", " | ", ps.MarshalString(outOrder))
 	return outOrder, nil
 }
 

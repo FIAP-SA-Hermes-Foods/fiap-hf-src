@@ -46,7 +46,7 @@ func (p *productDB) SaveProduct(reqProduct dto.RequestProduct) (*dto.OutputProdu
 func (p *productDB) UpdateProductByID(id int64, reqProduct dto.RequestProduct) (*dto.OutputProduct, error) {
 	product := reqProduct.Product()
 
-	outDB, err := p.db.SaveProduct(product)
+	outDB, err := p.db.UpdateProductByID(id, product)
 
 	if err != nil {
 		return nil, err
@@ -66,8 +66,8 @@ func (p *productDB) UpdateProductByID(id int64, reqProduct dto.RequestProduct) (
 		CreatedAt:     outDB.CreatedAt.Format(),
 		DeactivatedAt: outDB.DeactivatedAt.Format(),
 	}
-	return out, nil
 
+	return out, nil
 }
 
 func (p *productDB) GetProductByCategory(category string) ([]dto.OutputProduct, error) {
@@ -100,7 +100,6 @@ func (p *productDB) GetProductByCategory(category string) ([]dto.OutputProduct, 
 	}
 
 	return out, nil
-
 }
 
 func (p *productDB) GetProductByID(id int64) (*dto.OutputProduct, error) {

@@ -54,7 +54,7 @@ func (h *voucherController) SaveVoucher(rw http.ResponseWriter, req *http.Reques
 		}
 	}
 
-	reqVoucher.ExpiresAt = voucher.CreatedAt.Format()
+	reqVoucher.ExpiresAt = voucher.ExpiresAt.Format()
 
 	v, err := h.app.SaveVoucher(reqVoucher)
 
