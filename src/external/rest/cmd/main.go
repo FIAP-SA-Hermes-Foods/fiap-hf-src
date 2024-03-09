@@ -5,7 +5,7 @@ import (
 	"context"
 	"fiap-hf-src/src/core/useCase"
 	"fiap-hf-src/src/external/db"
-	"fiap-hf-src/src/external/db/postgres"
+	"fiap-hf-src/src/external/db/rds/postgres"
 	httpExt "fiap-hf-src/src/external/http"
 	"fiap-hf-src/src/external/rest"
 	"fiap-hf-src/src/operation/controller/web"
@@ -41,13 +41,22 @@ func main() {
 
 	ctx := context.Background()
 
+	dbDuration, err := time.ParseDuration(os.Getenv("DB_DURATION"))
+
+	if err != nil {
+		log.Fatalf("error: %v", err)
+
+	}
+
 	psql := postgres.NewPostgresDB(
 		ctx,
+		os.Getenv("DB_REGION"),
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
+		dbDuration,
 	)
 
 	defer psql.Close()

@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"context"
 	"fiap-hf-src/migration"
-	"fiap-hf-src/src/external/db/postgres"
+	"fiap-hf-src/src/external/db/rds/postgres"
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 func init() {
@@ -19,13 +20,21 @@ func init() {
 func main() {
 	ctx := context.Background()
 
+	dbDuration, err := time.ParseDuration(os.Getenv("DB_DURATION"))
+
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
 	db := postgres.NewPostgresDB(
 		ctx,
+		os.Getenv("DB_REGION"),
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
+		dbDuration,
 	)
 
 	m := migration.NewMigration(db)
