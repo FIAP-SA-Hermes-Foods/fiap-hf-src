@@ -7,6 +7,8 @@ import (
 	"fiap-hf-src/src/base/interfaces"
 	"fmt"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 var _ interfaces.SQLDatabase = (*postgresDB)(nil)
