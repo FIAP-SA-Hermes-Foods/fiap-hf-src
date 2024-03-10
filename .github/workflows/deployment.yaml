@@ -62,19 +62,15 @@ jobs:
       id: build-images
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY_POSTGRES: hermes-foods-postgres
         ECR_REPOSITORY_API: hermes-foods-go
         ECR_REPOSITORY_SWAGGER: hermes-foods-swagger
         IMAGE_TAG: latest
       run: |
         cp /home/admin/envs/.env .
-        docker build -f ./infrastructure/docker/go/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG .
+        docker build -f ./infrastructure/docker/Dockerfile.go_app -t $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY_API:$IMAGE_TAG
-        
-        docker build -f ./infrastructure/docker/postgres/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_POSTGRES:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY_POSTGRES:$IMAGE_TAG
-        
-        docker build -f ./infrastructure/docker/swagger/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY_SWAGGER:$IMAGE_TAG .
+                
+        docker build -f ./infrastructure/docker/Dockerfile.swagger -t $ECR_REGISTRY/$ECR_REPOSITORY_SWAGGER:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY_SWAGGER:$IMAGE_TAG
 
     - name: Set up kubectl
@@ -85,16 +81,12 @@ jobs:
     - name: K8s setup
       env:
         REPOSITORY_API_URL: ${{ secrets.AWS_REGISTRY_API_URL }}
-        REPOSITORY_POSTGRES_URL: ${{ secrets.AWS_REGISTRY_POSTGRES_URL }}
         REPOSITORY_SWAGGER_URL: ${{ secrets.AWS_REGISTRY_SWAGGER_URL }}
         IMAGE_TAG: latest
       run: | 
           ./infrastructure/scripts/kubernetes-config.sh ${{ secrets.KUBE_REG_SERVER }} ${{ secrets.KUBE_REG_USERNAME }} ${{ secrets.KUBE_REG_PASSWORD }} ${{ secrets.KUBE_REG_EMAIL }}
           kubectl apply -f ./infrastructure/kubernetes/config/swagger.yaml
-          kubectl apply -f ./infrastructure/kubernetes/config/init-db.yaml
-          kubectl apply -f ./infrastructure/kubernetes/config/postgres.yaml
           kubectl apply -f ./infrastructure/kubernetes/deployment/app.yaml
-          kubectl apply -f ./infrastructure/kubernetes/deployment/postgres.yaml
           kubectl apply -f ./infrastructure/kubernetes/deployment/swagger.yaml
           kubectl apply -f ./infrastructure/kubernetes/hpa/app.yaml
           kubectl apply -f ./infrastructure/kubernetes/hpa/swagger.yaml
@@ -103,6 +95,5 @@ jobs:
     - name: Update pods
       run: | 
           kubectl rollout restart deployment hermes-foods-go-deployment -n dev
-          kubectl rollout restart deployment hermes-foods-postgres-deployment -n dev
           kubectl rollout restart deployment hermes-foods-swagger-deployment -n dev
       shell: bash

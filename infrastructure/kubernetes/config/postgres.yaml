@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: hermes-foods-postgres-config
-  namespace: dev
-
-data:
-  postgres-url: postgres-service
