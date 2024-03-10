@@ -82,6 +82,10 @@ func (m migrationDB) Migrate() error {
 
 	for i := range files {
 
+		if strings.Contains(files[i], ".example.sql") {
+			continue
+		}
+
 		q, err := os.ReadFile(filepath.Join(path, files[i]))
 
 		if err != nil {

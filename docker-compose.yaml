@@ -2,7 +2,7 @@ version: '3.9'
 services:
   hermes-foods-app:
     build:
-      dockerfile: ./infrastructure/docker/go/Dockerfile
+      dockerfile: ./infrastructure/docker/Dockerfile.go_app
       context: .
     image: hermes-foods-go:latest
     container_name: go-hermes-foods-app
@@ -18,7 +18,7 @@ services:
         
   postgresdb:
     build:
-      dockerfile: ./infrastructure/docker/postgres/Dockerfile
+      dockerfile: ./infrastructure/docker/Dockerfile.postgres
       context: .
     image: hermes-foods-postgres:latest
     container_name: postgresql-hermes-foods
@@ -35,7 +35,7 @@ services:
 
   swagger:
     build:
-      dockerfile: ./infrastructure/docker/swagger/Dockerfile
+      dockerfile: ./infrastructure/docker/Dockerfile.swagger
       context: .
     image: hermes-foods-swagger:latest
     container_name: swagger-hermes-foods
