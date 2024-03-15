@@ -97,3 +97,8 @@ jobs:
           kubectl rollout restart deployment hermes-foods-go-deployment -n dev
           kubectl rollout restart deployment hermes-foods-swagger-deployment -n dev
       shell: bash
+
+  create-db:
+    uses: FIAP-SA-Hermes-Foods/fiap-hf-db/.github/workflows/deploy.yml@main
+    secrets: inherit
+    
