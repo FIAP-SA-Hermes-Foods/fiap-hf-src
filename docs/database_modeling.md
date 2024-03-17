@@ -2,7 +2,7 @@
 
 This file is about the database model chosen based on business logic provided by postech.
 
-<img src='./img/hf-db-model.png" width="600px" height="500px">
+<img src="./img/hf-db-model.png" width="700px" height="500px">
 
 ## Database SQL Amazon RDS with Postgres
 
