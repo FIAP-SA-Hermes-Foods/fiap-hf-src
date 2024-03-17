@@ -19,7 +19,7 @@ We decided to migrate our Postgres database that was running in a Container, use
 5. Costs: We decided that if our application were to grow, managing it through Amazon RDS would generate savings in the long term, rather than working within an infrastructure as a service (IaaS) environment, as it is a elastic and scalable environment.
 
 
-## Database noSQL - Amazon Dynamo DB
+## Database noSQL with Amazon Dynamo DB
 
 We decided to create a table in the noSQL Dynamo DB database to work together with cognito in our authentication system, for the following advantages:
 
