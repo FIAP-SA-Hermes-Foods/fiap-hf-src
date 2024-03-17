@@ -1,31 +1,32 @@
 # Introduction
+
 This file is about the database model chosen based on business logic provided by postech.
 
-<img src='./img/hf-db-model.png" width="700px" height="500px">
+<img src='./img/hf-db-model.png" width="600px" height="500px">
 
-## Banco de dados SQL Amazon RDS com Postgres
+## Database SQL Amazon RDS with Postgres
 
-Resolvemos migrar o nosso banco de dados Postgres que estava rodando em Conteiner, usado para persistir os dados das nossas APIs (Cliente, Produto, Pedido e Voucher) para Amazon RDS, pelas seguintes vantagens:
+We decided to migrate our Postgres database that was running in a Container, used to persist data from our APIs (Customer, Product, Order and Voucher) to Amazon RDS, for the following advantages:
 
-1. Escalabilidade e desempenho: Com o Amazon RDS nós podemos escalar o nosso banco de dados verticalmente e horizontalmente, conforme necessário, facilitando futuramente o gerenciamento de desempenho da nossa aplicação a medida que a nossa base de usuários/ produtos  crescem. 
+1. Scalability and performance: With Amazon RDS we can scale our database vertically and horizontally as needed, making it easier to manage the performance of our application in the future as our user/product base grows.
 
-2. Disponibilidade e durabilidade dos dados: Com o amazon RDS é possível configurarmos o nosso banco de dados afim de garantir a alta disponibilidade dos nossos dados, através de backups automáticos, replicação em múltiplas zonas de disponibilidades e recuperar os nossos dados em casos de desatres.
+2. Data availability and durability: With Amazon RDS it is possible to configure our database to guarantee the high availability of our data, through automatic backups, replication in multiple availability zones and recover our data in cases of disaster.
 
-3. Gerenciamento simplificado: Por se tratar de uma plataforma como serviço (PaaS), não precisamos nos preocupar com atualizações dos patches e sistema operacional, e acesso simplificado pelo console AWS e CLI, para configurar, monitorar e ajustar nosso banco de dados.
+3. Simplified management: Being a platform as a service (PaaS), we don't need to worry about patch and operating system updates, and simplified access via the AWS console and CLI to configure, monitor and adjust our database.
 
-4. Segurança: O Amazon RDS oferece recursos de segurança robustos, como criptografia de dados em repouso e em trânsito, além de integração com outros serviços da AWS para controle de acesso e conformidade.
+4. Security: Amazon RDS offers robust security features such as data encryption both securely and in transit, as well as integration with other AWS services for access control and compliance.
 
-5. Custos: Chegamos a conclusão que caso a nossa aplicação venha a crescer, gerencia-lá pelo amazon RDS nos geraria uma economia a longo prazo, do que trabalhar dentro de um ambiente de infra-estrutura como serviço (IaaS), pois se trata de um ambiente elástico e escalável.
+5. Costs: We decided that if our application were to grow, managing it through Amazon RDS would generate savings in the long term, rather than working within an infrastructure as a service (IaaS) environment, as it is a elastic and scalable environment.
 
 
-## Banco de dados noSQL - Amazon Dynamo DB
+## Database noSQL - Amazon Dynamo DB
 
-Resolvemos criar uma tabela no banco de dados noSQL Dynamo DB para trabahar em conjunto com o cognito no nosso sistema de autenticação, pelas seguintes vantagens:
+We decided to create a table in the noSQL Dynamo DB database to work together with cognito in our authentication system, for the following advantages:
 
-1. Escalabilidade e desempenho: Dynamo DB é um banco noSQL altamente escalável e pode lidar com cargas de trabalho de formas mais variadas e imprevisíveis, trabalha com grande número de usuários ou picos de tráfego e tem capacidade de escalar automaticamente.
+1. Scalability and performance: Dynamo DB is a highly scalable noSQL database and can handle workloads in more varied and unpredictable ways, works with a large number of users or traffic spikes and has the ability to scale automatically.
 
-2. Gerenciamento simplificado: É um serviço totalmente gerenciado pela AWS e por esse motivo não precisamos nos preocupar com a infraestrutura subjacente, a AWS cuida da configuração, monitoramento e manutenção do banco de dados.
+2. Simplified management: It is a service fully managed by AWS and for this reason we do not need to worry about the underlying infrastructure, AWS takes care of the configuration, monitoring and maintenance of the database.
 
-3. Integração com o Amazon Cognito: Uma das justificativas da nossa escolha é a fácil integração entre Dynamo DB, serviço de autenticação do cognito e as funções lambda. Usamos o cognito para gerenciar usuários e autenticá-los, enquanto o Dynamo DB foi usado para armazenar dados relacionados a autenticação.
+3. Integration with Amazon Cognito: One of the reasons for our choice is the easy integration between Dynamo DB, Cognito authentication service and lambda functions. We used Cognito to manage users and authenticate them, while Dynamo DB was used to store authentication related data.
 
 
