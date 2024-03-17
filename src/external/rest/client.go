@@ -16,13 +16,6 @@ func NewHandlerClient(controller interfaces.ClientController) *handlerClient {
 }
 
 func (h *handlerClient) Handler(rw http.ResponseWriter, req *http.Request) {
-	apiHToken := req.Header.Get("Auth-token")
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
 
 	var routesClient = map[string]http.HandlerFunc{
 		"get hermes_foods/client/{cpf}": h.controller.GetClientByCPF,

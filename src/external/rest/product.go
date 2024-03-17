@@ -16,13 +16,6 @@ func NewHandlerProduct(controller interfaces.ProductController) *handlerProduct 
 }
 
 func (h handlerProduct) Handler(rw http.ResponseWriter, req *http.Request) {
-	apiHToken := req.Header.Get("Auth-token")
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
 
 	var routeProducts = map[string]http.HandlerFunc{
 		"get hermes_foods/product":         h.controller.GetProductByCategory,

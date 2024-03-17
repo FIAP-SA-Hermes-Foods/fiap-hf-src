@@ -17,14 +17,6 @@ func NewHandlerOrder(controller interfaces.OrderController) *handlerOrder {
 
 func (h *handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 
-	apiHToken := req.Header.Get("Auth-token")
-
-	if err := tokenValidate(apiHToken); err != nil {
-		rw.WriteHeader(http.StatusUnauthorized)
-		rw.Write([]byte(`{"error": "not authorized"} `))
-		return
-	}
-
 	var routesOrders = map[string]http.HandlerFunc{
 		"get hermes_foods/order":        h.controller.GetOrders,
 		"get hermes_foods/order/{id}":   h.controller.GetOrderByID,
