@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
@@ -118,7 +119,11 @@ func main() {
 	controllersProduct := web.NewProductController(app)
 	controllersVoucher := web.NewVoucherController(app)
 
+	configAws := aws.NewConfig()
+	configAws.Region = aws.String("us-east-1")
+
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config:            *configAws,
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
