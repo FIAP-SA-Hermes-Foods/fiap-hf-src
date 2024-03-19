@@ -31,11 +31,7 @@ func NewUserAuth(ctx context.Context, funcName string, awsSession session.Sessio
 }
 
 func (u *userAuth) Auth(in dto.UserInput) (*dto.UserOutput, error) {
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	client := lambda.New(sess)
+	client := lambda.New(&u.awsSession)
 
 	inJson, err := json.Marshal(in)
 
