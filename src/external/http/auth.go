@@ -60,9 +60,8 @@ func (u *userAuth) Auth(in dto.UserInput) (*dto.UserOutput, error) {
 
 	var out *dto.UserOutput
 
-	if err := json.Unmarshal(result.Payload, &out); err != nil {
-		l.Errorf("Auth: ", "|", err)
-		return nil, err
+	if result != nil && result.StatusCode != nil {
+		out.StatusCode = int(*result.StatusCode)
 	}
 
 	return out, nil
