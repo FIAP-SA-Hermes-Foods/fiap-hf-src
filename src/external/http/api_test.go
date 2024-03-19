@@ -1,4 +1,4 @@
-package api_mercadoPago
+package api
 
 import (
 	"context"

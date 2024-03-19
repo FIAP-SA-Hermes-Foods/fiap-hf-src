@@ -17,6 +17,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws/session"
 )
 
 const (
@@ -116,10 +118,16 @@ func main() {
 	controllersProduct := web.NewProductController(app)
 	controllersVoucher := web.NewVoucherController(app)
 
-	handlersClient := rest.NewHandlerClient(controllersClient)
-	handlersOrder := rest.NewHandlerOrder(controllersOrder)
-	handlersProduct := rest.NewHandlerProduct(controllersProduct)
-	hanldersVoucher := rest.NewHandlerVoucher(controllersVoucher)
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+
+	userAuth := httpExt.NewUserAuth(ctx, os.Getenv("USER_AUTH_FUNC_NAME"), *sess)
+
+	handlersClient := rest.NewHandlerClient(controllersClient, userAuth)
+	handlersOrder := rest.NewHandlerOrder(controllersOrder, userAuth)
+	handlersProduct := rest.NewHandlerProduct(controllersProduct, userAuth)
+	hanldersVoucher := rest.NewHandlerVoucher(controllersVoucher, userAuth)
 
 	router.Handle("/hermes_foods/health", http.StripPrefix("/", rest.Middleware(web.HealthCheck)))
 
