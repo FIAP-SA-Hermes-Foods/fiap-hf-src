@@ -30,19 +30,37 @@ func NewUserAuth(ctx context.Context, funcName string, awsSession session.Sessio
 	}
 }
 
+type payload struct {
+	Body string `json:"body"`
+}
+
+type outLambda struct {
+	StatusCode int               `json:"statusCode"`
+	Headers    map[string]string `json:"headers"`
+	Body       string            `json:"body"`
+}
+
 func (u *userAuth) Auth(in dto.UserInput) (*dto.UserOutput, error) {
 	client := lambda.New(&u.awsSession)
 
 	inJson, err := json.Marshal(in)
+
+	p := payload{
+		Body: string(inJson),
+	}
+
+	pload, err := json.Marshal(p)
 
 	if err != nil {
 		l.Errorf("Auth: ", "|", err)
 		return nil, err
 	}
 
+	l.Infof("Auth: ", "|", string(inJson))
+
 	input := &lambda.InvokeInput{
 		FunctionName: aws.String(u.lambdaFuncName),
-		Payload:      inJson,
+		Payload:      pload,
 	}
 
 	result, err := client.Invoke(input)
@@ -56,13 +74,19 @@ func (u *userAuth) Auth(in dto.UserInput) (*dto.UserOutput, error) {
 		return nil, err
 	}
 
-	l.Infof("Auth: ", "|", result.String())
+	l.Infof("Auth: ", "|", string(result.Payload))
+	l.Infof("Auth: ", "|", int(*result.StatusCode))
+
+	var outL outLambda
+
+	if err := json.Unmarshal(result.Payload, &outL); err != nil {
+		l.Errorf("Auth: ", "|", err)
+		return nil, err
+	}
 
 	var out dto.UserOutput
 
-	if result != nil && result.StatusCode != nil {
-		out.StatusCode = int(*result.StatusCode)
-	}
+	out.StatusCode = outL.StatusCode
 
 	return &out, nil
 }
