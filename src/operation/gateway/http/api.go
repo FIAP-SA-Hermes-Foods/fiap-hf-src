@@ -9,7 +9,8 @@ import (
 var _ interfaces.PaymentGateway = (*mercadoPagoGateway)(nil)
 
 type mercadoPagoGateway struct {
-	api interfaces.PaymentAPI
+	api  interfaces.PaymentAPI
+	auth interfaces.UserAuth
 }
 
 func NewMercadoPagoAPI(api interfaces.PaymentAPI) *mercadoPagoGateway {
