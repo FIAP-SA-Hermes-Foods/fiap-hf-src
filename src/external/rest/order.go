@@ -33,7 +33,7 @@ func (h *handlerOrder) Handler(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		if uAuth.WantRegister {
+		if uAuth.User != nil && uAuth.User.WantRegister {
 			out, err := h.userAuth.Auth(uAuth)
 
 			if err != nil {
