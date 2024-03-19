@@ -58,11 +58,11 @@ func (u *userAuth) Auth(in dto.UserInput) (*dto.UserOutput, error) {
 
 	l.Infof("Auth: ", "|", result.String())
 
-	var out *dto.UserOutput
+	var out dto.UserOutput
 
 	if result != nil && result.StatusCode != nil {
 		out.StatusCode = int(*result.StatusCode)
 	}
 
-	return out, nil
+	return &out, nil
 }
